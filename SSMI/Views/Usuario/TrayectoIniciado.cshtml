@@ -1,0 +1,138 @@
+﻿@model SSMI.Models.Usuario
+
+@{
+    ViewData["Title"] = "TrayectoIniciado";
+    Layout = "~/Views/Shared/_UsuarioLayout.cshtml";
+}
+
+<style>
+    /* ── Contenido principal ── */
+    .contenido-perfil {
+        flex-grow: 1;
+        overflow-y: auto;
+        padding: 1.5rem;
+        transition: background .3s;
+    }
+
+    /* ── Cajas de información ── */
+    .caja-info {
+        background-color: #e9ecef;
+        border-radius: 20px;
+        min-height: 80px;
+        padding: 1rem 1.25rem;
+        font-size: var(--font-size-base);
+        transition: background-color .3s, color .3s;
+    }
+
+    .caja-mapa {
+        width: 100%;
+        height: 300px;
+        background-color: #e9ecef;
+        border-radius: 20px;
+        overflow: hidden;
+        transition: background-color .3s;
+    }
+
+    /* ── Botón finalizar ── */
+    .boton-finalizar {
+        background-color: #eb4d4b;
+        border: none;
+        font-size: calc(var(--font-size-base) * 1.1);
+        min-width: 200px;
+        transition: transform .2s, font-size .3s;
+    }
+
+        .boton-finalizar:hover {
+            transform: translateY(-2px);
+            background-color: #d63031;
+            color: white;
+        }
+
+    /* ── Modo oscuro ── */
+    body.dark-mode .caja-info {
+        background-color: #21262d !important;
+        color: #c9d1d9;
+    }
+
+    body.dark-mode .caja-mapa {
+        background-color: #21262d !important;
+    }
+
+    body.dark-mode .text-secondary {
+        color: #8b949e !important;
+    }
+</style>
+
+<div class="d-flex app-viewport">
+    <!-- ══ SIDEBAR ══ -->
+    <div id="sidebarMenu" class="shadow">
+        <div class="d-flex flex-column p-4 h-100">
+            <h4 class="text-center mt-2 mb-4">SSMI</h4>
+            <a asp-action="Index" class="nav-btn"><i class="bi bi-house-door"></i> Inicio</a>
+            <a asp-action="Perfil" class="nav-btn"><i class="bi bi-person-circle"></i> Mi Perfil</a>
+            <a asp-action="MejorRuta" class="nav-btn"><i class="bi bi-map"></i> Mejor Ruta</a>
+            <a asp-action="Comentarios" class="nav-btn"><i class="bi bi-chat-left-dots"></i> Comentarios</a>
+            <div class="mt-auto">
+                <a asp-action="Ayuda" class="nav-btn"><i class="bi bi-question-circle"></i> Ayuda</a>
+                <a asp-action="AcercaDeNosotros" class="nav-btn"><i class="bi bi-info-square"></i> Acerca de nosotros</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ CONTENIDO PRINCIPAL ══ -->
+    <div class="flex-grow-1 d-flex flex-column">
+        <div class="p-3 d-flex align-items-center gap-3 border-bottom">
+            <button id="btnToggleMenu" class="btn btn-dark rounded-circle shadow-sm" style="width: 45px; height: 45px;">
+                <i class="bi bi-list"></i>
+            </button>
+            <h2 class="mb-0">Trayecto Iniciado</h2>
+        </div>
+
+        <div class="contenido-perfil d-flex flex-column justify-content-center">
+            <div class="container pb-5" style="max-width: 550px;">
+                <div class="mb-4">
+                    <h4 class="fw-bold ps-2 mb-2">Instrucciones</h4>
+                    <div class="caja-info">
+                        <p class="text-secondary mb-0">...</p>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <h4 class="fw-bold ps-2 mb-2">Próximo camión en:</h4>
+                    <div class="caja-info">
+                        <p class="text-secondary mb-0">...</p>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <h4 class="fw-bold ps-2 mb-2">Capacidad:</h4>
+                    <div class="caja-info">
+                        <p class="text-secondary mb-0">...</p>
+                    </div>
+                </div>
+
+                <div class="mb-5">
+                    <h4 class="fw-bold ps-2 mb-2">Mapa</h4>
+                    <div class="caja-mapa">
+                        <img src="~/Imagenes/imgRutaCamiones.png" alt="Mapa de ruta de camiones"
+                             style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center justify-content-center gap-3 mt-4">
+                    <a asp-action="Index"
+                       class="btn btn-danger rounded-pill px-5 py-3 shadow-lg fw-bold boton-finalizar">
+                        Finalizar Trayecto
+                    </a>
+                    <a asp-action="OtrasUnidades"
+                       class="d-flex align-items-center justify-content-center"
+                       style="width: 70px; height: 70px; text-decoration: none; flex-shrink: 0;"
+                       title="Ver otras unidades disponibles">
+                        <img src="~/Imagenes/imgOtrasUnidades.png" alt="Otras unidades disponibles"
+                             style="max-width: 100%; max-height: 100%; object-fit: contain; cursor: pointer;">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

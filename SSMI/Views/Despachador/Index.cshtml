@@ -1,0 +1,265 @@
+﻿@{
+    ViewData["Title"] = "Dashboard Despachador";
+    Layout = "~/Views/Shared/_UsuarioLayout.cshtml";
+
+}
+
+<style>
+    /* ── Contenedor principal ── */
+    .area-principal {
+        min-height: 100vh;
+        background-color: #f0f2f5;
+        display: flex;
+        align-items: stretch;
+        overflow-x: hidden;
+    }
+
+    /* ── Encabezado fijo ── */
+    .encabezado-fijo {
+        position: sticky;
+        top: 0;
+        z-index: 999;
+        padding: 15px;
+    }
+
+    /* ── Contenido del dashboard ── */
+    .contenido-dashboard {
+        flex-grow: 1;
+        padding: 2rem;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .encabezado-dashboard {
+        margin-bottom: 2rem;
+    }
+
+    .titulo-dashboard {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: var(--sidebar-bg);
+    }
+
+    .subtitulo-dashboard {
+        color: #6b7280;
+    }
+
+    /* ── KPIs ── */
+    .cuadricula-kpi {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .tarjeta-kpi {
+        background: white;
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+        transition: .3s;
+    }
+
+        .tarjeta-kpi:hover {
+            transform: translateY(-5px);
+        }
+
+    .valor-kpi {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: var(--sidebar-bg);
+    }
+
+    .etiqueta-kpi {
+        color: #6b7280;
+        font-size: 0.9rem;
+    }
+
+    /* ── Tabla ── */
+    .tarjeta-tabla {
+        background: white;
+        border-radius: 20px;
+        padding: 1.5rem;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+
+    .titulo-tabla {
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--sidebar-bg);
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th {
+        text-align: left;
+        padding: 0.75rem;
+        font-size: 0.9rem;
+        color: #6b7280;
+        text-transform: uppercase;
+    }
+
+    td {
+        padding: 1rem 0.75rem;
+        border-top: 1px solid #eee;
+        color: #1E3C54;
+    }
+
+    .badge {
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .insignia-aprobado {
+        background: #10b981;
+        color: white;
+    }
+
+    .insignia-pendiente {
+        background: #f59e0b;
+        color: white;
+    }
+
+    .insignia-rechazado {
+        background: #ef4444;
+        color: white;
+    }
+
+    /* ── Modo oscuro ── */
+    body.dark-mode .area-principal {
+        background-color: #0d1117;
+    }
+
+    body.dark-mode .titulo-dashboard {
+        color: #e6edf3;
+    }
+
+    body.dark-mode .subtitulo-dashboard {
+        color: #8b949e;
+    }
+
+    body.dark-mode .tarjeta-kpi {
+        background: #161b22;
+        border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    body.dark-mode .valor-kpi {
+        color: var(--accent-ssmi);
+    }
+
+    body.dark-mode .tarjeta-tabla {
+        background: #161b22;
+        border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    body.dark-mode td {
+        border-color: #30363d;
+        color: #e6edf3;
+    }
+</style>
+
+<div class="menu-container d-flex area-principal">
+
+    <div id="sidebarMenu" class="shadow">
+        <div class="d-flex flex-column p-4 h-100">
+            <h4 class="text-center mt-2 mb-4">SSMI</h4>
+            <a asp-controller="Despachador" asp-action="Index" class="nav-btn active">
+                <i class="bi bi-speedometer2"></i> Dashboard
+            </a>
+            <a asp-controller="Despachador" asp-action="Perfil" class="nav-btn">
+                <i class="bi bi-person-circle"></i> Mi Perfil
+            </a>
+            <a asp-controller="Despachador" asp-action="HistoricoDeRegistros" class="nav-btn">
+                <i class="bi bi-clock-history"></i> Histórico
+            </a>
+            <div class="mt-auto">
+                <a asp-controller="Usuario" asp-action="Ayuda" class="nav-btn">
+                    <i class="bi bi-question-circle"></i> Ayuda
+                </a>
+                <a asp-controller="Usuario" asp-action="AcercaDeNosotros" class="nav-btn"><i class="bi bi-info-square"></i> Acerca de nosotros</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex flex-column w-100">
+
+        <div class="encabezado-fijo">
+            <button id="btnToggleMenu" class="btn rounded-circle shadow-sm">
+                <i class="bi bi-list"></i>
+            </button>
+        </div>
+
+        <div class="contenido-dashboard">
+            <div class="encabezado-dashboard">
+                <div class="titulo-dashboard">Panel del Despachador</div>
+                <div class="subtitulo-dashboard">
+                    Control de salidas del día -
+                    <span style="font-weight: 600;">
+                        @DateTime.Today.ToString("dd 'de' MMMM 'de' yyyy", new System.Globalization.CultureInfo("es-ES"))
+                    </span>
+                </div>
+            </div>
+
+            <div class="cuadricula-kpi">
+                <div class="tarjeta-kpi">
+                    <div class="valor-kpi">12</div>
+                    <div class="etiqueta-kpi">Salidas hoy</div>
+                </div>
+                <div class="tarjeta-kpi">
+                    <div class="valor-kpi">9</div>
+                    <div class="etiqueta-kpi">Aprobados</div>
+                </div>
+                <div class="tarjeta-kpi">
+                    <div class="valor-kpi">2</div>
+                    <div class="etiqueta-kpi">Pendientes</div>
+                </div>
+                <div class="tarjeta-kpi">
+                    <div class="valor-kpi">1</div>
+                    <div class="etiqueta-kpi">Rechazados</div>
+                </div>
+            </div>
+
+            <div class="tarjeta-tabla">
+                <div class="titulo-tabla">Registros de hoy</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th># Económico</th>
+                            <th>Conductor</th>
+                            <th>Fecha</th>
+                            <th>Hora</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>BUS-001</td>
+                            <td style="font-weight: 600;">Juan Pérez</td>
+                            <td>@DateTime.Today.ToString("dd/MM/yyyy")</td>
+                            <td>08:30 AM</td>
+                            <td><span class="badge insignia-aprobado">Aprobado</span></td>
+                        </tr>
+                        <tr>
+                            <td>BUS-002</td>
+                            <td style="font-weight: 600;">Carlos López</td>
+                            <td>@DateTime.Today.ToString("dd/MM/yyyy")</td>
+                            <td>09:15 AM</td>
+                            <td><span class="badge insignia-pendiente">Pendiente</span></td>
+                        </tr>
+                        <tr>
+                            <td>BUS-003</td>
+                            <td style="font-weight: 600;">Carlos López</td>
+                            <td>@DateTime.Today.ToString("dd/MM/yyyy")</td>
+                            <td>09:15 AM</td>
+                            <td><span class="badge insignia-rechazado">Rechazado</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

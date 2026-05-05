@@ -1,0 +1,103 @@
+﻿/* =====================================================
+   SSMI — Sidebar (compartido entre vistas)
+===================================================== */
+:root {
+    --accent-ssmi: #00d4ff;
+    --sidebar-bg: #1E3C54;
+}
+
+.app-viewport {
+    height: 100vh;
+    background-color: #f0f2f5;
+    overflow: hidden;
+    transition: background-color .3s;
+}
+
+#sidebarMenu {
+    width: 280px;
+    background-color: var(--sidebar-bg) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
+    flex-shrink: 0;
+}
+
+    #sidebarMenu.sidebar-hidden {
+        margin-left: -280px;
+    }
+
+    #sidebarMenu h4 {
+        color: var(--accent-ssmi);
+        font-weight: 800;
+        letter-spacing: 1px;
+        transition: color .3s;
+    }
+
+.nav-btn {
+    text-align: left;
+    padding: 12px 20px;
+    border-radius: 12px !important;
+    margin-bottom: 8px;
+    transition: 0.3s;
+    border: none !important;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: rgba(255,255,255,0.8);
+    background: transparent;
+    text-decoration: none;
+    font-size: var(--font-size-base);
+}
+
+    .nav-btn:hover {
+        background: rgba(255,255,255,0.1);
+        color: #ffffff;
+        transform: translateX(5px);
+    }
+
+    .nav-btn.active {
+        background: #ffffff !important;
+        color: var(--sidebar-bg) !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+.page-header-bar {
+    border-bottom: 1px solid rgba(0,0,0,.07);
+    background: #fff;
+    transition: background .3s, border-color .3s;
+}
+
+#btnToggleMenu {
+    background-color: #1E3C54;
+    border: 2px solid #00d4ff;
+    color: white !important;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: .3s;
+}
+
+    #btnToggleMenu:hover {
+        transform: scale(1.08);
+        box-shadow: 0 0 12px rgba(0,212,255,.35);
+    }
+
+@media (max-width: 768px) {
+    #sidebarMenu {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        z-index: 1050;
+        box-shadow: 4px 0 20px rgba(0,0,0,0.3);
+    }
+
+    #btnToggleMenu {
+        position: relative;
+        z-index: 1060;
+    }
+}
+

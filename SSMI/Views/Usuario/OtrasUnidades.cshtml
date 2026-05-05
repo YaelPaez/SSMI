@@ -1,0 +1,209 @@
+﻿@model SSMI.Models.Usuario
+
+@{
+    ViewData["Title"] = "Otras Unidades";
+    Layout = "~/Views/Shared/_UsuarioLayout.cshtml";
+}
+
+<style>
+    /* ── Contenido principal ── */
+    .contenido-perfil {
+        flex-grow: 1;
+        overflow-y: auto;
+        padding: 1.5rem;
+        transition: background .3s;
+    }
+
+    /* ── Tarjetas de unidad ── */
+    .tarjeta-unidad {
+        background-color: #fff;
+        border-radius: 15px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,.08);
+        transition: box-shadow .3s, transform .2s;
+    }
+
+        .tarjeta-unidad:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,.12);
+            transform: translateY(-2px);
+        }
+
+    .encabezado-unidad {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .imagen-unidad {
+        width: 80px;
+        height: 60px;
+        flex-shrink: 0;
+        background-color: #f0f2f5;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .boton-unidad {
+        flex-grow: 1;
+        background-color: #e9ecef;
+        border-radius: 10px;
+        overflow: hidden;
+        transition: background-color .3s;
+    }
+
+        .boton-unidad .btn {
+            border-radius: 0 !important;
+            border: none;
+            padding: 0.75rem 1rem;
+            font-weight: 600;
+            transition: background-color .3s;
+        }
+
+            .boton-unidad .btn:hover {
+                background-color: #dee2e6 !important;
+            }
+
+    .detalles-unidad {
+        font-size: calc(var(--font-size-base) * 0.9);
+        color: #495057;
+    }
+
+        .detalles-unidad p {
+            margin-bottom: 0.5rem;
+        }
+
+    /* ── Botón regresar ── */
+    .boton-regresar {
+        background-color: #6c757d;
+        border: none;
+        color: white;
+        font-weight: 600;
+        transition: background-color .3s, transform .2s;
+    }
+
+        .boton-regresar:hover {
+            background-color: #5a6268;
+            transform: translateY(-2px);
+            color: white;
+        }
+
+    /* ── Modo oscuro ── */
+    body.dark-mode .tarjeta-unidad {
+        background-color: #161b22;
+        box-shadow: 0 2px 8px rgba(0,0,0,.3);
+    }
+
+        body.dark-mode .tarjeta-unidad:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,.5);
+        }
+
+    body.dark-mode .imagen-unidad {
+        background-color: #21262d;
+    }
+
+    body.dark-mode .boton-unidad {
+        background-color: #21262d;
+    }
+
+        body.dark-mode .boton-unidad .btn {
+            color: #c9d1d9;
+        }
+
+            body.dark-mode .boton-unidad .btn:hover {
+                background-color: #30363d !important;
+            }
+
+    body.dark-mode .detalles-unidad {
+        color: #8b949e;
+    }
+</style>
+
+<div class="d-flex app-viewport">
+    <!-- ══ SIDEBAR ══ -->
+    <div id="sidebarMenu" class="shadow">
+        <div class="d-flex flex-column p-4 h-100">
+            <h4 class="text-center mt-2 mb-4">SSMI</h4>
+            <a asp-action="Index" class="nav-btn"><i class="bi bi-house-door"></i> Inicio</a>
+            <a asp-action="Perfil" class="nav-btn"><i class="bi bi-person-circle"></i> Mi Perfil</a>
+            <a asp-action="MejorRuta" class="nav-btn"><i class="bi bi-map"></i> Mejor Ruta</a>
+            <a asp-action="Comentarios" class="nav-btn"><i class="bi bi-chat-left-dots"></i> Comentarios</a>
+            <div class="mt-auto">
+                <a asp-action="Ayuda" class="nav-btn"><i class="bi bi-question-circle"></i> Ayuda</a>
+                <a asp-action="AcercaDeNosotros" class="nav-btn"><i class="bi bi-info-square"></i> Acerca de nosotros</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ CONTENIDO PRINCIPAL ══ -->
+    <div class="flex-grow-1 d-flex flex-column">
+        <div class="p-3 d-flex align-items-center gap-3 border-bottom">
+            <button id="btnToggleMenu" class="btn btn-dark rounded-circle shadow-sm" style="width: 45px; height: 45px;">
+                <i class="bi bi-list"></i>
+            </button>
+            <h2 class="mb-0">Unidades Próximas</h2>
+        </div>
+
+        <div class="contenido-perfil d-flex flex-column">
+            <div class="container pb-5" style="max-width: 550px;">
+                <!-- Unidad 1 -->
+                <div class="tarjeta-unidad">
+                    <div class="encabezado-unidad">
+                        <div class="imagen-unidad">
+                            <img src="~/Imagenes/imgDibujoUnidades.png" alt="Unidad de transporte"
+                                 style="width: 100%; height: 100%; object-fit: contain;">
+                        </div>
+                        <div class="boton-unidad">
+                            <button class="btn w-100 text-start d-flex justify-content-between align-items-center"
+                                    type="button" data-bs-toggle="collapse" data-bs-target="#detalleUnidad1"
+                                    aria-expanded="false" aria-controls="detalleUnidad1">
+                                <span class="fw-bold">UNIDAD 1</span>
+                                <i class="bi bi-chevron-down text-secondary"></i>
+                            </button>
+                            <div id="detalleUnidad1" class="collapse detalles-unidad px-3 py-3">
+                                <hr class="my-2 opacity-25">
+                                <p class="mb-1"><strong>Capacidad: </strong>...</p>
+                                <p class="mb-1"><strong>Cercanía: </strong>...</p>
+                                <p class="mb-0"><strong>Próxima parada: </strong>...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Unidad 2 -->
+                <div class="tarjeta-unidad">
+                    <div class="encabezado-unidad">
+                        <div class="imagen-unidad">
+                            <img src="~/Imagenes/imgDibujoUnidades.png" alt="Unidad de transporte"
+                                 style="width: 100%; height: 100%; object-fit: contain;">
+                        </div>
+                        <div class="boton-unidad">
+                            <button class="btn w-100 text-start d-flex justify-content-between align-items-center"
+                                    type="button" data-bs-toggle="collapse" data-bs-target="#detalleUnidad2"
+                                    aria-expanded="false" aria-controls="detalleUnidad2">
+                                <span class="fw-bold">UNIDAD 2</span>
+                                <i class="bi bi-chevron-down text-secondary"></i>
+                            </button>
+                            <div id="detalleUnidad2" class="collapse detalles-unidad px-3 py-3">
+                                <hr class="my-2 opacity-25">
+                                <p class="mb-1"><strong>Capacidad: </strong>...</p>
+                                <p class="mb-1"><strong>Cercanía: </strong>...</p>
+                                <p class="mb-0"><strong>Próxima parada: </strong>...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botón Regresar -->
+                <div class="text-center mt-5 pt-3">
+                    <a asp-action="TrayectoIniciado" class="btn boton-regresar rounded-pill px-5 py-2 fw-bold">
+                        <i class="bi bi-arrow-left"></i> Regresar
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

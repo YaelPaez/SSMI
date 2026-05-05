@@ -1,0 +1,629 @@
+﻿@{
+    ViewData["Title"] = "Configuración";
+    Layout = "~/Views/Shared/_UsuarioLayout.cshtml";
+}
+
+<style>
+    /* ── Variables de esta vista ── */
+    :root {
+        --accent-ssmi: #00d4ff;
+        --sidebar-bg: #1E3C54;
+    }
+
+    /* ── Herencia de tamaño de texto ── */
+    h1, h2, h3, h4, h5, h6, p, a, span, label, input, button, select, td, th, li {
+        font-size: inherit;
+    }
+
+    .caja-icono {
+        font-size: 1.4em;
+    }
+
+    /* ── Área de configuración ── */
+    .contenido-configuracion {
+        flex-grow: 1;
+        overflow-y: auto;
+        padding: 40px;
+        transition: background .3s;
+    }
+
+    .tarjeta-configuracion {
+        background: white;
+        border: none;
+        border-radius: 18px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+        .tarjeta-configuracion:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08) !important;
+        }
+
+    .caja-icono {
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        background-color: #f4f7f9;
+        color: var(--sidebar-bg);
+        transition: 0.3s;
+        flex-shrink: 0;
+    }
+
+    .tarjeta-configuracion:hover .caja-icono {
+        background-color: var(--sidebar-bg);
+        color: var(--accent-ssmi);
+    }
+
+    .form-check-input:checked {
+        background-color: var(--accent-ssmi);
+        border-color: var(--accent-ssmi);
+    }
+
+    /* ── Dropdowns accesibilidad ── */
+    .seccion-ajustes {
+        margin-bottom: .5rem;
+    }
+
+        .seccion-ajustes h6 {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: .12em;
+            color: var(--accent-ssmi);
+            opacity: .75;
+            margin-bottom: .5rem;
+            font-weight: 600;
+        }
+
+    .selector-ssmi {
+        position: relative;
+        margin: .35rem 0;
+    }
+
+    .selector-ssmi-encabezado {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: .6rem .8rem;
+        background: #f4f7f9;
+        border: 1px solid rgba(0,0,0,.08);
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all .2s;
+        user-select: none;
+        color: #1E3C54;
+    }
+
+        .selector-ssmi-encabezado:hover {
+            border-color: var(--accent-ssmi);
+            background: #eaf9fd;
+        }
+
+    .selector-ssmi.abierto .selector-ssmi-encabezado {
+        border-color: var(--accent-ssmi);
+        box-shadow: 0 0 0 3px rgba(0,212,255,.12);
+    }
+
+    .selector-ssmi-encabezado svg {
+        width: 14px;
+        height: 14px;
+        color: var(--accent-ssmi);
+        transition: transform .2s;
+        flex-shrink: 0;
+    }
+
+    .selector-ssmi.abierto .selector-ssmi-encabezado svg {
+        transform: rotate(180deg);
+    }
+
+    .selector-ssmi-cuerpo {
+        display: none;
+        background: #fff;
+        border: 1px solid rgba(0,212,255,.3);
+        border-radius: 8px;
+        margin-top: 4px;
+        overflow: hidden;
+        box-shadow: 0 6px 20px rgba(0,0,0,.1);
+        z-index: 10;
+        position: relative;
+        animation: deslizarAbajo .15s ease;
+    }
+
+    .selector-ssmi.abierto .selector-ssmi-cuerpo {
+        display: block;
+    }
+
+    @@keyframes deslizarAbajo {
+        from {
+            opacity: 0;
+            transform: translateY(-6px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .opcion-ssmi {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: .55rem .8rem;
+        color: #4a5a6a;
+        cursor: pointer;
+        transition: all .15s;
+        gap: .5rem;
+    }
+
+        .opcion-ssmi:hover {
+            background: #eaf9fd;
+            color: #1E3C54;
+        }
+
+        .opcion-ssmi input[type="radio"] {
+            display: none;
+        }
+
+    .marca-seleccion {
+        opacity: 0;
+        color: var(--accent-ssmi);
+        font-weight: 700;
+        font-size: .85rem;
+        transition: opacity .15s;
+        flex-shrink: 0;
+    }
+
+    .opcion-ssmi input[type="radio"]:checked ~ .marca-seleccion {
+        opacity: 1;
+    }
+
+    /* ── Toggle switch ── */
+    .interruptor-ssmi {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: .55rem .8rem;
+        background: #f4f7f9;
+        border: 1px solid rgba(0,0,0,.08);
+        border-radius: 8px;
+        margin: .35rem 0;
+        cursor: pointer;
+        transition: all .2s;
+    }
+
+        .interruptor-ssmi:hover {
+            border-color: var(--accent-ssmi);
+            background: #eaf9fd;
+        }
+
+        .interruptor-ssmi label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            color: #4a5a6a;
+            width: 100%;
+        }
+
+    .contenedor-switch {
+        position: relative;
+        width: 38px;
+        height: 20px;
+        flex-shrink: 0;
+    }
+
+        .contenedor-switch input {
+            display: none;
+        }
+
+    .pista-switch {
+        position: absolute;
+        inset: 0;
+        background: #d0d8e0;
+        border: 1px solid rgba(0,0,0,.1);
+        border-radius: 10px;
+        transition: all .3s;
+        cursor: pointer;
+    }
+
+    .pulgar-switch {
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 14px;
+        height: 14px;
+        background: #fff;
+        border-radius: 50%;
+        box-shadow: 0 1px 4px rgba(0,0,0,.2);
+        transition: all .3s;
+        pointer-events: none;
+    }
+
+    .contenedor-switch input:checked ~ .pista-switch {
+        background: rgba(0,212,255,.25);
+        border-color: var(--accent-ssmi);
+    }
+
+    .contenedor-switch input:checked ~ .pulgar-switch {
+        left: 22px;
+        background: var(--accent-ssmi);
+        box-shadow: 0 0 6px rgba(0,212,255,.5);
+    }
+
+    .divisor-ssmi {
+        height: 1px;
+        background: rgba(0,0,0,.07);
+        margin: .75rem 0;
+    }
+
+    /* ── Tarjeta accesibilidad ── */
+    .tarjeta-accesibilidad {
+        background: white;
+        border: none;
+        border-radius: 18px;
+        padding: 1.5rem 1.75rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,.06);
+        margin-bottom: 1rem;
+        transition: background .3s;
+    }
+
+    .cuadricula-accesibilidad {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    /* ── Barra encabezado ── */
+    .barra-encabezado {
+        border-bottom: 1px solid rgba(0,0,0,.07);
+        background: #fff;
+        transition: background .3s, border-color .3s;
+    }
+
+    /* ── Modo oscuro específico de esta vista ── */
+    body.dark-mode .contenido-configuracion {
+        background: #0d1117;
+    }
+
+    body.dark-mode .tarjeta-configuracion {
+        background: #161b22;
+        color: #e6edf3;
+    }
+
+        body.dark-mode .tarjeta-configuracion h5 {
+            color: #e6edf3;
+        }
+
+        body.dark-mode .tarjeta-configuracion p {
+            color: #8b949e !important;
+        }
+
+    body.dark-mode .selector-ssmi-encabezado {
+        background: #161b22;
+        color: #e6edf3;
+        border-color: rgba(255,255,255,.1);
+    }
+
+    body.dark-mode .selector-ssmi-cuerpo {
+        background: #1c2128;
+        border-color: rgba(0,212,255,.25);
+    }
+
+    body.dark-mode .opcion-ssmi {
+        color: #c9d1d9;
+    }
+
+        body.dark-mode .opcion-ssmi:hover {
+            background: #21262d;
+            color: #e6edf3;
+        }
+
+    body.dark-mode .interruptor-ssmi {
+        background: #161b22;
+        border-color: rgba(255,255,255,.1);
+    }
+
+        body.dark-mode .interruptor-ssmi label {
+            color: #c9d1d9;
+        }
+
+    body.dark-mode .tarjeta-accesibilidad {
+        background: #161b22;
+    }
+
+    body.dark-mode .caja-icono {
+        background: #21262d;
+        color: var(--accent-ssmi);
+    }
+
+    body.dark-mode .barra-encabezado {
+        background: #161b22 !important;
+        border-color: rgba(255,255,255,.08) !important;
+    }
+
+    body.dark-mode h2 {
+        color: #e6edf3 !important;
+    }
+
+    body.dark-mode .divisor-ssmi {
+        background: rgba(255,255,255,.08);
+    }
+</style>
+
+<div class="menu-container d-flex app-viewport">
+
+    <!-- ══ SIDEBAR ══ -->
+    <div id="sidebarMenu" class="shadow">
+        <div class="d-flex flex-column p-4 h-100">
+            <h4 class="text-center mt-2 mb-4">SSMI</h4>
+            <a asp-action="Index" class="nav-btn"><i class="bi bi-house-door"></i> Inicio</a>
+            <a asp-action="Perfil" class="nav-btn"><i class="bi bi-person-circle"></i> Mi Perfil</a>
+            <a asp-action="Configuracion" class="nav-btn active"><i class="bi bi-gear"></i> Configuración</a>
+            <a asp-action="Comentarios" class="nav-btn"><i class="bi bi-chat-left-dots"></i> Comentarios</a>
+            <div class="mt-auto">
+                <a asp-action="Ayuda" class="nav-btn"><i class="bi bi-question-circle"></i> Ayuda</a>
+                <a asp-action="AcercaDeNosotros" class="nav-btn"><i class="bi bi-info-square"></i> Acerca de nosotros</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ CONTENIDO ══ -->
+    <div class="d-flex flex-column w-100 overflow-hidden">
+
+        <div class="p-3 d-flex align-items-center gap-3 barra-encabezado">
+            <button id="btnToggleMenu" class="btn rounded-circle shadow-sm">
+                <i class="bi bi-list"></i>
+            </button>
+            <h2 class="mb-0 fw-bold" style="color:#1E3C54;">Configuración</h2>
+        </div>
+
+        <div class="contenido-configuracion">
+            <div class="container" style="max-width:900px;">
+
+                <h5 class="text-muted mb-4 text-uppercase small fw-bold">Preferencias de la App</h5>
+
+                <div class="card tarjeta-configuracion mb-3 shadow-sm">
+                    <div class="card-body d-flex align-items-center p-4">
+                        <div class="caja-icono me-4"><i class="bi bi-bell"></i></div>
+                        <div class="flex-grow-1">
+                            <h5 class="mb-1 fw-bold">Notificaciones en tiempo real</h5>
+                            <p class="mb-0 text-muted small">Alertas sobre tráfico y transporte público</p>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="switchNotif" checked style="width:3rem;height:1.5rem;">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card tarjeta-configuracion mb-3 shadow-sm">
+                    <div class="card-body d-flex align-items-center p-4">
+                        <div class="caja-icono me-4"><i class="bi bi-shield-lock"></i></div>
+                        <div class="flex-grow-1">
+                            <h5 class="mb-1 fw-bold">Modo Incógnito de Ruta</h5>
+                            <p class="mb-0 text-muted small">No guardar historial de búsqueda de hoy</p>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="switchPriv" style="width:3rem;height:1.5rem;">
+                        </div>
+                    </div>
+                </div>
+
+                <h5 class="text-muted mb-4 mt-5 text-uppercase small fw-bold">Accesibilidad Visual</h5>
+
+                <div class="tarjeta-accesibilidad shadow-sm">
+                    <div class="cuadricula-accesibilidad">
+
+                        <div>
+                            <div class="seccion-ajustes">
+                                <h6>🌈 Modo de Visión</h6>
+                                <div class="selector-ssmi" id="visionDropdown">
+                                    <div class="selector-ssmi-encabezado" onclick="toggleSelectorSsmi('visionDropdown')" role="button">
+                                        <span id="visionSeleccionado">Normal</span>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9" /></svg>
+                                    </div>
+                                    <div class="selector-ssmi-cuerpo">
+                                        <label class="opcion-ssmi">
+                                            <span>👁 Normal</span>
+                                            <input type="radio" name="ssmi_daltonism" value="normal" onchange="ssmiSetDaltonism('normal')" checked>
+                                            <span class="marca-seleccion">✓</span>
+                                        </label>
+                                        <label class="opcion-ssmi">
+                                            <span>🔴 Protanopía (sin rojo)</span>
+                                            <input type="radio" name="ssmi_daltonism" value="protanopia" onchange="ssmiSetDaltonism('protanopia')">
+                                            <span class="marca-seleccion">✓</span>
+                                        </label>
+                                        <label class="opcion-ssmi">
+                                            <span>🟢 Deuteranopía (sin verde)</span>
+                                            <input type="radio" name="ssmi_daltonism" value="deuteranopia" onchange="ssmiSetDaltonism('deuteranopia')">
+                                            <span class="marca-seleccion">✓</span>
+                                        </label>
+                                        <label class="opcion-ssmi">
+                                            <span>🔵 Tritanopía (sin azul)</span>
+                                            <input type="radio" name="ssmi_daltonism" value="tritanopia" onchange="ssmiSetDaltonism('tritanopia')">
+                                            <span class="marca-seleccion">✓</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="divisor-ssmi"></div>
+
+                            <div class="seccion-ajustes">
+                                <h6>🌙 Apariencia</h6>
+                                <div class="interruptor-ssmi" onclick="document.getElementById('ssmiDarkToggle').click()">
+                                    <label>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                             style="width:14px;height:14px;color:var(--accent-ssmi)">
+                                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                                        </svg>
+                                        Modo Oscuro
+                                    </label>
+                                    <div class="contenedor-switch">
+                                        <input type="checkbox" id="ssmiDarkToggle" onchange="ssmiToggleDark()">
+                                        <div class="pista-switch"></div>
+                                        <div class="pulgar-switch"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="seccion-ajustes">
+                                <h6>🔤 Tamaño de Texto</h6>
+                                <div class="selector-ssmi" id="fontSizeDropdown">
+                                    <div class="selector-ssmi-encabezado" onclick="toggleSelectorSsmi('fontSizeDropdown')" role="button">
+                                        <span id="tamanoSeleccionado">Normal (1rem)</span>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9" /></svg>
+                                    </div>
+                                    <div class="selector-ssmi-cuerpo">
+                                        <label class="opcion-ssmi">
+                                            <span style="font-size:.8rem">A — Pequeño</span>
+                                            <input type="radio" name="ssmi_fontsize" value="sm" onchange="ssmiSetFontSize('sm')">
+                                            <span class="marca-seleccion">✓</span>
+                                        </label>
+                                        <label class="opcion-ssmi">
+                                            <span>A — Normal</span>
+                                            <input type="radio" name="ssmi_fontsize" value="md" onchange="ssmiSetFontSize('md')" checked>
+                                            <span class="marca-seleccion">✓</span>
+                                        </label>
+                                        <label class="opcion-ssmi">
+                                            <span style="font-size:1.05rem">A — Grande</span>
+                                            <input type="radio" name="ssmi_fontsize" value="lg" onchange="ssmiSetFontSize('lg')">
+                                            <span class="marca-seleccion">✓</span>
+                                        </label>
+                                        <label class="opcion-ssmi">
+                                            <span style="font-size:1.1rem">A — Extra Grande</span>
+                                            <input type="radio" name="ssmi_fontsize" value="xl" onchange="ssmiSetFontSize('xl')">
+                                            <span class="marca-seleccion">✓</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="divisor-ssmi"></div>
+
+                            <div class="seccion-ajustes">
+                                <h6>👁 Vista Previa</h6>
+                                <div class="opcion-ssmi" style="padding:.65rem .8rem;background:#f4f7f9;border-radius:8px;border:1px solid rgba(0,0,0,.07);">
+                                    <p id="vistaPreviaTexto" style="margin:0;color:#1E3C54;line-height:1.5;transition:font-size .3s;">
+                                        El texto de la app se verá así con el tamaño seleccionado.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <h5 class="text-muted mb-4 mt-5 text-uppercase small fw-bold">Cuenta y Datos</h5>
+
+                <div class="card tarjeta-configuracion mb-3 shadow-sm">
+                    <div class="card-body d-flex align-items-center p-4">
+                        <div class="caja-icono me-4"><i class="bi bi-translate"></i></div>
+                        <div class="flex-grow-1">
+                            <h5 class="mb-1 fw-bold">Idioma de la Interfaz</h5>
+                            <p class="mb-0 text-muted small">Seleccionado: Español (MX)</p>
+                        </div>
+                        <i class="bi bi-chevron-right text-muted"></i>
+                    </div>
+                </div>
+
+                <div class="card tarjeta-configuracion mb-3 shadow-sm border-start border-danger border-4">
+                    <div class="card-body d-flex align-items-center p-4">
+                        <div class="caja-icono me-4 text-danger"><i class="bi bi-trash3"></i></div>
+                        <div class="flex-grow-1">
+                            <h5 class="mb-1 fw-bold text-danger">Eliminar mi información</h5>
+                            <p class="mb-0 text-muted small">Borrar cuenta y datos de movilidad permanentemente</p>
+                        </div>
+                        <i class="bi bi-chevron-right text-muted"></i>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // ── EXCLUSIVO DE CONFIGURACIÓN ──
+
+        function sincronizarEtiquetas() {
+            const nombresVision = { normal: 'Normal', protanopia: 'Protanopía', deuteranopia: 'Deuteranopía', tritanopia: 'Tritanopía' };
+            const nombresTamano = { sm: 'Pequeño (0.875rem)', md: 'Normal (1rem)', lg: 'Grande (1.125rem)', xl: 'Extra Grande (1.25rem)' };
+            const dal = localStorage.getItem('daltonismMode') || 'normal';
+            const fs  = localStorage.getItem('fontSize') || 'md';
+            const vEl = document.getElementById('visionSeleccionado');
+            const fEl = document.getElementById('tamanoSeleccionado');
+            if (vEl) vEl.textContent = nombresVision[dal] || 'Normal';
+            if (fEl) fEl.textContent = nombresTamano[fs] || 'Normal (1rem)';
+            document.querySelectorAll('input[name="ssmi_daltonism"]').forEach(r => r.checked = r.value === dal);
+            document.querySelectorAll('input[name="ssmi_fontsize"]').forEach(r => r.checked = r.value === fs);
+        }
+
+        function ssmiSetDaltonism(mode) {
+            applyDaltonism(mode);
+            localStorage.setItem('daltonismMode', mode);
+            sincronizarEtiquetas();
+            cerrarSelectorSsmi('visionDropdown');
+        }
+
+        function ssmiToggleDark() {
+            const toggle = document.getElementById('ssmiDarkToggle');
+            const isDark = toggle ? toggle.checked : false;
+            applyDarkMode(isDark);
+            localStorage.setItem('darkMode', String(isDark));
+        }
+
+        function ssmiSetFontSize(size) {
+            applyFontSize(size);
+            localStorage.setItem('fontSize', size);
+            sincronizarEtiquetas();
+            cerrarSelectorSsmi('fontSizeDropdown');
+        }
+
+        function toggleSelectorSsmi(id) {
+            const dropdown = document.getElementById(id);
+            if (!dropdown) return;
+            document.querySelectorAll('.selector-ssmi.abierto').forEach(d => {
+                if (d.id !== id) d.classList.remove('abierto');
+            });
+            dropdown.classList.toggle('abierto');
+        }
+
+        function cerrarSelectorSsmi(id) {
+            document.getElementById(id)?.classList.remove('abierto');
+        }
+
+        function previsualizarTexto(size) {
+            const map = { sm: '0.875rem', md: '1rem', lg: '1.125rem', xl: '1.25rem' };
+            const prev = document.getElementById('vistaPreviaTexto');
+            if (prev) prev.style.fontSize = map[size] || '1rem';
+        }
+
+        document.addEventListener('click', e => {
+            document.querySelectorAll('.selector-ssmi.abierto').forEach(d => {
+                if (!d.contains(e.target)) d.classList.remove('abierto');
+            });
+        });
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape')
+                document.querySelectorAll('.selector-ssmi.abierto').forEach(d => d.classList.remove('abierto'));
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            sincronizarEtiquetas();
+            document.querySelectorAll('input[name="ssmi_fontsize"]').forEach(input => {
+                input.parentElement.addEventListener('mouseenter', () => previsualizarTexto(input.value));
+                input.parentElement.addEventListener('mouseleave', () => {
+                    previsualizarTexto(localStorage.getItem('fontSize') || 'md');
+                });
+            });
+        });
+    </script>
+}

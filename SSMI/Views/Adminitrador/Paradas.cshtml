@@ -1,0 +1,387 @@
+﻿@{
+    ViewData["Title"] = "Gestión de Paradas";
+    Layout = "~/Views/Shared/_UsuarioLayout.cshtml";
+}
+
+<style>
+    /* ── Área principal ── */
+    .area-admin {
+        height: 85vh;
+        background-color: #f0f2f5;
+        overflow: hidden;
+        transition: background-color .3s;
+    }
+
+    body.dark-mode .area-admin {
+        background-color: #0d1117;
+    }
+
+    /* ── Encabezado ── */
+    .encabezado-admin {
+        background: linear-gradient(135deg, #1E3C54, #2a5580);
+        color: white;
+        padding: 1.5rem;
+        box-shadow: 0 4px 15px rgba(30, 60, 84, 0.3);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    body.dark-mode .encabezado-admin {
+        background: linear-gradient(135deg, #0d1117, #161b22);
+        border-bottom: 2px solid rgba(0, 212, 255, 0.2);
+    }
+
+    .encabezado-admin h2 {
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: calc(var(--font-size-base) * 1.8);
+    }
+
+    /* ── Navegación ── */
+    .navegacion-admin {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+        .navegacion-admin a {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+            transition: all .3s;
+            font-weight: 600;
+        }
+
+            .navegacion-admin a:hover {
+                background: rgba(255, 255, 255, 0.2);
+                transform: translateY(-2px);
+            }
+
+            .navegacion-admin a.active {
+                background: #00d4ff;
+                color: #1E3C54;
+            }
+
+    /* ── Contenido ── */
+    .contenido-admin {
+        flex-grow: 1;
+        overflow-y: auto;
+        padding: 1.5rem;
+    }
+
+    .titulo-seccion {
+        color: #1E3C54;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: calc(var(--font-size-base) * 1.5);
+    }
+
+    body.dark-mode .titulo-seccion {
+        color: #e6edf3;
+    }
+
+    /* ── Tabla ── */
+    .table {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,.08);
+        margin-bottom: 2rem;
+    }
+
+    body.dark-mode .table {
+        background: #161b22;
+        box-shadow: 0 2px 8px rgba(0,0,0,.3);
+    }
+
+    .table thead {
+        background-color: #f8f9fa;
+        border-bottom: 2px solid #e9ecef;
+    }
+
+        .table thead th {
+            color: #1E3C54;
+            font-weight: 600;
+            padding: 1rem;
+            font-size: var(--font-size-base);
+        }
+
+    .table tbody td {
+        padding: 1rem;
+        vertical-align: middle;
+        border-bottom: 1px solid #e9ecef;
+        color: #1E3C54;
+    }
+
+    .table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    body.dark-mode .table thead {
+        background-color: #0d1117;
+        border-color: #30363d;
+    }
+
+        body.dark-mode .table thead th {
+            color: #e6edf3;
+        }
+
+    body.dark-mode .table tbody td {
+        border-color: #30363d;
+        color: #e6edf3;
+    }
+
+    body.dark-mode .table tbody tr:hover {
+        background-color: #0d1117;
+    }
+
+    /* ── Botones ── */
+    .boton-admin {
+        border: none;
+        border-radius: 10px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        font-size: var(--font-size-base);
+        transition: all .3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+    }
+
+    .boton-agregar {
+        background-color: #1E3C54;
+        color: white;
+    }
+
+        .boton-agregar:hover {
+            background-color: #2a5580;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(30, 60, 84, 0.3);
+            color: white;
+        }
+
+    .boton-editar {
+        background-color: #00d4ff;
+        color: #1E3C54;
+        padding: 0.5rem 1rem;
+        font-size: calc(var(--font-size-base) * 0.9);
+    }
+
+        .boton-editar:hover {
+            background-color: #00bcd4;
+            transform: translateY(-1px);
+        }
+
+    .boton-eliminar {
+        background-color: #eb4d4b;
+        color: white;
+        padding: 0.5rem 1rem;
+        font-size: calc(var(--font-size-base) * 0.9);
+    }
+
+        .boton-eliminar:hover {
+            background-color: #d63031;
+            transform: translateY(-1px);
+        }
+
+    .celda-acciones {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    /* ── Modal en modo oscuro ── */
+    body.dark-mode .modal-content {
+        background-color: #161b22;
+        color: #e6edf3;
+        border: 1px solid #30363d;
+    }
+
+    body.dark-mode .modal-header {
+        border-bottom: 1px solid #30363d;
+    }
+
+    body.dark-mode .modal-footer {
+        border-top: 1px solid #30363d;
+    }
+
+    body.dark-mode .modal-title {
+        color: #e6edf3;
+    }
+
+    body.dark-mode .modal-body .form-label {
+        color: #e6edf3;
+    }
+
+    body.dark-mode .modal-body .form-control {
+        background-color: #0d1117;
+        border-color: #30363d;
+        color: #e6edf3;
+    }
+
+        body.dark-mode .modal-body .form-control::placeholder {
+            color: #00d4ff;
+            opacity: 0.7;
+        }
+
+        body.dark-mode .modal-body .form-control:focus {
+            background-color: #0d1117;
+            border-color: #00d4ff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 212, 255, 0.15);
+        }
+
+    body.dark-mode .btn-close {
+        filter: invert(1);
+    }
+
+    body.dark-mode .modal-footer .btn-secondary {
+        background-color: #30363d;
+        border-color: #30363d;
+        color: #e6edf3;
+    }
+
+    body.dark-mode .modal-footer .boton-agregar {
+        background-color: #00d4ff;
+        color: #1E3C54;
+        font-weight: 700;
+    }
+
+        body.dark-mode .modal-footer .boton-agregar:hover {
+            background-color: #00bcd4;
+            box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
+        }
+
+    /* ── Responsive ── */
+    @@media (max-width: 768px) {
+        .encabezado-admin {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .navegacion-admin {
+            flex-wrap: wrap;
+        }
+
+        .contenido-admin {
+            padding: 1rem;
+        }
+
+        .table {
+            font-size: calc(var(--font-size-base) * 0.9);
+        }
+
+            .table thead th,
+            .table tbody td {
+                padding: 0.75rem;
+            }
+    }
+</style>
+
+<div class="d-flex flex-column area-admin">
+    <!-- ══ HEADER ══ -->
+    <div class="encabezado-admin">
+        <h2>
+            <i class="bi bi-geo-alt"></i> Gestión de Paradas
+        </h2>
+        <div class="navegacion-admin">
+            <a asp-action="Paradas" class="active">Paradas</a>
+            <a asp-action="Camiones">Camiones</a>
+            <a asp-action="Conductores">Conductores</a>
+            <a asp-action="Monitoreo">Monitoreo</a>
+        </div>
+    </div>
+
+    <!-- ══ CONTENIDO ══ -->
+    <div class="contenido-admin">
+        <div class="mb-3">
+            <button class="btn boton-admin boton-agregar" data-bs-toggle="modal" data-bs-target="#modalParada">
+                <i class="bi bi-plus-circle"></i> Agregar Parada
+            </button>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Latitud</th>
+                        <th>Longitud</th>
+                        <th>Orden</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Parada Central</td>
+                        <td>19.4326</td>
+                        <td>-99.1332</td>
+                        <td>1</td>
+                        <td>
+                            <div class="celda-acciones">
+                                <button class="btn boton-admin boton-editar"><i class="bi bi-pencil"></i></button>
+                                <button class="btn boton-admin boton-eliminar"><i class="bi bi-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Parada Secundaria</td>
+                        <td>19.4350</td>
+                        <td>-99.1350</td>
+                        <td>2</td>
+                        <td>
+                            <div class="celda-acciones">
+                                <button class="btn boton-admin boton-editar"><i class="bi bi-pencil"></i></button>
+                                <button class="btn boton-admin boton-eliminar"><i class="bi bi-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- ══ MODAL AGREGAR PARADA ══ -->
+<div class="modal fade" id="modalParada" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-geo-alt"></i> Agregar Parada</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label">Nombre de la Parada</label>
+                        <input type="text" class="form-control" placeholder="Ej: Parada Central">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="form-label">Latitud</label>
+                            <input type="number" class="form-control" step="0.0001" placeholder="19.4326">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Longitud</label>
+                            <input type="number" class="form-control" step="0.0001" placeholder="-99.1332">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Orden en la Ruta</label>
+                        <input type="number" class="form-control" placeholder="1">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn boton-admin boton-agregar">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,265 @@
+﻿@model SSMI.Models.Usuario
+
+@{
+    ViewData["Title"] = "Centro de Ayuda";
+    Layout = "~/Views/Shared/_UsuarioLayout.cshtml";
+}
+
+<style>
+    /* ── Contenido de ayuda ── */
+    .contenido-ayuda {
+        flex-grow: 1;
+        overflow-y: auto;
+        padding: 40px;
+        transition: background .3s;
+    }
+
+    .titulo-ayuda {
+        color: #1E3C54;
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        font-size: calc(var(--font-size-base, 1rem) * 1.5);
+        transition: color .3s;
+    }
+
+    /* ── Accordion ── */
+    .tarjeta-pregunta {
+        border: none !important;
+        border-radius: 15px !important;
+        margin-bottom: 12px;
+        box-shadow: 0 4px 14px rgba(0,0,0,.06);
+        overflow: hidden;
+        transition: box-shadow .25s;
+    }
+
+        .tarjeta-pregunta:hover {
+            box-shadow: 0 6px 20px rgba(0,0,0,.1);
+        }
+
+    .accordion-button {
+        font-weight: 600;
+        font-size: var(--font-size-base, 1rem);
+        color: #1E3C54;
+        background-color: #fff;
+        transition: background-color .2s, color .2s;
+    }
+
+        .accordion-button:not(.collapsed) {
+            background-color: rgba(0,212,255,.1);
+            color: #1E3C54;
+            font-weight: 700;
+            box-shadow: none;
+        }
+
+        .accordion-button::after {
+            filter: none;
+        }
+
+    .accordion-body {
+        font-size: var(--font-size-base, 1rem);
+        color: #6b7280;
+        background: #fff;
+        transition: background .3s, color .3s;
+    }
+
+    /* ── Banner soporte ── */
+    .banner-soporte {
+        background: linear-gradient(135deg, #1E3C54 0%, #2a5270 100%);
+        color: white;
+        border-radius: 20px;
+        padding: 35px 30px;
+        text-align: center;
+        transition: background .3s, box-shadow .3s;
+    }
+
+        .banner-soporte h4 {
+            font-size: calc(var(--font-size-base, 1rem) * 1.2);
+            font-weight: 700;
+        }
+
+        .banner-soporte p {
+            font-size: var(--font-size-base, 1rem);
+        }
+
+        .banner-soporte .bi-headset {
+            font-size: 2.5rem;
+            color: #00d4ff;
+        }
+
+    .boton-soporte {
+        background: #fff;
+        color: #1E3C54;
+        font-weight: 700;
+        border-radius: 50px;
+        padding: .6rem 2rem;
+        border: none;
+        text-decoration: none;
+        display: inline-block;
+        transition: all .25s;
+        font-size: var(--font-size-base, 1rem);
+    }
+
+        .boton-soporte:hover {
+            background: #e0f7ff;
+            transform: translateY(-2px);
+            color: #1E3C54;
+        }
+
+    /* ── Modo oscuro específico de esta vista ── */
+    body.dark-mode .contenido-ayuda {
+        background-color: #0d1117;
+    }
+
+    body.dark-mode .titulo-ayuda {
+        color: #e6edf3;
+    }
+
+    body.dark-mode .tarjeta-pregunta {
+        box-shadow: 0 4px 14px rgba(0,0,0,.3);
+    }
+
+    body.dark-mode .accordion-button {
+        background-color: #161b22;
+        color: #e6edf3;
+    }
+
+        body.dark-mode .accordion-button:not(.collapsed) {
+            background-color: rgba(0,212,255,.12);
+            color: #00d4ff;
+        }
+
+        body.dark-mode .accordion-button::after {
+            filter: invert(1);
+        }
+
+    body.dark-mode .accordion-body {
+        background: #161b22;
+        color: #8b949e;
+    }
+
+    body.dark-mode .banner-soporte {
+        background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+        border: 1px solid rgba(0,212,255,.2);
+        box-shadow: 0 8px 30px rgba(0,0,0,.4);
+    }
+
+    body.dark-mode .boton-soporte {
+        background: rgba(0,212,255,.15);
+        color: #00d4ff;
+        border: 1px solid rgba(0,212,255,.35);
+    }
+
+        body.dark-mode .boton-soporte:hover {
+            background: rgba(0,212,255,.25);
+        }
+</style>
+
+<div class="menu-container d-flex app-viewport">
+
+    <!-- ══ SIDEBAR ══ -->
+    <div id="sidebarMenu" class="shadow">
+        <div class="d-flex flex-column p-4 h-100">
+            <h4 class="text-center mt-2 mb-4">SSMI</h4>
+            <a asp-action="Index" class="nav-btn"><i class="bi bi-house-door"></i> Inicio</a>
+            <a asp-action="Perfil" class="nav-btn"><i class="bi bi-person-circle"></i> Mi Perfil</a>
+            <a asp-action="Configuracion" class="nav-btn"><i class="bi bi-gear"></i> Configuración</a>
+            <a asp-action="Comentarios" class="nav-btn"><i class="bi bi-chat-left-dots"></i> Comentarios</a>
+            <div class="mt-auto">
+                <a asp-action="Ayuda" class="nav-btn active"><i class="bi bi-question-circle"></i> Ayuda</a>
+                <a asp-action="AcercaDeNosotros" class="nav-btn"><i class="bi bi-info-square"></i> Acerca de nosotros</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ CONTENIDO ══ -->
+    <div class="d-flex flex-column w-100 overflow-hidden">
+        <div class="p-3">
+            <button id="btnToggleMenu" class="btn rounded-circle shadow-sm">
+                <i class="bi bi-list fs-5"></i>
+            </button>
+        </div>
+
+        <div class="contenido-ayuda">
+            <div class="container-fluid" style="max-width:780px;">
+
+                <h2 class="titulo-ayuda">¿Cómo podemos ayudarte?</h2>
+
+                <div class="accordion mb-5" id="helpAccordion">
+                    <div class="accordion-item tarjeta-pregunta">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#faq1">
+                                <i class="bi bi-map me-2 text-info"></i>
+                                ¿Cómo puedo cambiar mi ruta preferida?
+                            </button>
+                        </h2>
+                        <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
+                            <div class="accordion-body">
+                                Puedes cambiar tus rutas desde la sección de <strong>Inicio</strong>, seleccionando
+                                el icono de estrella en tu trayecto habitual o ajustando las preferencias en tu Perfil.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item tarjeta-pregunta">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#faq2">
+                                <i class="bi bi-shield-lock me-2 text-info"></i>
+                                ¿Mis datos de ubicación están seguros?
+                            </button>
+                        </h2>
+                        <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
+                            <div class="accordion-body">
+                                Sí. SSMI cifra tus datos de geolocalización y solo los utiliza para calcular
+                                tiempos de tráfico en tiempo real de forma anónima.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item tarjeta-pregunta">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#faq3">
+                                <i class="bi bi-bug me-2 text-info"></i>
+                                ¿Cómo reportar un fallo en la app?
+                            </button>
+                        </h2>
+                        <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
+                            <div class="accordion-body">
+                                Ve a la sección de <strong>Comentarios</strong> en el menú lateral y selecciona
+                                "Reportar Error". Atenderemos tu solicitud en menos de 24 horas.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item tarjeta-pregunta">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#faq4">
+                                <i class="bi bi-eye me-2 text-info"></i>
+                                ¿Cómo activo el modo de accesibilidad visual?
+                            </button>
+                        </h2>
+                        <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
+                            <div class="accordion-body">
+                                Ve a <strong>Configuración → Accesibilidad Visual</strong>. Puedes activar modos
+                                para protanopía, deuteranopía y tritanopía, modo oscuro y cambiar el tamaño del texto.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="banner-soporte shadow">
+                    <i class="bi bi-headset mb-3 d-block"></i>
+                    <h4>¿No encontraste lo que buscabas?</h4>
+                    <p class="mb-4 opacity-75">Nuestro equipo técnico está listo para asistirte personalmente.</p>
+                    <a href="mailto:ayuda@ssmi.com" class="boton-soporte">
+                        <i class="bi bi-envelope me-2"></i>Contactar Soporte
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

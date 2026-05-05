@@ -1,0 +1,45 @@
+﻿/* ── Daltonismo: filtro SVG aplicado a todo el body ── */
+body.protanopia {
+    filter: url(#filter-protanopia) !important;
+    --accent-ssmi: #4fc3f7;
+}
+
+body.deuteranopia {
+    filter: url(#filter-deuteranopia) !important;
+    --accent-ssmi: #e040fb;
+}
+
+body.tritanopia {
+    filter: url(#filter-tritanopia) !important;
+    --accent-ssmi: #ff6b35;
+}
+
+/* ── Tamaños de fuente ── */
+:root {
+    --font-size-base: 1rem;
+}
+
+html.font-size-sm, body.font-size-sm {
+    font-size: 0.875rem !important;
+    --font-size-base: 0.875rem;
+}
+
+html.font-size-md, body.font-size-md {
+    font-size: 1rem !important;
+    --font-size-base: 1rem;
+}
+
+html.font-size-lg, body.font-size-lg {
+    font-size: 1.125rem !important;
+    --font-size-base: 1.125rem;
+}
+
+html.font-size-xl, body.font-size-xl {
+    font-size: 1.25rem !important;
+    --font-size-base: 1.25rem;
+}
+
+body {
+    font-size: var(--font-size-base);
+    transition: filter .3s;
+}

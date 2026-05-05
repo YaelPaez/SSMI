@@ -1,0 +1,770 @@
+﻿@{
+    ViewData["Title"] = "Panel de Conductor - SSMI";
+    Layout = "~/Views/Shared/_UsuarioLayout.cshtml";
+}
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        overflow: hidden;
+    }
+
+    /* ── Contenedor principal ── */
+    .contenedor-conductor {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        background: #f0f2f5;
+    }
+
+    body.dark-mode .contenedor-conductor {
+        background: #0d1117;
+    }
+
+    /* ── Encabezado fijo ── */
+    .encabezado-conductor {
+        background: linear-gradient(135deg, #1E3C54, #2a5580);
+        color: white;
+        padding: 1rem;
+        box-shadow: 0 4px 15px rgba(30, 60, 84, 0.3);
+        z-index: 100;
+    }
+
+    body.dark-mode .encabezado-conductor {
+        background: linear-gradient(135deg, #0d1117, #161b22);
+        border-bottom: 2px solid rgba(0, 212, 255, 0.2);
+    }
+
+    .contenido-encabezado {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .info-encabezado h1 {
+        font-size: calc(var(--font-size-base) * 1.5);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .info-encabezado p {
+        font-size: calc(var(--font-size-base) * 0.9);
+        margin: 0.25rem 0 0 0;
+        opacity: 0.9;
+    }
+
+    .indicador-estado {
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: calc(var(--font-size-base) * 0.85);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        white-space: nowrap;
+    }
+
+        .indicador-estado i {
+            font-size: 1rem;
+            animation: pulso 2s infinite;
+        }
+
+    .estado-detenido {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+    }
+
+        .estado-detenido i {
+            animation: none;
+        }
+
+    .estado-activo {
+        background: #10b981;
+        color: white;
+    }
+
+    .estado-finalizado {
+        background: #ef4444;
+        color: white;
+    }
+
+    @@keyframes pulso {
+        0%, 100% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.6;
+        }
+    }
+
+    /* ── Mapa ── */
+    .seccion-mapa {
+        flex: 1;
+        position: relative;
+        background: linear-gradient(135deg, #e5e3df, #f5f3f0);
+        overflow: hidden;
+    }
+
+    body.dark-mode .seccion-mapa {
+        background: linear-gradient(135deg, #161b22, #0d1117);
+    }
+
+    #mapContainer {
+        width: 100%;
+        height: 100%;
+        position: relative;
+    }
+
+    .marcador-mapa {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: #8b949e;
+        font-size: calc(var(--font-size-base) * 1.1);
+    }
+
+        .marcador-mapa i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+    .boton-centrar-mapa {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: #1E3C54;
+        color: white;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        transition: all .3s;
+        z-index: 50;
+    }
+
+        .boton-centrar-mapa:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+        }
+
+    body.dark-mode .boton-centrar-mapa {
+        background: rgba(0, 212, 255, 0.2);
+        color: #00d4ff;
+        border: 1px solid rgba(0, 212, 255, 0.4);
+    }
+
+    .boton-centrar-mapa i {
+        font-size: 1.5rem;
+    }
+
+    /* ── Panel de control ── */
+    .panel-control {
+        background: white;
+        border-radius: 20px 20px 0 0;
+        padding: 1.5rem;
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+        max-height: 50vh;
+        overflow-y: auto;
+        z-index: 200;
+    }
+
+    body.dark-mode .panel-control {
+        background: #161b22;
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+        border-top: 1px solid rgba(0, 212, 255, 0.1);
+    }
+
+    .manija-panel {
+        width: 50px;
+        height: 4px;
+        background: #d1d5db;
+        border-radius: 2px;
+        margin: 0 auto 1rem;
+    }
+
+    body.dark-mode .manija-panel {
+        background: #30363d;
+    }
+
+    .seccion-panel {
+        margin-bottom: 1.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    body.dark-mode .seccion-panel {
+        border-bottom-color: #30363d;
+    }
+
+    .seccion-panel:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    .titulo-panel {
+        font-size: calc(var(--font-size-base) * 1.1);
+        font-weight: 700;
+        color: #1E3C54;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    body.dark-mode .titulo-panel {
+        color: #e6edf3;
+    }
+
+    /* ── Botones de ruta ── */
+    .botones-ruta {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .boton-ruta {
+        flex: 1;
+        padding: 1rem;
+        border: none;
+        border-radius: 12px;
+        font-size: calc(var(--font-size-base) * 1.1);
+        font-weight: 700;
+        cursor: pointer;
+        transition: all .3s;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        color: white;
+    }
+
+        .boton-ruta i {
+            font-size: 1.8rem;
+        }
+
+    .boton-iniciar {
+        background: linear-gradient(135deg, #10b981, #059669);
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    }
+
+        .boton-iniciar:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.5);
+        }
+
+    .boton-finalizar {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+    }
+
+        .boton-finalizar:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.5);
+        }
+
+    .boton-ruta:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none !important;
+    }
+
+    /* ── Capacidad ── */
+    .visualizador-capacidad {
+        background: linear-gradient(135deg, #f0f2f5, #e8eaed);
+        border-radius: 12px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    body.dark-mode .visualizador-capacidad {
+        background: linear-gradient(135deg, #0d1117, #161b22);
+    }
+
+    .encabezado-capacidad {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .etiqueta-capacidad {
+        font-size: var(--font-size-base);
+        font-weight: 600;
+        color: #1E3C54;
+    }
+
+    body.dark-mode .etiqueta-capacidad {
+        color: #e6edf3;
+    }
+
+    .valor-capacidad {
+        font-size: calc(var(--font-size-base) * 1.5);
+        font-weight: 700;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        background: white;
+        color: #1E3C54;
+    }
+
+    body.dark-mode .valor-capacidad {
+        background: #0d1117;
+        color: #00d4ff;
+    }
+
+    .barra-capacidad {
+        width: 100%;
+        height: 12px;
+        background: #e5e7eb;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 1rem;
+    }
+
+    body.dark-mode .barra-capacidad {
+        background: #30363d;
+    }
+
+    .relleno-capacidad {
+        height: 100%;
+        background: linear-gradient(90deg, #10b981, #f59e0b, #ef4444);
+        transition: width .3s;
+        border-radius: 10px;
+    }
+
+    .deslizador-capacidad {
+        width: 100%;
+        height: 35px;
+        cursor: pointer;
+        accent-color: #1E3C54;
+        margin-bottom: 1rem;
+    }
+
+    body.dark-mode .deslizador-capacidad {
+        accent-color: #00d4ff;
+    }
+
+    .boton-enviar-capacidad {
+        width: 100%;
+        padding: 0.75rem;
+        background: #1E3C54;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: var(--font-size-base);
+        cursor: pointer;
+        transition: all .3s;
+    }
+
+        .boton-enviar-capacidad:hover {
+            background: #2a5580;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(30, 60, 84, 0.3);
+        }
+
+    body.dark-mode .boton-enviar-capacidad {
+        background: rgba(0, 212, 255, 0.2);
+        color: #00d4ff;
+        border: 1px solid rgba(0, 212, 255, 0.4);
+    }
+
+        body.dark-mode .boton-enviar-capacidad:hover {
+            background: rgba(0, 212, 255, 0.3);
+            box-shadow: 0 4px 12px rgba(0, 212, 255, 0.2);
+        }
+
+    /* ── Próximas paradas ── */
+    .lista-paradas {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .item-parada {
+        background: linear-gradient(135deg, #f0f2f5, #e8eaed);
+        border-left: 4px solid #1E3C54;
+        padding: 1rem;
+        border-radius: 8px;
+        transition: all .3s;
+    }
+
+    body.dark-mode .item-parada {
+        background: linear-gradient(135deg, #0d1117, #161b22);
+        border-left-color: #00d4ff;
+    }
+
+    .item-parada.siguiente {
+        background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+        border-left-color: #00d4ff;
+        box-shadow: 0 4px 12px rgba(0, 212, 255, 0.2);
+    }
+
+    body.dark-mode .item-parada.siguiente {
+        background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(0, 212, 255, 0.05));
+    }
+
+    .encabezado-parada {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .nombre-parada {
+        font-size: calc(var(--font-size-base) * 1.05);
+        font-weight: 700;
+        color: #1E3C54;
+    }
+
+    body.dark-mode .nombre-parada {
+        color: #e6edf3;
+    }
+
+    .insignia-parada {
+        background: #6b7280;
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        font-size: calc(var(--font-size-base) * 0.75);
+        font-weight: 600;
+    }
+
+    .item-parada.siguiente .insignia-parada {
+        background: #00d4ff;
+        color: #1E3C54;
+    }
+
+    .info-parada {
+        font-size: calc(var(--font-size-base) * 0.9);
+        color: #6b7280;
+    }
+
+    body.dark-mode .info-parada {
+        color: #8b949e;
+    }
+
+    /* ── Ubicación ── */
+    .info-ubicacion {
+        background: linear-gradient(135deg, #f0f2f5, #e8eaed);
+        border-radius: 10px;
+        padding: 1rem;
+        font-family: 'Courier New', monospace;
+        font-size: calc(var(--font-size-base) * 0.9);
+        text-align: center;
+    }
+
+    body.dark-mode .info-ubicacion {
+        background: linear-gradient(135deg, #0d1117, #161b22);
+    }
+
+    .etiqueta-ubicacion {
+        font-size: calc(var(--font-size-base) * 0.85);
+        color: #6b7280;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+
+    body.dark-mode .etiqueta-ubicacion {
+        color: #8b949e;
+    }
+
+    .valor-ubicacion {
+        color: #1E3C54;
+        font-weight: 700;
+        word-break: break-all;
+    }
+
+    body.dark-mode .valor-ubicacion {
+        color: #00d4ff;
+    }
+
+    /* ── Responsive ── */
+    @@media (max-width: 768px) {
+        .encabezado-conductor {
+            padding: 0.75rem;
+        }
+
+        .info-encabezado h1 {
+            font-size: calc(var(--font-size-base) * 1.3);
+        }
+
+        .indicador-estado {
+            padding: 0.4rem 0.8rem;
+        }
+
+        .panel-control {
+            max-height: 55vh;
+            padding: 1rem;
+        }
+
+        .botones-ruta {
+            gap: 0.75rem;
+        }
+
+        .boton-ruta {
+            padding: 0.8rem;
+            font-size: var(--font-size-base);
+        }
+
+            .boton-ruta i {
+                font-size: 1.5rem;
+            }
+    }
+</style>
+
+<div class="contenedor-conductor">
+    <!-- ══ ENCABEZADO FIJO ══ -->
+    <div class="encabezado-conductor">
+        <div class="contenido-encabezado">
+            <div class="info-encabezado">
+                <h1>
+                    <i class="bi bi-bus-front"></i>
+                    <span id="routeName">Ruta Principal</span>
+                </h1>
+                <p>
+                    <strong>Camión:</strong> <span id="busNumber">ABC-123</span>
+                </p>
+            </div>
+            <div class="indicador-estado estado-detenido" id="statusIndicator">
+                <i class="bi bi-circle-fill"></i>
+                <span id="statusText">Detenido</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ MAPA ══ -->
+    <div class="seccion-mapa">
+        <div id="mapContainer">
+            <div class="marcador-mapa">
+                <i class="bi bi-map"></i>
+                <p>Mapa integrado<br><small>(Leaflet / Google Maps Ready)</small></p>
+            </div>
+        </div>
+        <button class="boton-centrar-mapa" id="btnCenterMap" title="Centrar ubicación">
+            <i class="bi bi-geo"></i>
+        </button>
+    </div>
+
+    <!-- ══ PANEL DE CONTROL ══ -->
+    <div class="panel-control">
+        <div class="manija-panel"></div>
+
+        <!-- CONTROL DE RUTA -->
+        <div class="seccion-panel">
+            <h3 class="titulo-panel">
+                <i class="bi bi-play-circle"></i> Control de Ruta
+            </h3>
+            <div class="botones-ruta">
+                <button class="boton-ruta boton-iniciar" id="btnStart" onclick="iniciarRuta()">
+                    <i class="bi bi-play-fill"></i>
+                    <span>Iniciar</span>
+                </button>
+                <button class="boton-ruta boton-finalizar" id="btnEnd" onclick="finalizarRuta()" disabled>
+                    <i class="bi bi-stop-fill"></i>
+                    <span>Finalizar</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- UBICACIÓN ACTUAL -->
+        <div class="seccion-panel">
+            <h3 class="titulo-panel">
+                <i class="bi bi-geo-alt"></i> Ubicación Actual
+            </h3>
+            <div class="info-ubicacion">
+                <div class="etiqueta-ubicacion">Latitud / Longitud</div>
+                <div class="valor-ubicacion" id="locationValue">
+                    Esperando ubicación...
+                </div>
+            </div>
+        </div>
+
+        <!-- CAPACIDAD -->
+        <div class="seccion-panel">
+            <h3 class="titulo-panel">
+                <i class="bi bi-people"></i> Capacidad del Camión
+            </h3>
+            <div class="visualizador-capacidad">
+                <div class="encabezado-capacidad">
+                    <span class="etiqueta-capacidad">Ocupación actual</span>
+                    <span class="valor-capacidad" id="capacityPercent">0%</span>
+                </div>
+                <div class="barra-capacidad">
+                    <div class="relleno-capacidad" id="capacityFill" style="width: 0%"></div>
+                </div>
+                <input type="range" class="deslizador-capacidad" id="capacitySlider"
+                       min="0" max="100" value="0" oninput="actualizarCapacidad(this.value)">
+                <button class="boton-enviar-capacidad" onclick="enviarCapacidad()">
+                    Enviar Capacidad
+                </button>
+            </div>
+        </div>
+
+        <!-- PRÓXIMAS PARADAS -->
+        <div class="seccion-panel">
+            <h3 class="titulo-panel">
+                <i class="bi bi-signpost"></i> Próximas Paradas
+            </h3>
+            <div class="lista-paradas" id="stopsList">
+                <div class="item-parada siguiente">
+                    <div class="encabezado-parada">
+                        <span class="nombre-parada">Parada Central</span>
+                        <span class="insignia-parada">Próxima</span>
+                    </div>
+                    <div class="info-parada">A 200 m • 2 min</div>
+                </div>
+                <div class="item-parada">
+                    <div class="encabezado-parada">
+                        <span class="nombre-parada">Parada Secundaria</span>
+                        <span class="insignia-parada">Pendiente</span>
+                    </div>
+                    <div class="info-parada">A 500 m • 5 min</div>
+                </div>
+                <div class="item-parada">
+                    <div class="encabezado-parada">
+                        <span class="nombre-parada">Terminal Oeste</span>
+                        <span class="insignia-parada">Pendiente</span>
+                    </div>
+                    <div class="info-parada">A 1.2 km • 10 min</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        /* ── VARIABLES GLOBALES ── */
+        let currentLocation = null;
+        let isJourneyActive = false;
+        let watchId = null;
+
+        /* ── INICIAR RUTA ── */
+        function iniciarRuta() {
+            isJourneyActive = true;
+            document.getElementById('btnStart').disabled = true;
+            document.getElementById('btnEnd').disabled = false;
+            actualizarEstado('activo');
+            iniciarGeolocalizacion();
+            console.log('Ruta iniciada');
+        }
+
+        /* ── FINALIZAR RUTA ── */
+        function finalizarRuta() {
+            isJourneyActive = false;
+            document.getElementById('btnStart').disabled = false;
+            document.getElementById('btnEnd').disabled = true;
+            actualizarEstado('finalizado');
+            detenerGeolocalizacion();
+            console.log('⏹ Ruta finalizada');
+        }
+
+        /* ── ACTUALIZAR ESTADO ── */
+        function actualizarEstado(estado) {
+            const indicator = document.getElementById('statusIndicator');
+            const statusText = document.getElementById('statusText');
+
+            indicator.classList.remove('estado-detenido', 'estado-activo', 'estado-finalizado');
+
+            switch(estado) {
+                case 'activo':
+                    indicator.classList.add('estado-activo');
+                    statusText.textContent = 'En ruta';
+                    break;
+                case 'finalizado':
+                    indicator.classList.add('estado-finalizado');
+                    statusText.textContent = 'Ruta finalizada';
+                    break;
+                default:
+                    indicator.classList.add('estado-detenido');
+                    statusText.textContent = 'Detenido';
+            }
+        }
+
+        /* ── GEOLOCALIZACIÓN ── */
+        function iniciarGeolocalizacion() {
+            if ('geolocation' in navigator && !watchId) {
+                watchId = navigator.geolocation.watchPosition(
+                    position => {
+                        currentLocation = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude,
+                            accuracy: position.coords.accuracy
+                        };
+                        mostrarUbicacion();
+                    },
+                    error => {
+                        console.error('Error de geolocalización:', error);
+                        document.getElementById('locationValue').textContent = 'Error: ' + error.message;
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 0
+                    }
+                );
+            }
+        }
+
+        function detenerGeolocalizacion() {
+            if (watchId !== null) {
+                navigator.geolocation.clearWatch(watchId);
+                watchId = null;
+            }
+        }
+
+        function mostrarUbicacion() {
+            if (currentLocation) {
+                const lat = currentLocation.lat.toFixed(6);
+                const lng = currentLocation.lng.toFixed(6);
+                document.getElementById('locationValue').textContent = lat + '\n' + lng;
+            }
+        }
+
+        /* ── CAPACIDAD ── */
+        function actualizarCapacidad(valor) {
+            document.getElementById('capacityPercent').textContent = valor + '%';
+            document.getElementById('capacityFill').style.width = valor + '%';
+        }
+
+        function enviarCapacidad() {
+            const capacidad = document.getElementById('capacitySlider').value;
+            console.log('Capacidad enviada:', {
+                percentage: capacidad,
+                timestamp: new Date().toISOString(),
+                busId: document.getElementById('busNumber').textContent,
+                location: currentLocation
+            });
+            alert('Capacidad ' + capacidad + '% enviada');
+        }
+
+        /* ── CENTRAR MAPA ── */
+        document.getElementById('btnCenterMap').addEventListener('click', function() {
+            if (currentLocation) {
+                console.log('📍 Centrando mapa en:', currentLocation);
+                alert('Mapa centrado en: ' + currentLocation.lat.toFixed(4) + ', ' + currentLocation.lng.toFixed(4));
+            } else {
+                alert('Ubicación no disponible');
+            }
+        });
+    </script>
+}

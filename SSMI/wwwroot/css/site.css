@@ -1,0 +1,86 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+    --verde: #27ae60;
+    --azul: #2980b9;
+    --rosa: #e84393;
+    --naranja: #f39c12;
+    --negro: #111111;
+    --blanco: #ffffff;
+}
+
+
+
+
+body {
+    background-image: url('../imagenes/fondoapp.jpg');
+    
+}
+
+    .login-container h2 {
+        margin-bottom: 20px;
+        color: #111;
+    }
+
+    .login-container input {
+        width: 100%;
+        padding: 12px;
+        margin: 10px 0;
+        border-radius: 8px;
+        border: 2px solid #2980b9;
+        outline: none;
+        transition: 0.3s;
+    }
+
+        .login-container input:focus {
+            border-color: #e84393;
+        }
+
+    .login-container button {
+        width: 100%;
+        padding: 12px;
+        margin-top: 15px;
+        background: #111;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: 0.3s;
+    }
+
+        .login-container button:hover {
+            background: #27ae60;
+        }
+
+.no-selec{
+    user-select: none;
+    pointer-events: none;
+}
+@media screen and (min-wifth: 800px){
+    body{
+        font-size: 20px
+    }
+}

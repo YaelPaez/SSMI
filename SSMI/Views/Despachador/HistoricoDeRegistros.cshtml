@@ -1,0 +1,308 @@
+﻿@{
+    ViewData["Title"] = "Histórico";
+    Layout = "~/Views/Shared/_UsuarioLayout.cshtml";
+
+}
+
+<style>
+    /* ... (Mantengo tus estilos originales intactos) ... */
+    :root {
+        --primary: #1E3C54;
+        --accent: #00d4ff;
+    }
+
+    .app-viewport {
+        min-height: 100vh;
+        background-color: #f0f2f5;
+        display: flex;
+        align-items: stretch;
+        overflow-x: hidden;
+    }
+
+    #sidebarMenu {
+        width: 280px;
+        background-color: #1E3C54 !important;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        transition: margin-left 0.3s ease-in-out, visibility 0.3s;
+        z-index: 1000;
+        flex-shrink: 0;
+    }
+
+        #sidebarMenu.collapsed {
+            margin-left: -280px;
+            visibility: hidden;
+        }
+
+    .nav-btn {
+        text-align: left;
+        padding: 12px 20px;
+        border-radius: 12px !important;
+        margin-bottom: 8px;
+        transition: 0.3s;
+        border: none !important;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: rgba(255,255,255,0.8);
+        background: transparent;
+        text-decoration: none;
+    }
+
+        .nav-btn.active {
+            background: #ffffff !important;
+            color: #1E3C54 !important;
+        }
+
+    .sticky-header {
+        position: sticky;
+        top: 0;
+        z-index: 999;
+        padding: 15px;
+    }
+
+    #btnToggleMenu {
+        background-color: #1E3C54;
+        border: 2px solid #00d4ff;
+        color: white;
+    }
+
+    .history-content {
+        flex-grow: 1;
+        padding: 2rem;
+    }
+
+    .history-title {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: var(--primary);
+    }
+
+    .filters {
+        display: flex;
+        gap: 1rem;
+        margin: 1.5rem 0;
+        flex-wrap: wrap;
+    }
+
+    .filter-input {
+        padding: 0.7rem 1rem;
+        border-radius: 10px;
+        border: 1px solid #ddd;
+        min-width: 200px;
+        background: white;
+    }
+
+    .table-card {
+        background: white;
+        border-radius: 20px;
+        padding: 1.5rem;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th {
+        text-align: left;
+        padding: 0.75rem;
+        color: #6b7280;
+        font-size: 0.85rem;
+    }
+
+    td {
+        padding: 1rem 0.75rem;
+        border-top: 1px solid #eee;
+        color: #1E3C54;
+    }
+
+    .badge {
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .ok {
+        background: #10b981;
+        color: white;
+    }
+
+    .pending {
+        background: #f59e0b;
+        color: white;
+    }
+
+    .error {
+        background: #ef4444;
+        color: white;
+    }
+
+    body.dark-mode .app-viewport {
+        background-color: #0d1117;
+    }
+
+    body.dark-mode .table-card, body.dark-mode .filter-input {
+        background: #161b22;
+        border-color: #30363d;
+        color: #e6edf3;
+    }
+
+    body.dark-mode td {
+        border-color: #30363d;
+        color: #e6edf3;
+    }
+
+    body.dark-mode .history-title {
+        color: #e6edf3;
+    }
+</style>
+
+<div class="menu-container d-flex app-viewport">
+    <div id="sidebarMenu" class="shadow">
+        <div class="d-flex flex-column p-4 h-100">
+            <h4 class="text-center mt-2 mb-4" style="color:#00d4ff">SSMI</h4>
+            <a asp-controller="Despachador" asp-action="Index" class="nav-btn">
+                <i class="bi bi-speedometer2"></i> Dashboard
+            </a>
+            <a asp-controller="Despachador" asp-action="Perfil" class="nav-btn">
+                <i class="bi bi-person-circle"></i> Mi Perfil
+            </a>
+            <a asp-controller="Despachador" asp-action="HistoricoDeRegistros" class="nav-btn active">
+                <i class="bi bi-clock-history"></i> Histórico
+            </a>
+            <div class="mt-auto">
+                <a asp-controller="Usuario" asp-action="Ayuda" class="nav-btn">
+                    <i class="bi bi-question-circle"></i> Ayuda
+                </a>
+                <a asp-controller="Usuario" asp-action="AcercaDeNosotros" class="nav-btn"><i class="bi bi-info-square"></i> Acerca de nosotros</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex flex-column w-100">
+        <div class="sticky-header">
+            <button id="btnToggleMenu" class="btn rounded-circle shadow-sm">
+                <i class="bi bi-list"></i>
+            </button>
+        </div>
+
+        <div class="history-content">
+            <div class="history-title">Histórico de registros</div>
+
+            <div class="filters">
+                <input type="text" id="searchConductor" class="filter-input" placeholder="Buscar conductor...">
+
+                <div class="d-flex align-items-center gap-2">
+                    <input type="date" id="startDate" class="filter-input" title="Fecha inicial">
+                    <span class="text-muted">al</span>
+                    <input type="date" id="endDate" class="filter-input" title="Fecha final">
+                </div>
+
+                <select id="searchStatus" class="filter-input">
+                    <option value="">Todos los estados</option>
+                    <option value="Aprobado">Aprobado</option>
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="Rechazado">Rechazado</option>
+                </select>
+            </div>
+
+            <div class="table-card">
+                <table id="historyTable">
+                    <thead>
+                        <tr>
+                            <th># Económico</th>
+                            <th>Conductor</th>
+                            <th>Fecha</th>
+                            <th>Hora</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="history-row">
+                            <td>BUS-001</td>
+                            <td class="col-conductor" style="font-weight: 600;">Pedro Ramírez</td>
+                            <td class="col-date">14/04/2026</td>
+                            <td>07:30 AM</td>
+                            <td><span class="badge ok col-status">Aprobado</span></td>
+                        </tr>
+                        <tr class="history-row">
+                            <td>BUS-045</td>
+                            <td class="col-conductor" style="font-weight: 600;">Luis García</td>
+                            <td class="col-date">13/04/2026</td>
+                            <td>08:00 AM</td>
+                            <td><span class="badge pending col-status">Pendiente</span></td>
+                        </tr>
+                        <tr class="history-row">
+                            <td>BUS-078</td>
+                            <td class="col-conductor" style="font-weight: 600;">Ana Torres</td>
+                            <td class="col-date">12/04/2026</td>
+                            <td>09:15 AM</td>
+                            <td><span class="badge error col-status">Rechazado</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const inputName = document.getElementById('searchConductor');
+            const inputStartDate = document.getElementById('startDate');
+            const inputEndDate = document.getElementById('endDate');
+            const inputStatus = document.getElementById('searchStatus');
+            const rows = document.querySelectorAll('.history-row');
+
+            function filterTable() {
+                const nameVal = inputName.value.toLowerCase();
+                const statusVal = inputStatus.value;
+                const startVal = inputStartDate.value;
+                const endVal = inputEndDate.value;
+
+                rows.forEach(row => {
+                    const conductor = row.querySelector('.col-conductor').textContent.toLowerCase();
+                    const status = row.querySelector('.col-status').textContent;
+                    const dateText = row.querySelector('.col-date').textContent;
+
+                    const [day, month, year] = dateText.split('/');
+                    const rowDate = new Date(year, month - 1, day);
+
+                    let matchesDate = true;
+
+                    if (startVal) {
+                        const [sYear, sMonth, sDay] = startVal.split('-');
+                        const startDate = new Date(sYear, sMonth - 1, sDay);
+                        if (rowDate < startDate) matchesDate = false;
+                    }
+
+                    if (endVal) {
+                        const [eYear, eMonth, eDay] = endVal.split('-');
+                        const endDate = new Date(eYear, eMonth - 1, eDay);
+                        if (rowDate > endDate) matchesDate = false;
+                    }
+
+                    const matchesName = conductor.includes(nameVal);
+                    const matchesStatus = statusVal === "" || status === statusVal;
+
+                    if (matchesName && matchesStatus && matchesDate) {
+                        row.style.display = "";
+                    } else {
+                        row.style.display = "none";
+                    }
+                });
+            }
+
+            inputName.addEventListener('input', filterTable);
+            inputStartDate.addEventListener('change', filterTable);
+            inputEndDate.addEventListener('change', filterTable);
+            inputStatus.addEventListener('change', filterTable);
+        });
+    </script>
+}

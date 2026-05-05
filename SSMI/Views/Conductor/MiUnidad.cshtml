@@ -1,0 +1,254 @@
+﻿@{
+    ViewData["Title"] = "Mi Unidad";
+    Layout = "~/Views/Shared/_UsuarioLayout.cshtml";
+
+}
+
+<style>
+    /* ── Contenedor principal ── */
+    .area-principal {
+        min-height: 100vh;
+        background-color: #f0f2f5;
+        display: flex;
+        align-items: stretch;
+        overflow-x: hidden;
+    }
+
+    /* ── Encabezado fijo ── */
+    .encabezado-fijo {
+        position: sticky;
+        top: 0;
+        z-index: 999;
+        padding: 15px;
+    }
+
+    /* ── Contenido principal ── */
+    .contenido-principal {
+        flex-grow: 1;
+        padding: 2rem;
+        transition: all 0.3s ease-in-out;
+    }
+
+    /* ── Tarjeta de unidad ── */
+    .tarjeta-unidad {
+        background: white;
+        border-radius: 16px;
+        padding: 2.5rem;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .encabezado-unidad {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .titulo-unidad {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: var(--sidebar-bg);
+    }
+
+    .estado-unidad {
+        padding: 0.5rem 1.2rem;
+        border-radius: 20px;
+        font-weight: 700;
+        color: white;
+        background: #10b981;
+        font-size: 0.9rem;
+    }
+
+    .cuadricula-unidad {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .item-unidad {
+        padding: 1.2rem;
+        border-radius: 12px;
+        background: #f8fafc;
+        border: 1px solid #edf2f7;
+    }
+
+    .etiqueta-unidad {
+        font-size: 0.8rem;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    .valor-unidad {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--sidebar-bg);
+    }
+
+    .acciones-unidad {
+        margin-top: 2.5rem;
+        display: flex;
+        gap: 1rem;
+    }
+
+    .boton-unidad {
+        flex: 1;
+        padding: 1rem;
+        border: none;
+        border-radius: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .boton-primario-unidad {
+        background: var(--sidebar-bg);
+        color: white;
+    }
+
+    .boton-secundario-unidad {
+        background: var(--accent-ssmi);
+        color: var(--sidebar-bg);
+    }
+
+    .boton-unidad:hover {
+        opacity: 0.9;
+        transform: translateY(-2px);
+    }
+
+    .boton-primario-unidad:hover {
+        background: #152b3d; 
+        color: white;
+    }
+
+    .boton-secundario-unidad:hover {
+        background: #00b8e6;
+        color: var(--sidebar-bg);
+    }
+
+    /* ── Modo oscuro ── */
+    body.dark-mode .area-principal {
+        background-color: #0d1117;
+    }
+
+    body.dark-mode .tarjeta-unidad {
+        background: #161b22;
+        border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    body.dark-mode .titulo-unidad {
+        color: #e6edf3;
+    }
+
+    body.dark-mode .item-unidad {
+        background: #0d1117;
+        border-color: #30363d;
+    }
+
+    body.dark-mode .valor-unidad {
+        color: #00d4ff;
+    }
+
+    body.dark-mode .etiqueta-unidad {
+        color: #8b949e;
+    }
+
+    body.dark-mode .boton-secundario-unidad {
+        background: #00d4ff;
+        color: #0d1117;
+    }
+
+    @@media (max-width: 768px) {
+        .acciones-unidad {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<div class="menu-container d-flex area-principal">
+
+    <div id="sidebarMenu" class="shadow">
+        <div class="d-flex flex-column p-4 h-100">
+            <h4 class="text-center mt-2 mb-4">SSMI</h4>
+
+            <a asp-controller="Conductor" asp-action="Index" class="nav-btn">
+                <i class="bi bi-bus-front"></i> Index
+            </a>
+
+            <a asp-controller="Conductor" asp-action="MiUnidad" class="nav-btn active">
+                <i class="bi bi-bus-front"></i> Mi Unidad
+            </a>
+
+            <a asp-controller="Conductor" asp-action="Incidencias" class="nav-btn">
+                <i class="bi bi-bus-front"></i> Incidencias
+            </a>
+
+            <div class="mt-auto">
+                <a asp-controller="Usuario" asp-action="Ayuda" class="nav-btn">
+                    <i class="bi bi-question-circle"></i> Ayuda
+                </a>
+                <a asp-controller="Usuario" asp-action="AcercaDeNosotros" class="nav-btn">
+                    <i class="bi bi-question-circle"></i> Acerca de Nosotros
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex flex-column w-100">
+
+        <div class="encabezado-fijo">
+            <button id="btnToggleMenu" class="btn rounded-circle shadow-sm">
+                <i class="bi bi-list"></i>
+            </button>
+        </div>
+
+        <div class="contenido-principal">
+            <div class="tarjeta-unidad">
+                <div class="encabezado-unidad">
+                    <div class="titulo-unidad">Información de la Unidad</div>
+                    <span class="estado-unidad">En Servicio</span>
+                </div>
+
+                <div class="cuadricula-unidad">
+                    <div class="item-unidad">
+                        <span class="etiqueta-unidad">Número Económico</span>
+                        <div class="valor-unidad">BUS-042</div>
+                    </div>
+                    <div class="item-unidad">
+                        <span class="etiqueta-unidad">Placas</span>
+                        <div class="valor-unidad">ABC-1234</div>
+                    </div>
+                    <div class="item-unidad">
+                        <span class="etiqueta-unidad">Modelo</span>
+                        <div class="valor-unidad">Mercedes-Benz 2024</div>
+                    </div>
+                    <div class="item-unidad">
+                        <span class="etiqueta-unidad">Capacidad</span>
+                        <div class="valor-unidad">45 Pasajeros</div>
+                    </div>
+                    <div class="item-unidad">
+                        <span class="etiqueta-unidad">Última Revisión</span>
+                        <div class="valor-unidad">10/04/2026</div>
+                    </div>
+                    <div class="item-unidad">
+                        <span class="etiqueta-unidad">Kilometraje</span>
+                        <div class="valor-unidad">12,450 km</div>
+                    </div>
+                </div>
+
+                <div class="acciones-unidad">
+                    <a asp-controller="Conductor" asp-action="Incidencias" class="boton-unidad boton-primario-unidad">
+                        <center><i class="bi bi-cone-striped"></i>  Reportar Incidencia</center>
+                    </a>
+                    <button class="boton-unidad boton-secundario-unidad">
+                        <i class="bi bi-tools"></i> Editar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,186 @@
+﻿@{
+    ViewData["Title"] = "Política de Privacidad";
+}
+
+<style>
+    body {
+        background-color: #f4f7f9;
+    }
+
+    /* ── Tarjeta principal ── */
+    .tarjeta-privacidad {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        overflow: hidden;
+    }
+
+    /* ── Título de sección ── */
+    .titulo-seccion {
+        color: #1E3C54;
+        font-weight: 800;
+        position: relative;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+    }
+
+        .titulo-seccion::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 50px;
+            height: 4px;
+            background-color: #00d4ff;
+            border-radius: 2px;
+        }
+
+    /* ── Cajas informativas ── */
+    .caja-info {
+        background-color: #f8f9fa;
+        border-left: 5px solid #1E3C54;
+        border-radius: 8px;
+        padding: 20px;
+        height: 100%;
+    }
+
+    /* ── Icono circular ── */
+    .icono-circular {
+        width: 50px;
+        height: 50px;
+        background: #1E3C54;
+        color: white;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+    }
+
+    /* ── Botón regresar ── */
+    .boton-regresar {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #1E3C54;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all .2s;
+    }
+
+        .boton-regresar:hover {
+            color: #00d4ff;
+            transform: translateX(-3px);
+        }
+</style>
+
+<div class="container py-5" style="max-width: 780px;">
+
+    <div class="card tarjeta-privacidad">
+        <div class="card-body p-4 p-md-5">
+            <div class="text-center mb-5">
+                <div class="icono-circular mx-auto shadow">
+                    <i class="bi bi-shield-lock-fill"></i>
+                </div>
+                <h1 class="display-6 fw-bold text-dark">Política de Privacidad</h1>
+                <p class="text-muted">Actualizado: Marzo 2026 • Versión 2.0</p>
+            </div>
+
+            <div class="mb-5">
+                <h3 class="titulo-seccion">1. Introducción</h3>
+                <p class="text-secondary lead">
+                    En <strong>SSMI</strong>, nuestra prioridad es mejorar tu movilidad urbana de forma segura y sostenible.
+                </p>
+                <p>
+                    Al utilizar nuestra aplicación de rutas y transporte público, aceptas las prácticas descritas en esta política,
+                    diseñada para proteger tu información personal mientras optimizamos tus trayectos cotidianos.
+                </p>
+            </div>
+
+            <div class="mb-5">
+                <h3 class="titulo-seccion">2. Información que recopilamos</h3>
+                <div class="row g-4 mt-1">
+                    <div class="col-md-6">
+                        <div class="caja-info shadow-sm">
+                            <h5 class="fw-bold text-dark"><i class="bi bi-person-badge me-2"></i>Registro</h5>
+                            <ul class="text-muted small">
+                                <li>Nombre completo</li>
+                                <li>Correo y teléfono verificado</li>
+                                <li>Género y fecha de nacimiento</li>
+                                <li class="text-primary fw-bold">Preferencia de discapacidad</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="caja-info shadow-sm" style="border-left-color: #00d4ff;">
+                            <h5 class="fw-bold text-dark"><i class="bi bi-geo-alt me-2"></i>Actividad</h5>
+                            <ul class="text-muted small">
+                                <li>Geolocalización en tiempo real</li>
+                                <li>Historial de rutas consultadas</li>
+                                <li>Modelo de dispositivo y SO</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-5">
+                <h3 class="titulo-seccion">3. Uso de la información</h3>
+                <div class="list-group list-group-flush border rounded-3 overflow-hidden">
+                    <div class="list-group-item d-flex gap-3 p-3">
+                        <i class="bi bi-lightning-fill text-warning"></i>
+                        <div><strong>Optimización:</strong> Rutas más rápidas y menos congestionadas.</div>
+                    </div>
+                    <div class="list-group-item d-flex gap-3 p-3">
+                        <i class="bi bi-graph-up-arrow text-success"></i>
+                        <div><strong>Análisis:</strong> Estimación de tráfico y demanda de transporte.</div>
+                    </div>
+                    <div class="list-group-item d-flex gap-3 p-3">
+                        <i class="bi bi-bell-fill text-danger"></i>
+                        <div><strong>Avisos:</strong> Notificaciones sobre retrasos o cambios en rutas.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-5">
+                <h3 class="titulo-seccion">4. Permisos</h3>
+                <div class="table-responsive">
+                    <table class="table table-borderless bg-light rounded-3 overflow-hidden">
+                        <thead style="background-color: #1E3C54; color: white;">
+                            <tr>
+                                <th class="p-3">Permiso</th>
+                                <th class="p-3">Necesidad</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-bottom">
+                                <td class="p-3"><strong>Ubicación</strong></td>
+                                <td class="p-3 text-muted">Esencial para el cálculo de rutas y tiempos.</td>
+                            </tr>
+                            <tr class="border-bottom">
+                                <td class="p-3"><strong>Conexión</strong></td>
+                                <td class="p-3 text-muted">Para sincronizar datos de tráfico en vivo.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="p-4 rounded-4 mt-5 text-center shadow-sm" style="background-color: #1E3C54; color: white;">
+                <h4 class="fw-bold mb-3">¿Tienes alguna duda?</h4>
+                <p class="small mb-4 text-white-50">Nuestro equipo de soporte está disponible para explicarte el manejo de tus datos.</p>
+                <a href="mailto:code.revolution08gmail.com" class="btn btn-light px-4 py-2 fw-bold" style="color: #1E3C54; border-radius: 10px;">
+                    <i class="bi bi-envelope-fill me-2"></i>Escríbenos ahora
+                </a>
+            </div>
+
+            <!-- Botón regresar abajo -->
+            <div class="text-center mt-5">
+                <a asp-controller="Login" asp-action="Registro" class="btn px-5 py-3 fw-bold shadow-sm" style="background-color: #00d4ff; color: #1E3C54; border-radius: 50px;">
+                    <i class="bi bi-arrow-left me-2"></i> Volver al Registro
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

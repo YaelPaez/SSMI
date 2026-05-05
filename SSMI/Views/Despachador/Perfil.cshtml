@@ -1,0 +1,177 @@
+﻿@model SSMI.Models.Usuario
+
+@{
+    ViewData["Title"] = "Perfil";
+    Layout = "~/Views/Shared/_UsuarioLayout.cshtml";
+}
+
+<style>
+    /* ── Contenedor principal ── */
+    .area-principal {
+        min-height: 100vh;
+        background-color: #f0f2f5;
+        display: flex;
+        align-items: stretch;
+        overflow-x: hidden;
+    }
+
+    /* ── Encabezado fijo ── */
+    .encabezado-fijo {
+        position: sticky;
+        top: 0;
+        z-index: 999;
+        padding: 15px;
+    }
+
+    /* ── Contenido de perfil ── */
+    .contenido-perfil {
+        flex-grow: 1;
+        padding: 40px;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .tarjeta-perfil {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        max-width: 500px;
+        margin: auto;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    }
+
+    .contenedor-avatar {
+        width: 110px;
+        height: 110px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #1E3C54, #00d4ff);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+    }
+
+    .nombre-perfil {
+        text-align: center;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1E3C54;
+    }
+
+    .subtitulo-perfil {
+        text-align: center;
+        color: #6b7280;
+        margin-bottom: 20px;
+    }
+
+    .tarjeta-info {
+        background: #f0f2f5;
+        border-radius: 12px;
+        padding: 15px;
+        margin-bottom: 10px;
+    }
+
+    .etiqueta-info {
+        font-size: 0.8rem;
+        color: #6b7280;
+    }
+
+    .valor-info {
+        font-weight: 600;
+        color: #1E3C54;
+    }
+
+    .boton-editar {
+        width: 100%;
+        margin-top: 15px;
+        padding: 12px;
+        border-radius: 12px;
+        border: none;
+        background: #1E3C54;
+        color: white;
+        font-weight: 600;
+    }
+
+    /* ── Modo oscuro ── */
+    body.dark-mode .area-principal {
+        background-color: #0d1117;
+    }
+
+    body.dark-mode .tarjeta-perfil {
+        background: #161b22;
+        color: #e6edf3;
+    }
+
+    body.dark-mode .nombre-perfil {
+        color: #e6edf3;
+    }
+
+    body.dark-mode .tarjeta-info {
+        background: #0d1117;
+    }
+
+    body.dark-mode .valor-info {
+        color: #00d4ff;
+    }
+</style>
+
+<div class="menu-container d-flex area-principal">
+
+    <div id="sidebarMenu" class="shadow">
+        <div class="d-flex flex-column p-4 h-100">
+            <h4 class="text-center mt-2 mb-4">SSMI</h4>
+            <a asp-controller="Despachador" asp-action="Index" class="nav-btn">
+                <i class="bi bi-speedometer2"></i> Dashboard
+            </a>
+            <a asp-controller="Despachador" asp-action="Perfil" class="nav-btn active">
+                <i class="bi bi-person-circle"></i> Mi Perfil
+            </a>
+            <a asp-controller="Despachador" asp-action="HistoricoDeRegistros" class="nav-btn">
+                <i class="bi bi-clock-history"></i> Histórico
+            </a>
+            <div class="mt-auto">
+                <a asp-controller="Usuario" asp-action="Ayuda" class="nav-btn">
+                    <i class="bi bi-question-circle"></i> Ayuda
+                </a>
+                <a asp-controller="Usuario" asp-action="AcercaDeNosotros" class="nav-btn"><i class="bi bi-info-square"></i> Acerca de nosotros</a>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex flex-column w-100">
+        <div class="encabezado-fijo">
+            <button id="btnToggleMenu" class="btn rounded-circle shadow-sm">
+                <i class="bi bi-list"></i>
+            </button>
+        </div>
+
+        <div class="contenido-perfil">
+            <div class="tarjeta-perfil">
+                <div class="contenedor-avatar">
+                    <i class="bi bi-person-fill text-white fs-1"></i>
+                </div>
+                <div class="nombre-perfil">
+                    @(Model?.Nombres + " " + Model?.Apellidos ?? "Despachador")
+                </div>
+                <div class="subtitulo-perfil">Despachador del sistema</div>
+                <div class="tarjeta-info">
+                    <div class="etiqueta-info">Correo</div>
+                    <div class="valor-info">@(Model?.Correo ?? "Sin datos")</div>
+                </div>
+                <div class="tarjeta-info">
+                    <div class="etiqueta-info">Teléfono</div>
+                    <div class="valor-info">@(Model?.Numtelefono ?? "Sin datos")</div>
+                </div>
+                <div class="tarjeta-info">
+                    <div class="etiqueta-info">Turno</div>
+                    <div class="valor-info">Matutino</div>
+                </div>
+                <div class="tarjeta-info">
+                    <div class="etiqueta-info">Estación asignada</div>
+                    <div class="valor-info">Terminal Centro</div>
+                </div>
+                <button class="boton-editar">Editar perfil</button>
+            </div>
+        </div>
+    </div>
+</div>

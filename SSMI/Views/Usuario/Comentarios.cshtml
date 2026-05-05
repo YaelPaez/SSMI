@@ -1,0 +1,187 @@
+﻿@model SSMI.Models.Usuario
+
+@{
+    ViewData["Title"] = "Comentarios y Sugerencias";
+    Layout = "~/Views/Shared/_UsuarioLayout.cshtml";
+}
+
+<style>
+    /* ── Área de contenido ── */
+    .content-area {
+        flex-grow: 1;
+        overflow-y: auto;
+        padding: 40px;
+        transition: background-color .3s;
+    }
+
+    /* ── Tarjeta del formulario ── */
+    .tarjeta-comentario {
+        background: white;
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        padding: 30px;
+        transition: background-color .3s, box-shadow .3s, border .3s;
+    }
+
+    .formulario-control {
+        border-radius: 15px;
+        border: 2px solid #e9ecef;
+        padding: 15px;
+        font-size: var(--font-size-base);
+        transition: all 0.3s;
+    }
+
+        .formulario-control:focus {
+            border-color: #00d4ff;
+            box-shadow: 0 0 0 0.25rem rgba(0,212,255,0.1);
+        }
+
+    .boton-enviar-comentario {
+        background-color: #1E3C54;
+        color: white;
+        border-radius: 12px;
+        padding: 12px 30px;
+        font-weight: bold;
+        font-size: var(--font-size-base);
+        border: none;
+        transition: 0.3s;
+    }
+
+        .boton-enviar-comentario:hover {
+            background-color: #2a5270;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(30,60,84,0.3);
+        }
+
+    .estrellas-calificacion {
+        color: #ffc107;
+        font-size: calc(var(--font-size-base) * 1.4);
+        cursor: pointer;
+    }
+
+    .nota-info {
+        transition: background-color .3s, border-color .3s, color .3s;
+    }
+
+    /* ── Modo oscuro específico de esta vista ── */
+    body.dark-mode .content-area {
+        background-color: #0d1117;
+    }
+
+    body.dark-mode .tarjeta-comentario {
+        background-color: #161b22 !important;
+        box-shadow: 0 10px 25px rgba(0,0,0,.4);
+        border: 1px solid rgba(0,212,255,.12);
+    }
+
+        body.dark-mode .tarjeta-comentario h2,
+        body.dark-mode .tarjeta-comentario .form-label {
+            color: #e6edf3 !important;
+        }
+
+    body.dark-mode .formulario-control {
+        background-color: rgba(0,212,255,.06) !important;
+        border-color: rgba(0,212,255,.2) !important;
+        color: #e6edf3 !important;
+    }
+
+        body.dark-mode .formulario-control::placeholder {
+            color: #8b949e;
+        }
+
+        body.dark-mode .formulario-control:focus {
+            border-color: #00d4ff !important;
+            box-shadow: 0 0 0 .25rem rgba(0,212,255,.12);
+        }
+
+    body.dark-mode .boton-enviar-comentario {
+        background-color: #00d4ff;
+        color: #0d1117;
+    }
+
+        body.dark-mode .boton-enviar-comentario:hover {
+            background-color: #33ddff;
+        }
+
+    body.dark-mode .nota-info {
+        background-color: #21262d !important;
+        border-color: #00d4ff !important;
+        color: #8b949e;
+    }
+
+    body.dark-mode .titulo-pagina {
+        color: #e6edf3 !important;
+    }
+</style>
+<div class="menu-container d-flex app-viewport">
+
+    <!-- ── Sidebar ── -->
+    <div id="sidebarMenu" class="shadow">
+        <div class="d-flex flex-column p-4 h-100">
+            <h4 class="text-center mt-2 mb-4">SSMI</h4>
+            <a asp-action="Index" class="nav-btn"><i class="bi bi-house-door"></i> Inicio</a>
+            <a asp-action="Perfil" class="nav-btn"><i class="bi bi-person-circle"></i> Mi Perfil</a>
+            <a asp-action="Configuracion" class="nav-btn"><i class="bi bi-gear"></i> Configuración</a>
+            <a asp-action="Comentarios" class="nav-btn active"><i class="bi bi-chat-left-dots"></i> Comentarios</a>
+            <div class="mt-auto">
+                <a asp-action="Ayuda" class="nav-btn"><i class="bi bi-question-circle"></i> Ayuda</a>
+                <a asp-action="AcercaDeNosotros" class="nav-btn"><i class="bi bi-info-square"></i> Acerca de nosotros</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Contenido ── -->
+    <div class="d-flex flex-column w-100">
+        <div class="p-3">
+            <button id="btnToggleMenu" class="btn rounded-circle shadow-sm">
+                <i class="bi bi-list"></i>
+            </button>
+        </div>
+
+        <div class="content-area">
+            <div class="container" style="max-width:800px;">
+
+                <div class="text-center mb-5">
+                    <h2 class="fw-bold titulo-pagina" style="color:#1E3C54;font-size:calc(var(--font-size-base) * 1.6);">
+                        Tu opinión nos importa
+                    </h2>
+                    <p class="text-muted">Ayúdanos a mejorar el transporte inteligente para todos.</p>
+                </div>
+
+                <div class="tarjeta-comentario">
+                    <form>
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">¿Cómo calificarías tu experiencia?</label>
+                            <div class="estrellas-calificacion mb-2">
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star"></i>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Cuéntanos más</label>
+                            <textarea class="form-control formulario-control" rows="5"
+                                      placeholder="Escribe tus sugerencias o reporta problemas aquí..."></textarea>
+                        </div>
+                        <div class="text-end">
+                            <button type="button" class="btn boton-enviar-comentario px-5">
+                                <i class="bi bi-send me-2"></i> Enviar Comentario
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="mt-4 p-3 border-start border-4 border-info bg-white rounded shadow-sm nota-info">
+                    <p class="small text-muted mb-0">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Tus comentarios son procesados de forma anónima para mejorar los algoritmos de ruta.
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
