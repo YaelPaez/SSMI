@@ -2,15 +2,19 @@
 using SSMI.Data;
 using SSMI.Funciones;
 using SSMI.Models;
+using SSMI.Services;
 
 namespace SSMI.Controllers
 {
     public class LoginController : Controller
     {
         private readonly IConfiguration _configuracion;
-        public LoginController(IConfiguration config)
+        private readonly IAuthService _auth;
+
+        public LoginController(IConfiguration config, IAuthService auth)
         {
             _configuracion = config;
+            _auth = auth;
         }
         public IActionResult IniciarSesion()
         {
@@ -24,7 +28,7 @@ namespace SSMI.Controllers
         }
 
         [HttpPost]
-        public IActionResult IniciarSesion(InicioSesionYRegistro datos)
+        public async Task<IActionResult> IniciarSesion(InicioSesionYRegistro datos)
         {
             Captcha cap = new Captcha();
             Contrasena ctr = new Contrasena();
@@ -32,7 +36,15 @@ namespace SSMI.Controllers
             string conStr = _configuracion.GetConnectionString("StringCONSQLocal");
             Usuario usuario = datos.Usuario;
 
-            Usuario usrEnc = cons.ConsultarUsuario(usuario.Correo, conStr);
+            usuario.Correo = usuario.Correo?.Trim();
+            if (string.IsNullOrWhiteSpace(usuario.Correo))
+            {
+                ViewBag.Error = "Ingresa un correo válido";
+                datos.Captcha.CaptchaGenerado = cap.GenerarCaptcha();
+                return View(datos);
+            }
+
+            Usuario? usrEnc = cons.ConsultarUsuario(usuario.Correo, conStr);
 
             if (datos.Captcha.CaptchaGenerado != datos.Captcha.Captcha)
             {
@@ -45,19 +57,22 @@ namespace SSMI.Controllers
             {
                 ViewBag.Error = "usuario no encontrado";
                 datos.Captcha.CaptchaGenerado = cap.GenerarCaptcha();
-                return View();
+                return View(datos);
             }
 
             if (!ctr.CompararContrsanas(usuario.Contrasena, usrEnc.Contrasena))
             {
                 ViewBag.Error = "Credenciales incorrectas";
                 datos.Captcha.CaptchaGenerado = cap.GenerarCaptcha();
-                return View();
+                return View(datos);
             }
             else
             {
                 ViewBag.Error = "Sesion Iniciada";
-                return RedirectToAction("Index", "Usuario");
+                await _auth.SignInAsync(usrEnc);
+
+                var (controller, action) = _auth.GetHomeRouteForRole(usrEnc.Rol);
+                return RedirectToAction(action, controller);
             }
 
 
@@ -102,9 +117,10 @@ namespace SSMI.Controllers
         }
 
 
-        public IActionResult CerrarSesion()
+        public async Task<IActionResult> CerrarSesion()
         {
-            return View();
+            await _auth.SignOutAsync();
+            return RedirectToAction("Index", "Home");
         }
     }
 }

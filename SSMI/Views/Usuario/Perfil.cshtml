@@ -129,6 +129,29 @@
         font-style: italic;
     }
 
+    /* ── Editar perfil ── */
+    .tarjeta-editar-perfil {
+        background: #fff;
+        border-radius: 16px;
+        padding: 1.25rem;
+        margin-top: 1rem;
+        box-shadow: 0 2px 12px rgba(0,0,0,.05);
+        display: none;
+    }
+
+    body.dark-mode .tarjeta-editar-perfil {
+        background: #161b22;
+        box-shadow: 0 2px 12px rgba(0,0,0,.3);
+    }
+
+    .tarjeta-editar-perfil .form-label {
+        color: #8b949e;
+        font-size: calc(var(--font-size-base, 1rem) * 0.8);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+    }
+
     /* ── Botón editar ── */
     .boton-editar {
         background: linear-gradient(135deg, #1E3C54, #2a5580);
@@ -190,6 +213,10 @@
         body.dark-mode .boton-editar:hover {
             box-shadow: 0 6px 20px rgba(0,212,255,.2);
         }
+}
+@section Scripts {
+    <script src="~/js/Pasajero/perfil.js" asp-append-version="true"></script>
+}
 </style>
 
 <div class="menu-container d-flex app-viewport">
@@ -205,6 +232,7 @@
             <div class="mt-auto">
                 <a asp-action="Ayuda" class="nav-btn"><i class="bi bi-question-circle"></i> Ayuda</a>
                 <a asp-action="AcercaDeNosotros" class="nav-btn"><i class="bi bi-info-square"></i> Acerca de nosotros</a>
+                <a asp-controller="Login" asp-action="CerrarSesion" class="nav-btn"><i class="bi bi-box-arrow-right"></i> Cerrar Sesión</a>
             </div>
         </div>
     </div>
@@ -225,7 +253,7 @@
                         <path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z" />
                     </svg>
                 </div>
-                <div class="nombre-perfil">@(Model?.Nombres != null ? Model.Nombres + " " + Model.Apellidos : "Mi Perfil")</div>
+                <div class="nombre-perfil">@(Model?.Nombres != null ? Model.Nombres.ToUpper() + " " + Model.Apellidos.ToUpper() : "Mi Perfil")</div>
                 <div class="subtitulo-perfil">@(Model?.Correo ?? "usuario@ssmi.mx")</div>
 
                 <div class="tarjeta-dato">
@@ -233,7 +261,7 @@
                     <div>
                         <div class="etiqueta-dato">Nombre completo</div>
                         <div class="valor-dato @(Model?.Nombres == null ? "vacio" : "")">
-                            @(Model?.Nombres != null ? Model.Nombres + " " + Model.Apellidos : "Sin datos")
+                            @(Model?.Nombres != null ? Model.Nombres.ToUpper() + " " + Model.Apellidos.ToUpper() : "Sin datos")
                         </div>
                     </div>
                 </div>
@@ -283,9 +311,56 @@
                     <div class="texto-vacio">Aún no has registrado viajes.</div>
                 </div>
 
-                <button class="boton-editar mt-3">
+                <button id="btnEditarPerfil" type="button" class="boton-editar mt-3">
                     <i class="bi bi-pencil-square me-2"></i>Editar perfil
                 </button>
+
+                <div id="cardEditarPerfil" class="tarjeta-editar-perfil">
+                    <div class="titulo-viajes"><i class="bi bi-pencil me-2"></i>Actualizar mis datos</div>
+
+                    <form asp-controller="Usuario" asp-action="ActualizarPerfil" method="post" class="mt-3">
+                        @Html.AntiForgeryToken()
+
+                        <div class="row g-3">
+                            <div class="col-12 col-md-6">
+                                <label class="form-label">Nombres</label>
+                                <input asp-for="Nombres" class="form-control" value="@Model.Nombres"/>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label">Apellidos</label>
+                                <input asp-for="Apellidos" class="form-control" value="@Model.Apellidos"/>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Teléfono</label>
+                                <input asp-for="Numtelefono" class="form-control" value="@Model.Numtelefono"/>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label">Fecha de nacimiento</label>
+                                <input name="FechaNacimiento" type="date" class="form-control"
+                                       value="@(Model?.FechaNacimiento != default ? Model.FechaNacimiento.ToString("yyyy-MM-dd") : string.Empty)" />
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label">Género</label>
+                                <input asp-for="Genero" class="form-control" value="@Model.Genero" />
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Discapacidad</label>
+                                <input asp-for="Discapacidad" class="form-control" />
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2 mt-3">
+                            <button type="submit" class="btn btn-primary flex-grow-1" style="background-color:#1E3C54;border:none;">
+                                Guardar cambios
+                            </button>
+                            <button id="btnCancelarEdicion" type="button" class="btn btn-outline-secondary">
+                                Cancelar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+
 
             </div>
         </div>

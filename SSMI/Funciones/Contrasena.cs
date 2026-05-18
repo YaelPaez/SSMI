@@ -13,8 +13,13 @@ public class Contrasena
         return r;
     }
 
-    public bool CompararContrsanas(string contrasena, string hash)
+    public bool CompararContrsanas(string? contrasena, string? hash)
     {
+        if (string.IsNullOrWhiteSpace(contrasena) || string.IsNullOrWhiteSpace(hash))
+        {
+            return false;
+        }
+
         return BCrypt.Net.BCrypt.Verify(contrasena, hash);
     }
 

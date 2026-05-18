@@ -2,42 +2,31 @@
 using Microsoft.AspNetCore.Mvc;
 using SSMI.Data;
 using SSMI.Models;
+using SSMI.Services;
 
 namespace SSMI.Controllers
 {
     public class ParadasAPIController : Controller
     {
-        private readonly IConfiguration _configuracion;
-        private readonly String _connStr;
+        private readonly IRutasService _rutasService;
 
-        public ParadasAPIController(IConfiguration config)
+        public ParadasAPIController(IRutasService rutasService)
         {
-            _configuracion = config;
-            _connStr = _configuracion.GetConnectionString("StringCONSQLocal");
+            _rutasService = rutasService;
         }
 
 
         [HttpPost]
         public IActionResult ObtenerParadasCercanas([FromBody] UbicacionRequest request)
         {
-            ConsultasParadas cons = new ConsultasParadas();
-            var paradas = cons.ConsultarParadas(
-                _connStr,
-                request.Lat,
-                request.Lon
-                );
-
+            var paradas = _rutasService.ObtenerParadasCercanas(request);
             return Json(paradas);
         }
 
         [HttpGet]
         public IActionResult ObtenerTodasLasParadas()
         {
-            ConsultasParadas cons = new ConsultasParadas();
-            var paradas = cons.ConsultarTodasParadas(
-                _connStr
-                );
-
+            var paradas = _rutasService.ObtenerTodasLasParadas();
             return Json(paradas);
         }
     }
