@@ -7,37 +7,79 @@
 }
 
 <style>
-    /* ── Contenido acerca de ── */
+    /* ── Contenido ── */
     .contenido-acerca {
         flex-grow: 1;
         overflow-y: auto;
         padding: 40px;
+        background: #f4f6f9;
+        transition: background .3s;
     }
 
-    /* ── Tarjetas de información ── */
-    .tarjeta-acerca {
-        background: white;
-        border-radius: 20px;
-        border: none;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-        padding: 30px;
-        margin-bottom: 20px;
+    .contenedor-principal {
+        max-width: 1100px;
+        margin: auto;
     }
+
+    /* ── Tarjetas ── */
+    .tarjeta-acerca {
+        background: #fff;
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        border-top: 5px solid #1E3C54;
+        transition: all .3s;
+    }
+
+        .tarjeta-acerca:hover {
+            transform: translateY(-6px);
+        }
+
+        .tarjeta-acerca h4 {
+            color: #1E3C54;
+            margin-bottom: 1rem;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            transition: color .3s;
+        }
+
+        .tarjeta-acerca p {
+            color: #4a5568;
+            text-align: justify;
+            line-height: 1.7;
+            margin-bottom: 0;
+            transition: color .3s;
+        }
 
     .icono-caracteristica {
-        font-size: 2rem;
+        font-size: 2.3rem;
         color: #1E3C54;
-        margin-bottom: 15px;
+        margin-bottom: 18px;
+        display: inline-block;
+        transition: color .3s;
     }
 
-    .titulo-ssmi {
-        color: #1E3C54;
+    .full-width {
+        grid-column: 1 / -1;
     }
 
-    /* ── Modo oscuro específico de esta vista ── */
+    .titulo-seccion {
+        color: #1E3C54;
+        transition: color .3s;
+    }
+
+    /* ── Modo oscuro ── */
+    body.dark-mode .contenido-acerca {
+        background: #0d1117;
+    }
+
     body.dark-mode .tarjeta-acerca {
         background: #161b22;
-        color: #e6edf3;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        border-top-color: #00d4ff;
     }
 
         body.dark-mode .tarjeta-acerca h4 {
@@ -52,8 +94,12 @@
         color: #00d4ff;
     }
 
-    body.dark-mode .titulo-ssmi {
+    body.dark-mode .titulo-seccion {
         color: #e6edf3;
+    }
+
+    body.dark-mode .text-muted {
+        color: #8b949e !important;
     }
 </style>
 
@@ -70,7 +116,6 @@
             <div class="mt-auto">
                 <a asp-action="Ayuda" class="nav-btn"><i class="bi bi-question-circle"></i> Ayuda</a>
                 <a asp-action="AcercaDeNosotros" class="nav-btn active"><i class="bi bi-info-square"></i> Acerca de nosotros</a>
-                <a asp-controller="Login" asp-action="CerrarSesion" class="nav-btn"><i class="bi bi-box-arrow-right"></i> Cerrar Sesión</a>
             </div>
         </div>
     </div>
@@ -84,10 +129,10 @@
         </div>
 
         <div class="contenido-acerca">
-            <div class="container-fluid">
+            <div class="contenedor-principal">
                 <div class="row mb-4">
                     <div class="col-12">
-                        <h2 class="fw-bold titulo-ssmi">Sobre SSMI</h2>
+                        <h2 class="fw-bold titulo-seccion">Sistema de Seguimiento y Movilidad Integrado - SSMI</h2>
                         <p class="text-muted lead">Revolucionando la movilidad urbana a través de datos y tecnología.</p>
                     </div>
                 </div>
@@ -97,14 +142,23 @@
                         <div class="tarjeta-acerca h-100">
                             <i class="bi bi-rocket-takeoff icono-caracteristica"></i>
                             <h4>Misión</h4>
-                            <p class="text-secondary">Proveer a los ciudadanos herramientas inteligentes para optimizar sus tiempos de traslado, utilizando rutas eficientes y seguras en el transporte público.</p>
+                            <p>Proveer a los ciudadanos herramientas inteligentes para optimizar sus tiempos de traslado, utilizando rutas eficientes y seguras en el transporte público.</p>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="tarjeta-acerca h-100">
                             <i class="bi bi-eye icono-caracteristica"></i>
                             <h4>Visión</h4>
-                            <p class="text-secondary">Convertirnos en la plataforma líder de movilidad inteligente, reduciendo el impacto ambiental y mejorando la calidad de vida urbana.</p>
+                            <p>Convertirnos en la plataforma líder de movilidad inteligente, reduciendo el impacto ambiental y mejorando la calidad de vida urbana.</p>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="tarjeta-acerca">
+                            <i class="bi bi-info-circle icono-caracteristica"></i>
+                            <h4>Acerca de SSMI</h4>
+                            <p>
+                                SSMI nace como una solución tecnológica enfocada en mejorar la experiencia del usuario dentro del transporte público mediante herramientas inteligentes de monitoreo, planificación y seguimiento en tiempo real. Nuestro propósito es brindar una experiencia moderna, eficiente y sustentable para la movilidad urbana.
+                            </p>
                         </div>
                     </div>
                 </div>
