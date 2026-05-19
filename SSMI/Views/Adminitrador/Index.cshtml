@@ -1,6 +1,8 @@
 ﻿@{
     ViewData["Title"] = "Administración de Rutas";
     Layout = "~/Views/Shared/_UsuarioLayout.cshtml";
+
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
 }
 
 <!-- ══ FILTROS SVG DALTONISMO ══ -->
@@ -476,25 +478,25 @@
     <div id="sidebarMenu" class="shadow">
         <div class="d-flex flex-column p-4 h-100">
             <h4 class="text-center mt-2 mb-4">SSMI Admin</h4>
-            
-            <button class="nav-btn active" onclick="mostrarSeccion('paradas')">
+
+            <a asp-controller="Adminitrador" asp-action="Paradas" class="nav-btn @(currentAction == "Paradas" ? "active" : "")">
                 <i class="bi bi-geo-alt"></i> Paradas
-            </button>
+            </a>
 
-            <button class="nav-btn" onclick="mostrarSeccion('camiones')">
+            <a asp-controller="Adminitrador" asp-action="Camiones" class="nav-btn @(currentAction == "Camiones" ? "active" : "")">
                 <i class="bi bi-bus-front"></i> Camiones
-            </button>
+            </a>
 
-            <button class="nav-btn" onclick="mostrarSeccion('conductoresIndex')">
+            <a asp-controller="Adminitrador" asp-action="Conductores" class="nav-btn @(currentAction == "Conductores" ? "active" : "")">
                 <i class="bi bi-person-badge"></i> Conductores
-            </button>
+            </a>
 
-            <button class="nav-btn" onclick="mostrarSeccion('monitoreo')">
+            <a asp-controller="Adminitrador" asp-action="Monitoreo" class="nav-btn @(currentAction == "Monitoreo" ? "active" : "")">
                 <i class="bi bi-activity"></i> Monitoreo
-            </button>
+            </a>
 
             <div class="mt-auto">
-                <a href="/" class="nav-btn"><i class="bi bi-box-arrow-left"></i> Salir</a>
+                <a asp-controller="Login" asp-action="CerrarSesion" class="nav-btn"><i class="bi bi-box-arrow-left"></i> Salir</a>
             </div>
         </div>
     </div>
@@ -505,346 +507,58 @@
             <button id="btnToggleMenu" class="btn btn-dark rounded-circle shadow-sm" style="width: 45px; height: 45px;">
                 <i class="bi bi-list"></i>
             </button>
-            <h2 class="mb-0">Administración de Rutas</h2>
+            <h2 class="mb-0">Administración</h2>
         </div>
 
         <div class="admin-content">
-            <!-- ══ SECCIÓN: PARADAS ══ -->
-            <div id="paradas" class="seccion active">
-                <h3>
-                    <i class="bi bi-geo-alt"></i> Gestión de Paradas
-                </h3>
+            <h3 class="mb-3"><i class="bi bi-grid"></i> Panel de administración</h3>
+            <p class="text-muted mb-4">Selecciona una opción del menú para administrar paradas, camiones, conductores o monitoreo.</p>
 
-                <button class="btn btn-admin btn-agregar mb-3" data-bs-toggle="modal" data-bs-target="#modalParada">
-                    <i class="bi bi-plus-circle"></i> Agregar Parada
-                </button>
-
-                <div class="table-responsive">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Nombre</th>
-                                <th>Latitud</th>
-                                <th>Longitud</th>
-                                <th>Orden</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Parada Central</td>
-                                <td>19.4326</td>
-                                <td>-99.1332</td>
-                                <td>1</td>
-                                <td>
-                                    <div class="action-cell">
-                                        <button class="btn btn-admin btn-editar"><i class="bi bi-pencil"></i></button>
-                                        <button class="btn btn-admin btn-eliminar"><i class="bi bi-trash"></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Parada Secundaria</td>
-                                <td>19.4350</td>
-                                <td>-99.1350</td>
-                                <td>2</td>
-                                <td>
-                                    <div class="action-cell">
-                                        <button class="btn btn-admin btn-editar"><i class="bi bi-pencil"></i></button>
-                                        <button class="btn btn-admin btn-eliminar"><i class="bi bi-trash"></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- ══ SECCIÓN: CAMIONES ══ -->
-            <div id="camiones" class="seccion">
-                <h3>
-                    <i class="bi bi-bus-front"></i> Gestión de Camiones
-                </h3>
-
-                <button class="btn btn-admin btn-agregar mb-3" data-bs-toggle="modal" data-bs-target="#modalCamion">
-                    <i class="bi bi-plus-circle"></i> Nuevo Camión
-                </button>
-
-                <div class="table-responsive">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Placa</th>
-                                <th>Conductor</th>
-                                <th>Capacidad</th>
-                                <th>Estado</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>ABC-123</td>
-                                <td>Juan Pérez</td>
-                                <td>45 pasajeros</td>
-                                <td><span class="badge-status badge-activo">Activo</span></td>
-                                <td>
-                                    <div class="action-cell">
-                                        <button class="btn btn-admin btn-editar"><i class="bi bi-pencil"></i></button>
-                                        <button class="btn btn-admin btn-eliminar"><i class="bi bi-trash"></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>XYZ-456</td>
-                                <td>María López</td>
-                                <td>50 pasajeros</td>
-                                <td><span class="badge-status badge-ruta">En Ruta</span></td>
-                                <td>
-                                    <div class="action-cell">
-                                        <button class="btn btn-admin btn-editar"><i class="bi bi-pencil"></i></button>
-                                        <button class="btn btn-admin btn-eliminar"><i class="bi bi-trash"></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>DEF-789</td>
-                                <td>—</td>
-                                <td>48 pasajeros</td>
-                                <td><span class="badge-status badge-inactivo">Inactivo</span></td>
-                                <td>
-                                    <div class="action-cell">
-                                        <button class="btn btn-admin btn-editar"><i class="bi bi-pencil"></i></button>
-                                        <button class="btn btn-admin btn-eliminar"><i class="bi bi-trash"></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- ══ SECCIÓN: CONDUCTORES ══ -->
-            <div id="conductores" class="seccion">
-                <h3>
-                    <i class="bi bi-person-badge"></i> Gestión de Conductores
-                </h3>
-
-                <button class="btn btn-admin btn-agregar mb-3" data-bs-toggle="modal" data-bs-target="#modalConductor">
-                    <i class="bi bi-plus-circle"></i> Nuevo Conductor
-                </button>
-
-                <div class="table-responsive">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Nombre</th>
-                                <th>Licencia</th>
-                                <th>Camión Asignado</th>
-                                <th>Estado</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Juan Pérez</td>
-                                <td>LIC-001</td>
-                                <td>ABC-123</td>
-                                <td><span class="badge-status badge-activo">Activo</span></td>
-                                <td>
-                                    <div class="action-cell">
-                                        <button class="btn btn-admin btn-editar"><i class="bi bi-pencil"></i></button>
-                                        <button class="btn btn-admin btn-eliminar"><i class="bi bi-trash"></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>María López</td>
-                                <td>LIC-002</td>
-                                <td>XYZ-456</td>
-                                <td><span class="badge-status badge-activo">Activo</span></td>
-                                <td>
-                                    <div class="action-cell">
-                                        <button class="btn btn-admin btn-editar"><i class="bi bi-pencil"></i></button>
-                                        <button class="btn btn-admin btn-eliminar"><i class="bi bi-trash"></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Carlos Rodríguez</td>
-                                <td>LIC-003</td>
-                                <td>—</td>
-                                <td><span class="badge-status badge-inactivo">Disponible</span></td>
-                                <td>
-                                    <div class="action-cell">
-                                        <button class="btn btn-admin btn-editar"><i class="bi bi-pencil"></i></button>
-                                        <button class="btn btn-admin btn-eliminar"><i class="bi bi-trash"></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- ══ SECCIÓN: MONITOREO ══ -->
-            <div id="monitoreo" class="seccion">
-                <h3>
-                    <i class="bi bi-activity"></i> Monitoreo en Tiempo Real
-                </h3>
-
-                <div class="map-container">
-                    <div class="map-placeholder">
-                        <i class="bi bi-map"></i>
-                        <p>Mapa integrado (SignalR Ready)</p>
-                        <small>Placeholder para integración con Google Maps o Leaflet</small>
-                    </div>
-                </div>
-
-                <div class="form-admin mt-4">
-                    <h5 class="mb-3">
-                        <i class="bi bi-speedometer2"></i> Estado de Camiones en Línea
-                    </h5>
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Camión</th>
-                                    <th>Conductor</th>
-                                    <th>Velocidad</th>
-                                    <th>Pasajeros</th>
-                                    <th>Estado</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>ABC-123</td>
-                                    <td>Juan Pérez</td>
-                                    <td>35 km/h</td>
-                                    <td>28/45</td>
-                                    <td><span class="badge-status badge-ruta">En Ruta</span></td>
-                                </tr>
-                                <tr>
-                                    <td>XYZ-456</td>
-                                    <td>María López</td>
-                                    <td>42 km/h</td>
-                                    <td>35/50</td>
-                                    <td><span class="badge-status badge-ruta">En Ruta</span></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- ══ MODALES ══ -->
-<!-- Modal Agregar Parada -->
-<div class="modal fade" id="modalParada" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-geo-alt"></i> Agregar Parada</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form>
-                    <div class="mb-3">
-                        <label class="form-label">Nombre de la Parada</label>
-                        <input type="text" class="form-control" placeholder="Ej: Parada Central">
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <label class="form-label">Latitud</label>
-                            <input type="number" class="form-control" step="0.0001" placeholder="19.4326">
+            <div class="row g-3">
+                <div class="col-12 col-md-6 col-lg-3">
+                    <a asp-controller="Adminitrador" asp-action="Paradas" class="text-decoration-none">
+                        <div class="form-admin" style="cursor:pointer;">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bi bi-geo-alt fs-4"></i>
+                                <strong>Paradas</strong>
+                            </div>
+                            <div class="text-muted mt-2">Gestionar paradas y orden de ruta.</div>
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Longitud</label>
-                            <input type="number" class="form-control" step="0.0001" placeholder="-99.1332">
+                    </a>
+                </div>
+                <div class="col-12 col-md-6 col-lg-3">
+                    <a asp-controller="Adminitrador" asp-action="Camiones" class="text-decoration-none">
+                        <div class="form-admin" style="cursor:pointer;">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bi bi-bus-front fs-4"></i>
+                                <strong>Camiones</strong>
+                            </div>
+                            <div class="text-muted mt-2">Alta, baja y edición de camiones.</div>
                         </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Orden en la Ruta</label>
-                        <input type="number" class="form-control" placeholder="1">
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-admin btn-agregar">Guardar</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal Agregar Camión -->
-<div class="modal fade" id="modalCamion" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-bus-front"></i> Agregar Camión</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form>
-                    <div class="mb-3">
-                        <label class="form-label">Placa</label>
-                        <input type="text" class="form-control" placeholder="ABC-123">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Capacidad</label>
-                        <input type="number" class="form-control" placeholder="45">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Conductor</label>
-                        <select class="form-control">
-                            <option>Seleccionar conductor</option>
-                            <option>Juan Pérez</option>
-                            <option>María López</option>
-                        </select>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-admin btn-agregar">Guardar</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal Agregar Conductor -->
-<div class="modal fade" id="modalConductor" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-person-badge"></i> Agregar Conductor</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form>
-                    <div class="mb-3">
-                        <label class="form-label">Nombre</label>
-                        <input type="text" class="form-control" placeholder="Nombre completo">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Número de Licencia</label>
-                        <input type="text" class="form-control" placeholder="LIC-001">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Asignar Camión</label>
-                        <select class="form-control">
-                            <option>Sin asignar</option>
-                            <option>ABC-123</option>
-                            <option>XYZ-456</option>
-                        </select>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-admin btn-agregar">Guardar</button>
+                    </a>
+                </div>
+                <div class="col-12 col-md-6 col-lg-3">
+                    <a asp-controller="Adminitrador" asp-action="Conductores" class="text-decoration-none">
+                        <div class="form-admin" style="cursor:pointer;">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bi bi-person-badge fs-4"></i>
+                                <strong>Conductores</strong>
+                            </div>
+                            <div class="text-muted mt-2">Gestión de conductores y asignaciones.</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-12 col-md-6 col-lg-3">
+                    <a asp-controller="Adminitrador" asp-action="Monitoreo" class="text-decoration-none">
+                        <div class="form-admin" style="cursor:pointer;">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bi bi-activity fs-4"></i>
+                                <strong>Monitoreo</strong>
+                            </div>
+                            <div class="text-muted mt-2">Vista en tiempo real del sistema.</div>
+                        </div>
+                    </a>
+                </div>
             </div>
         </div>
     </div>
@@ -852,62 +566,14 @@
 
 @section Scripts {
     <script>
-        /* ── Alternar entre secciones ── */
-        function mostrarSeccion(seccionId) {
-            // Ocultar todas las secciones
-            const secciones = document.querySelectorAll('.seccion');
-            secciones.forEach(s => s.classList.remove('active'));
-
-            // Remover clase active de todos los botones
-            const botones = document.querySelectorAll('.nav-btn');
-            botones.forEach(b => b.classList.remove('active'));
-
-            // Mostrar sección seleccionada
-            const seccionActual = document.getElementById(seccionId);
-            if (seccionActual) {
-                seccionActual.classList.add('active');
-            }
-
-            // Marcar botón como activo
-            event.target.closest('.nav-btn')?.classList.add('active');
-        }
-
-        /* ── Toggle del sidebar ── */
         document.addEventListener("DOMContentLoaded", function () {
             const btn = document.getElementById('btnToggleMenu');
             const sidebar = document.getElementById('sidebarMenu');
 
-            btn.addEventListener('click', function () {
+            btn?.addEventListener('click', function () {
                 sidebar.style.marginLeft = sidebar.style.marginLeft === '-280px' ? '0px' : '-280px';
                 btn.classList.toggle('active');
             });
         });
-
-        /* ── Aplicar preferencias guardadas ── */
-        (function applyStoredPrefs() {
-            var dal = localStorage.getItem('daltonismMode') || 'normal';
-            document.body.classList.remove('protanopia', 'deuteranopia', 'tritanopia');
-            document.documentElement.classList.remove('protanopia', 'deuteranopia', 'tritanopia');
-            if (dal !== 'normal') {
-                document.body.classList.add(dal);
-                document.documentElement.classList.add(dal);
-            }
-
-            var isDark = localStorage.getItem('darkMode') === 'true';
-            document.body.classList.toggle('dark-mode', isDark);
-
-            var fs  = localStorage.getItem('fontSize') || 'md';
-            var map = { sm: '0.875rem', md: '1rem', lg: '1.125rem', xl: '1.25rem' };
-            var sz  = map[fs] || '1rem';
-            document.documentElement.style.setProperty('--font-size-base', sz);
-            document.documentElement.style.fontSize = sz;
-            document.body.style.fontSize = sz;
-            ['font-size-sm','font-size-md','font-size-lg','font-size-xl'].forEach(function(c){
-                document.documentElement.classList.remove(c);
-                document.body.classList.remove(c);
-            });
-            document.documentElement.classList.add('font-size-' + fs);
-            document.body.classList.add('font-size-' + fs);
-        })();
     </script>
 }

@@ -14,7 +14,7 @@ namespace SSMI.Funciones
         public async Task EnviarCorreoSMTP(string destinatario,string correoDestino, string Titulo, string Cuerpo)
         {
             var message = new MimeMessage();
-            message.From.Add(new MailboxAddress("MAUII APP", "paezyael5im10@gmail.com"));
+            message.From.Add(new MailboxAddress("MAUII APP", "code.revolution08@gmail.com"));
             message.To.Add(new MailboxAddress(destinatario, correoDestino));
             message.Subject = Titulo;
 
@@ -26,7 +26,7 @@ namespace SSMI.Funciones
             using (var client = new MailKit.Net.Smtp.SmtpClient())
             {
                 await client.ConnectAsync("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
-                await client.AuthenticateAsync("paezyael5im10@gmail.com", "skufhwthuydeawzs"); // no tu contraseña normal
+                await client.AuthenticateAsync("code.revolution08@gmail.com", "zjgdlneqrtnwxrcp"); // no tu contraseña normal
                 await client.SendAsync(message);
                 await client.DisconnectAsync(true);
             }
