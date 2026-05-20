@@ -1,7 +1,7 @@
 ﻿
 @{
     ViewData["Title"] = "Home Page";
-    ViewBag.HideHeader = true;
+    ViewBag.HideHeader = false;
 
 }
 <style>
@@ -17,7 +17,7 @@
         font-family: 'Segoe UI', system-ui, sans-serif;
         background: linear-gradient(135deg, #0d1b2a 0%, #1b3a4b 100%);
         color: white;
-        min-height: 100vh;
+        min-height: calc(100vh - 80px);
     }
 
     .seccion-nosotros {
@@ -207,10 +207,6 @@
                 <a asp-controller="Login" asp-action="Registro" class="btn-principal">Registrarse</a>
                 <a asp-controller="Login" asp-action="IniciarSesion" class="btn-secundario">Iniciar Sesión</a>
             </div>
-
-            <a asp-controller="Home" asp-action="EquipoDesarrollo" class="btn-equipo">
-                <i class="bi bi-people-fill"></i> Conoce al equipo de desarrolladores
-            </a>
         </div>
     </div>
     <div class="bloque-visual">

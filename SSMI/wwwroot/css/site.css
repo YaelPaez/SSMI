@@ -1,4 +1,4 @@
-html {
+﻿html {
   font-size: 14px;
 }
 
@@ -31,8 +31,73 @@ body {
     --blanco: #ffffff;
 }
 
+/* ───────── NAVBAR SSMI ───────── */
 
+/* ───────── NAVBAR SSMI ───────── */
 
+.navbar-ssmi {
+    background: rgba(13, 27, 42, 0.72);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    padding: 18px 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+}
+
+/* LOGO */
+
+.logo-ssmi {
+    color: white !important;
+    font-size: 1.8rem;
+    font-weight: 900;
+    letter-spacing: 1px;
+    transition: 0.3s;
+}
+
+    .logo-ssmi:hover {
+        color: #00d4ff !important;
+        transform: scale(1.03);
+    }
+
+/* LINKS */
+
+.nav-ssmi {
+    color: rgba(255,255,255,0.82) !important;
+    font-size: 1.05rem;
+    font-weight: 600;
+    padding: 10px 16px !important;
+    border-radius: 12px;
+    transition: 0.3s;
+    position: relative;
+}
+
+    .nav-ssmi:hover {
+        color: white !important;
+        background: rgba(255,255,255,0.08);
+        transform: translateY(-2px);
+    }
+
+/* BOTÓN PRINCIPAL */
+
+.btn-navbar {
+    background: linear-gradient(135deg, #5b58ff, #6d8dff);
+    color: white !important;
+    padding: 12px 22px;
+    border-radius: 14px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1rem;
+    transition: 0.3s;
+    box-shadow: 0 10px 25px rgba(91,88,255,0.35), 0 0 20px rgba(91,88,255,0.15);
+}
+
+    .btn-navbar:hover {
+        transform: translateY(-3px) scale(1.03);
+        color: white !important;
+        box-shadow: 0 14px 35px rgba(91,88,255,0.45), 0 0 25px rgba(91,88,255,0.25);
+    }
 
 body {
     background-image: url('../imagenes/fondoapp.jpg');

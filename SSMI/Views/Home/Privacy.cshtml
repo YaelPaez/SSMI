@@ -1,23 +1,42 @@
 ﻿@{
     ViewData["Title"] = "Política de Privacidad";
+    ViewBag.HideHeader = false;
+
 }
 
 <style>
-    body {
-        background-color: #f4f7f9;
+
+    :root {
+        --cian: #00d4ff;
+        --azul1: #0f2027;
+        --azul2: #203a43;
+        --azul3: #2c5364;
+        --glass: rgba(255,255,255,.06);
+        --borde: rgba(255,255,255,.08);
+        --texto: #e6edf3;
+        --texto2: #b8c7d1;
     }
 
-    /* ── Tarjeta principal ── */
+    body {
+        background: linear-gradient(135deg, var(--azul1), var(--azul2), var(--azul3));
+        min-height: 100vh;
+    }
+
+    /* CARD */
+
     .tarjeta-privacidad {
-        border: none;
-        border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        background: var(--glass);
+        backdrop-filter: blur(16px);
+        border: 1px solid var(--borde);
+        border-radius: 28px;
+        box-shadow: 0 10px 40px rgba(0,0,0,.3);
         overflow: hidden;
     }
 
-    /* ── Título de sección ── */
+    /* TITULOS */
+
     .titulo-seccion {
-        color: #1E3C54;
+        color: white;
         font-weight: 800;
         position: relative;
         padding-bottom: 10px;
@@ -29,50 +48,90 @@
             position: absolute;
             left: 0;
             bottom: 0;
-            width: 50px;
+            width: 55px;
             height: 4px;
-            background-color: #00d4ff;
-            border-radius: 2px;
+            background: var(--cian);
+            border-radius: 10px;
         }
 
-    /* ── Cajas informativas ── */
+    /* ICONO */
+
+    .icono-circular {
+        width: 70px;
+        height: 70px;
+        border-radius: 20px;
+        background: rgba(0,212,255,.12);
+        color: var(--cian);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        border: 1px solid rgba(0,212,255,.25);
+    }
+
+    /* CAJAS */
+
     .caja-info {
-        background-color: #f8f9fa;
-        border-left: 5px solid #1E3C54;
-        border-radius: 8px;
+        background: rgba(255,255,255,.04);
+        border: 1px solid rgba(255,255,255,.06);
+        border-left: 4px solid var(--cian);
+        border-radius: 18px;
         padding: 20px;
         height: 100%;
     }
 
-    /* ── Icono circular ── */
-    .icono-circular {
-        width: 50px;
-        height: 50px;
-        background: #1E3C54;
-        color: white;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
-        margin-bottom: 15px;
+    /* LISTA */
+
+    .list-group-item {
+        background: rgba(255,255,255,.04);
+        color: var(--texto);
+        border-color: rgba(255,255,255,.05);
     }
 
-    /* ── Botón regresar ── */
-    .boton-regresar {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        color: #1E3C54;
-        text-decoration: none;
-        font-weight: 600;
-        transition: all .2s;
+    /* TABLA */
+
+    .table {
+        color: var(--texto2);
+        margin-bottom: 0;
     }
 
-        .boton-regresar:hover {
-            color: #00d4ff;
-            transform: translateX(-3px);
+        .table thead {
+            background: rgba(0,212,255,.12);
         }
+
+        .table th {
+            color: white;
+            border: none;
+        }
+
+        .table td {
+            background: rgba(255,255,255,.03);
+            border-color: rgba(255,255,255,.05);
+        }
+
+    /* TEXTO */
+
+    h1, h2, h3, h4, h5,
+    .fw-bold,
+    strong {
+        color: white !important;
+    }
+
+    p, li, td, .text-muted, .text-secondary {
+        color: var(--texto2) !important;
+    }
+
+    /* BOTONES */
+
+    .btn {
+        border: none;
+        transition: .25s;
+    }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
 </style>
 
 <div class="container py-5" style="max-width: 780px;">
@@ -146,7 +205,7 @@
             <div class="mb-5">
                 <h3 class="titulo-seccion">4. Permisos</h3>
                 <div class="table-responsive">
-                    <table class="table table-borderless bg-light rounded-3 overflow-hidden">
+                    <table class="table table-borderless rounded-3 overflow-hidden">
                         <thead style="background-color: #1E3C54; color: white;">
                             <tr>
                                 <th class="p-3">Permiso</th>
@@ -167,10 +226,10 @@
                 </div>
             </div>
 
-            <div class="p-4 rounded-4 mt-5 text-center shadow-sm" style="background-color: #1E3C54; color: white;">
+            <div class="p-4 rounded-4 mt-5 text-center shadow-sm" style="background: rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08);">
                 <h4 class="fw-bold mb-3">¿Tienes alguna duda?</h4>
                 <p class="small mb-4 text-white-50">Nuestro equipo de soporte está disponible para explicarte el manejo de tus datos.</p>
-                <a href="mailto:code.revolution08gmail.com" class="btn btn-light px-4 py-2 fw-bold" style="color: #1E3C54; border-radius: 10px;">
+                <a href="mailto:code.revolution08gmail.com" class="btn px-4 py-2 fw-bold" style="color: #1E3C54; border-radius: 10px;">
                     <i class="bi bi-envelope-fill me-2"></i>Escríbenos ahora
                 </a>
             </div>

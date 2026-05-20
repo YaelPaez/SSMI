@@ -23,34 +23,72 @@
     @if (ViewBag.HideHeader != true)
     {
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">SSMI</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
+            <nav class="navbar navbar-expand-lg navbar-ssmi">
+                <div class="container-fluid px-4">
+
+                    <a class="navbar-brand logo-ssmi" asp-controller="Home" asp-action="Index">
+                        SSMI
+                    </a>
+
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSSMI">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="navbarSSMI">
+
+                        <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
+
+                            @{
+                                var accionActual = ViewContext.RouteData.Values["action"]?.ToString();
+                                var controladorActual = ViewContext.RouteData.Values["controller"]?.ToString();
+                            }
+
+                            @if (!(controladorActual == "Home" && accionActual == "Privacy"))
+                            {
+                            <li class="nav-item">
+                                <a class="nav-link nav-ssmi"
+                                   asp-controller="Home"
+                                   asp-action="Privacy">
+                                    <i class="bi bi-clipboard2-check-fill"></i> Politicas de Privacidad
+                                </a>
+                            </li>
+                            }
+                            @if (!(controladorActual == "Home" && accionActual == "EquipoDesarrollo"))
+                            {
+                            <li class="nav-item">
+                                <a class="nav-link nav-ssmi"
+                                   asp-controller="Home"
+                                   asp-action="EquipoDesarrollo">
+                                    <i class="bi bi-people-fill"></i> Equipo de Desarrollo
+                                </a>
+                            </li>
+                            }
+                            @if (!(controladorActual == "Home" && accionActual == "Contacto"))
+                            {
+                            <li class="nav-item">
+                                <a class="nav-link nav-ssmi"
+                                   asp-controller="Home"
+                                   asp-action="Contacto">
+                                    <i class="bi bi-envelope-fill"></i> Contacto
+                                </a>
+                            </li>
+                            }
+                            @if (!(controladorActual == "Home" && accionActual == "Index"))
+                            {
+                                <li class="nav-item">
+                                    <a class="btn-navbar"
+                                       asp-controller="Home"
+                                       asp-action="Index">
+                                        <i class="bi bi-house-fill"></i> Inicio
+                                    </a>
+                                </li>
+                            }
+
+                        </ul>
+
+                    </div>
                 </div>
-            </div>
-            <!-- Botones derecha -->
-            <div class="d-flex">
-                <a asp-controller="Login" asp-action="IniciarSesion" class="btn btn-outline-primary me-2">
-                    Iniciar sesión
-                </a>
-                <a asp-controller="Login" asp-action="Registro" class="btn btn-primary">
-                    Regístrate
-                </a>
-            </div>
-        </nav>
+            </nav>
     </header>
     }
     <div class="container">
