@@ -36,7 +36,16 @@ namespace SSMI.Controllers
             string conStr = _configuracion.GetConnectionString("StringCONSQLocal");
             Usuario usuario = datos.Usuario;
 
+            // VALIDAR MODELO
+            if (!ModelState.IsValid)
+            {
+                datos.Captcha.CaptchaGenerado = cap.GenerarCaptcha();
+
+                return View(datos);
+            }
+
             usuario.Correo = usuario.Correo?.Trim();
+
             if (string.IsNullOrWhiteSpace(usuario.Correo))
             {
                 ViewBag.Error = "Ingresa un correo válido";
@@ -95,15 +104,55 @@ namespace SSMI.Controllers
             string conStr = _configuracion.GetConnectionString("StringCONSQLocal");
             Usuario usuarioN = datos.Usuario;
 
-
-            if (datos.Captcha.CaptchaGenerado != datos.Captcha.Captcha)
+            // VALIDAR MODELO
+            if (!ModelState.IsValid)
             {
-                ViewBag.Error = "Validar Captcha";
-                Captcha cap = new Captcha();
-                datos.Captcha.CaptchaGenerado = cap.GenerarCaptcha();
+                Captcha capModelo = new Captcha();
+                datos.Captcha.CaptchaGenerado = capModelo.GenerarCaptcha();
+
                 return View(datos);
             }
 
+            // VALIDAR MAYOR DE EDAD
+            var hoy = DateOnly.FromDateTime(DateTime.Now);
+
+            if (usuarioN.FechaNacimiento > hoy)
+            {
+                ModelState.AddModelError("Usuario.FechaNacimiento",
+                    "La fecha no puede ser futura");
+            }
+            else
+            {
+                int edad = hoy.Year - usuarioN.FechaNacimiento.Year;
+
+                if (usuarioN.FechaNacimiento > hoy.AddYears(-edad))
+                {
+                    edad--;
+                }
+
+                if (edad < 18)
+                {
+                    ModelState.AddModelError("Usuario.FechaNacimiento",
+                        "Debes ser mayor de 18 años");
+                }
+            }
+
+            // VALIDAR CAPTCHA
+            if (datos.Captcha.CaptchaGenerado != datos.Captcha.Captcha)
+            {
+                ModelState.AddModelError("Captcha.Captcha",
+                    "Captcha incorrecto");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                Captcha capError = new Captcha();
+                datos.Captcha.CaptchaGenerado = capError.GenerarCaptcha();
+
+                return View(datos);
+            }
+
+            // ENCRIPTAR CONTRASEÑA
             string hash = ctr.EncriptarContrasena(usuarioN.Contrasena);
             usuarioN.Contrasena = hash;
             usuarioN.Rol = "Usuario";

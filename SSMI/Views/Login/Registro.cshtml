@@ -263,6 +263,16 @@
         font-weight: 600;
     }
 
+    .validation-summary-errors ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .validation-summary-errors li {
+        margin-bottom: 6px;
+    }
+
     /* ───────── RESPONSIVE ───────── */
 
     @@media (max-width: 900px) {
@@ -335,6 +345,7 @@
                 <p>Ingresa tus datos para continuar</p>
             </div>
 
+            <div asp-validation-summary="All" class="mensaje-error"></div>
             <form asp-controller="Login" asp-action="Registro" method="post">
 
                 <!-- FILA 1 -->
@@ -346,6 +357,7 @@
                                type="text"
                                class="entrada-personalizada"
                                placeholder="Nombre(s)"
+                               oninput="this.value=this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g,'')"
                                required>
                     </div>
 
@@ -354,6 +366,7 @@
                                type="text"
                                class="entrada-personalizada"
                                placeholder="Apellido(s)"
+                               oninput="this.value=this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g,'')"
                                required>
                     </div>
 
@@ -376,6 +389,9 @@
                                type="tel"
                                class="entrada-personalizada"
                                placeholder="Número Telefónico"
+                               inputmode="numeric"
+                               maxlength="10"
+                               oninput="this.value=this.value.replace(/[^0-9]/g,'')"
                                required>
                     </div>
 
@@ -458,6 +474,9 @@
                                type="text"
                                class="entrada-personalizada"
                                placeholder="Ingresar Captcha"
+                               onpaste="return false"
+                               oncopy="return false"
+                               oncut="return false"
                                required>
                     </div>
 

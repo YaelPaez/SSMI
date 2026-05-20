@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Code Revolution";
+    ViewData["Title"] = "Equipo de Desarrollo";
     ViewBag.HideHeader = false;
 
 }
@@ -90,15 +90,20 @@
 
     .caja-foto {
         width: 100%;
-        height: 220px;
+        height: 280px;
+        background: white;
+        border-bottom: 1px solid rgba(255,255,255,.08);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 4rem;
-        color: var(--cian);
-        background: linear-gradient(135deg, rgba(0,212,255,.08), rgba(255,255,255,.03));
-        border-bottom: 1px solid rgba(255,255,255,.08);
+        overflow: hidden;
     }
+
+        .caja-foto img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
 
     /* INFO */
 
@@ -153,23 +158,27 @@
                     <h2 class="titulo-equipo">Nuestro Equipo</h2>
                     <div class="cuadricula-equipo">
                         <div class="tarjeta-miembro">
-                            <div class="caja-foto"><i class="bi bi-person-circle"></i></div>
-                            <div class="info-miembro">
+                            <div class="caja-foto">
+                                <img src="~/Imagenes/imgAaron.jpeg" alt="Imagen Aaron" />
+                            </div>                            <div class="info-miembro">
                                 <h4>Cardona Orantes Aaron Emiliano</h4>
                                 <p>Ingeniero de Software Senior</p>
                                 <p>CECyT 13 | Aspirante a Tecnico enInformática</p>
                             </div>
                         </div>
                         <div class="tarjeta-miembro">
-                            <div class="caja-foto"><i class="bi bi-person-circle"></i></div>
-                            <div class="info-miembro">
+                            <div class="caja-foto">
+                                <img src="~/Imagenes/imgAnder.jpeg" alt="Imagen Ander" />
+                            </div>                                   <div class="info-miembro">
                                 <h4>Jessel Trejo Ander Giovanni</h4>
                                 <p>Ingeniero de Software</p>
                                 <p>CECyT 13 | Aspirante a Tecnico en Informática</p>
                             </div>
                         </div>
                         <div class="tarjeta-miembro">
-                            <div class="caja-foto"><i class="bi bi-person-circle"></i></div>
+                            <div class="caja-foto">
+                                <img src="~/Imagenes/imgLeonel.jpeg" alt= "Imagen Leonel" />
+                            </div>                                   
                             <div class="info-miembro">
                                 <h4>López Sebastián Leonel</h4>
                                 <p>Lider Tecnico de Desarrollo</p>
@@ -177,7 +186,9 @@
                             </div>
                         </div>
                         <div class="tarjeta-miembro">
-                            <div class="caja-foto"><i class="bi bi-person-circle"></i></div>
+                            <div class="caja-foto">
+                                <img src="~/Imagenes/imgYael.jpeg" alt="Imagen Yael" />
+                            </div>                                  
                             <div class="info-miembro">
                                 <h4>Paez Enriquez Yael Eduardo</h4>
                                 <p>Director de Tecnologia</p>
@@ -185,7 +196,9 @@
                             </div>
                         </div>
                         <div class="tarjeta-miembro">
-                            <div class="caja-foto"><i class="bi bi-person-circle"></i></div>
+                            <div class="caja-foto">
+                                <img src="~/Imagenes/imgAlberto.jpeg" alt="Imagen Alberto" />
+                            </div>                                 
                             <div class="info-miembro">
                                 <h4>Magos Martinez Alberto</h4>
                                 <p>Arquitecto de Software</p>
@@ -193,7 +206,9 @@
                             </div>
                         </div>
                         <div class="tarjeta-miembro">
-                            <div class="caja-foto"><i class="bi bi-person-circle"></i></div>
+                            <div class="caja-foto">
+                                <img src="~/Imagenes/imgElihu.jpeg" alt="Imagen Elihu" />
+                            </div>                                   
                             <div class="info-miembro">
                                 <h4>Juarez Robles Elihu Alexander</h4>
                                 <p>Desarrollador de Software</p>
