@@ -42,38 +42,7 @@
                                 var accionActual = ViewContext.RouteData.Values["action"]?.ToString();
                                 var controladorActual = ViewContext.RouteData.Values["controller"]?.ToString();
                             }
-
-                            @if (!(controladorActual == "Home" && accionActual == "Privacy"))
-                            {
-                            <li class="nav-item">
-                                <a class="nav-link nav-ssmi"
-                                   asp-controller="Home"
-                                   asp-action="Privacy">
-                                    <i class="bi bi-clipboard2-check-fill"></i> Politicas de Privacidad
-                                </a>
-                            </li>
-                            }
-                            @if (!(controladorActual == "Home" && accionActual == "EquipoDesarrollo"))
-                            {
-                            <li class="nav-item">
-                                <a class="nav-link nav-ssmi"
-                                   asp-controller="Home"
-                                   asp-action="EquipoDesarrollo">
-                                    <i class="bi bi-people-fill"></i> Equipo de Desarrollo
-                                </a>
-                            </li>
-                            }
-                            @if (!(controladorActual == "Home" && accionActual == "Contacto"))
-                            {
-                            <li class="nav-item">
-                                <a class="nav-link nav-ssmi"
-                                   asp-controller="Home"
-                                   asp-action="Contacto">
-                                    <i class="bi bi-envelope-fill"></i> Contacto
-                                </a>
-                            </li>
-                            }
-                            @if (!(controladorActual == "Home" && accionActual == "Index"))
+                            @if (controladorActual == "Login")
                             {
                                 <li class="nav-item">
                                     <a class="btn-navbar"
@@ -83,9 +52,53 @@
                                     </a>
                                 </li>
                             }
+                            else
+                            {
+                                @if (!(controladorActual == "Home" && accionActual == "Privacy"))
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link nav-ssmi"
+                                           asp-controller="Home"
+                                           asp-action="Privacy">
+                                            <i class="bi bi-clipboard2-check-fill"></i> Politicas de Privacidad
+                                        </a>
+                                    </li>
+                                }
 
+                                @if (!(controladorActual == "Home" && accionActual == "EquipoDesarrollo"))
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link nav-ssmi"
+                                           asp-controller="Home"
+                                           asp-action="EquipoDesarrollo">
+                                            <i class="bi bi-people-fill"></i> Equipo de Desarrollo
+                                        </a>
+                                    </li>
+                                }
+
+                                @if (!(controladorActual == "Home" && accionActual == "Contacto"))
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link nav-ssmi"
+                                           asp-controller="Home"
+                                           asp-action="Contacto">
+                                            <i class="bi bi-envelope-fill"></i> Contacto
+                                        </a>
+                                    </li>
+                                }
+
+                                @if (!(controladorActual == "Home" && accionActual == "Index"))
+                                {
+                                    <li class="nav-item">
+                                        <a class="btn-navbar"
+                                           asp-controller="Home"
+                                           asp-action="Index">
+                                            <i class="bi bi-house-fill"></i> Inicio
+                                        </a>
+                                    </li>
+                                }
+                            }
                         </ul>
-
                     </div>
                 </div>
             </nav>

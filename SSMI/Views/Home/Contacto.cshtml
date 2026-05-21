@@ -1,7 +1,7 @@
-﻿@model SSMI.Models.InicioSesionYRegistro
+﻿@model SSMI.Models.Contacto
 
 @{
-    ViewData["Title"] = "Iniciar Sesión";
+    ViewData["Title"] = "Contacto";
     ViewBag.HideHeader = false;
 }
 
@@ -29,7 +29,7 @@
 
     /* ───────── CONTENEDOR PRINCIPAL ───────── */
 
-    .contenedor-login {
+    .contenedor-contacto {
         width: 100%;
         display: flex;
         justify-content: center;
@@ -37,10 +37,10 @@
         animation: aparecer 0.8s ease;
     }
 
-    .tarjeta-login {
-        width: 900px;
+    .tarjeta-contacto {
+        width: 950px;
         max-width: 100%;
-        min-height: 540px;
+        min-height: 580px;
         border-radius: 28px;
         overflow: hidden;
         display: flex;
@@ -50,9 +50,9 @@
         box-shadow: 0 20px 45px rgba(0,0,0,0.35);
     }
 
-    /* ───────── DECORACIÓN IZQUIERDA ───────── */
+    /* ───────── PANEL IZQUIERDO ───────── */
 
-    .decoracion-login {
+    .decoracion-contacto {
         flex: 1;
         min-width: 320px;
         position: relative;
@@ -63,7 +63,6 @@
         background: rgba(255,255,255,0.03);
     }
 
-
     .contenido-decoracion {
         position: relative;
         z-index: 2;
@@ -71,8 +70,10 @@
         padding: 35px;
     }
 
+ 
+
     .contenido-decoracion h2 {
-        font-size: 2.4rem;
+        font-size: 2.3rem;
         font-weight: 800;
         margin-bottom: 15px;
         color: white;
@@ -141,26 +142,9 @@
             background: rgba(255,255,255,0.08);
         }
 
-    /* ───────── CAPTCHA ───────── */
-
-    .fila-captcha {
-        display: flex;
-        gap: 15px;
-        margin-bottom: 20px;
-    }
-
-    .columna-captcha {
-        flex: 1;
-    }
-
-    .captcha-generado {
-        background: rgba(0,0,0,0.25) !important;
-        color: var(--cian) !important;
-        border: 1px dashed rgba(0,212,255,0.5) !important;
-        text-align: center;
-        font-weight: bold;
-        letter-spacing: 4px;
-        cursor: not-allowed;
+    textarea.entrada-personalizada {
+        resize: none;
+        min-height: 150px;
     }
 
     /* ───────── BOTÓN ───────── */
@@ -187,6 +171,13 @@
 
     /* ───────── MENSAJES ───────── */
 
+    .mensaje-exito {
+        margin-top: 18px;
+        text-align: center;
+        color: #8dffb1;
+        font-weight: 600;
+    }
+
     .mensaje-error {
         margin-top: 18px;
         text-align: center;
@@ -194,42 +185,20 @@
         font-weight: 600;
     }
 
-    /* ───────── ENLACES ───────── */
-
-    .enlaces-footer {
-        text-align: center;
-        margin-top: 25px;
-    }
-
-        .enlaces-footer a {
-            color: rgba(255,255,255,0.75);
-            text-decoration: none;
-            transition: 0.3s ease;
-            font-size: 0.95rem;
-        }
-
-            .enlaces-footer a:hover {
-                color: var(--cian);
-            }
-
     /* ───────── RESPONSIVE ───────── */
 
     @@media (max-width: 900px) {
 
-        .tarjeta-login {
+        .tarjeta-contacto {
             flex-direction: column;
         }
 
-        .decoracion-login {
+        .decoracion-contacto {
             min-height: 260px;
         }
 
         .contenedor-formulario {
             padding: 35px 25px;
-        }
-
-        .fila-captcha {
-            flex-direction: column;
         }
     }
 
@@ -248,25 +217,21 @@
 
 </style>
 
-<div class="contenedor-login">
+<div class="contenedor-contacto">
 
-    <div class="tarjeta-login">
+    <div class="tarjeta-contacto">
 
         <!-- PANEL IZQUIERDO -->
 
-        <div class="decoracion-login">
-
-            <div class="circulo circulo-1"></div>
-            <div class="circulo circulo-2"></div>
-            <div class="circulo circulo-3"></div>
+        <div class="decoracion-contacto">
 
             <div class="contenido-decoracion">
 
-                <h2>Bienvenido</h2>
+                <h2>Contactanos</h2>
 
                 <p>
-                    Accede a tu cuenta para utilizar el sistema
-                    inteligente de monitoreo de transporte público.
+                    ¿Tienes alguna duda, problemas o sugerencias?
+                    Contactanos por este medio
                 </p>
 
             </div>
@@ -278,64 +243,48 @@
         <div class="contenedor-formulario">
 
             <div class="titulo-formulario">
-                <h1>Iniciar Sesión</h1>
-                <p>Ingresa tus credenciales para continuar</p>
+
+                <h1>Formulario de Contacto</h1>
+
             </div>
 
-            <form asp-controller="Login"
-                  asp-action="IniciarSesion"
+            <form asp-action="Contacto"
+                  asp-controller="Home"
                   method="post">
+
+                <!-- NOMBRE -->
+
+                <div class="grupo-entrada">
+
+                    <input asp-for="Nombre"
+                           type="text"
+                           class="entrada-personalizada"
+                           placeholder="Nombre"
+                           oninput="this.value=this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g,'')"
+                           required />
+
+                </div>
 
                 <!-- CORREO -->
 
                 <div class="grupo-entrada">
 
-                    <input asp-for="Usuario.Correo"
+                    <input asp-for="Correo"
                            type="email"
                            class="entrada-personalizada"
                            placeholder="Correo Electrónico"
-                           required>
+                           required />
 
                 </div>
 
-                <!-- CONTRASEÑA -->
+                <!-- MENSAJE -->
 
                 <div class="grupo-entrada">
 
-                    <input asp-for="Usuario.Contrasena"
-                           type="password"
-                           class="entrada-personalizada"
-                           placeholder="Contraseña"
-                           required>
-
-                </div>
-
-                <!-- CAPTCHA -->
-
-                <div class="fila-captcha">
-
-                    <div class="columna-captcha">
-
-                        <input asp-for="Captcha.CaptchaGenerado"
-                               type="text"
-                               class="entrada-personalizada captcha-generado"
-                               value="@Model.Captcha.CaptchaGenerado"
-                               readonly>
-
-                    </div>
-
-                    <div class="columna-captcha">
-
-                        <input asp-for="Captcha.Captcha"
-                               type="text"
-                               class="entrada-personalizada"
-                               placeholder="Ingresar Captcha"
-                               onpaste="return false"
-                               oncopy="return false"
-                               oncut="return false"
-                               required>
-
-                    </div>
+                    <textarea asp-for="Mensaje"
+                              class="entrada-personalizada"
+                              placeholder="Escribe tu mensaje"
+                              required></textarea>
 
                 </div>
 
@@ -344,11 +293,18 @@
                 <button type="submit"
                         class="btn-personalizado">
 
-                    ENTRAR
+                    ENVIAR MENSAJE
 
                 </button>
 
-                <!-- ERROR -->
+                <!-- MENSAJES -->
+                @if (ViewBag.Exito != null)
+                {
+                    <div class="mensaje-exito">
+                        @ViewBag.Exito
+                    </div>
+                }
+
                 @if (ViewBag.Error != null)
                 {
                     <div class="mensaje-error">
@@ -357,16 +313,6 @@
                 }
 
             </form>
-
-            <!-- ENLACE -->
-
-            <div class="enlaces-footer">
-
-                <a asp-action="Registro">
-                    ¿No tienes cuenta? Regístrate aquí
-                </a>
-
-            </div>
 
         </div>
 

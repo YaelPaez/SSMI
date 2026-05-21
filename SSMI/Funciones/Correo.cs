@@ -18,7 +18,7 @@ namespace SSMI.Funciones
             message.To.Add(new MailboxAddress(destinatario, correoDestino));
             message.Subject = Titulo;
 
-            message.Body = new TextPart("plain")
+            message.Body = new TextPart("html")
             {
                 Text = Cuerpo
             };
