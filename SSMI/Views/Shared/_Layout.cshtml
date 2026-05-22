@@ -54,17 +54,6 @@
                             }
                             else
                             {
-                                @if (!(controladorActual == "Home" && accionActual == "Privacy"))
-                                {
-                                    <li class="nav-item">
-                                        <a class="nav-link nav-ssmi"
-                                           asp-controller="Home"
-                                           asp-action="Privacy">
-                                            <i class="bi bi-clipboard2-check-fill"></i> Politicas de Privacidad
-                                        </a>
-                                    </li>
-                                }
-
                                 @if (!(controladorActual == "Home" && accionActual == "EquipoDesarrollo"))
                                 {
                                     <li class="nav-item">

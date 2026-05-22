@@ -193,23 +193,33 @@
 
         <div class="history-content">
             <div class="history-title">Histórico de registros</div>
+            <form method="get" asp-action="HistoricoDeRegistros">
+                <div class="filters">
+                    <input type="text"
+                           name="buscarConductor"
+                           class="filter-input"
+                           placeholder="Buscar conductor..." />
+                    <div class="d-flex align-items-center gap-2">
 
-            <div class="filters">
-                <input type="text" id="searchConductor" class="filter-input" placeholder="Buscar conductor...">
-
-                <div class="d-flex align-items-center gap-2">
-                    <input type="date" id="startDate" class="filter-input" title="Fecha inicial">
-                    <span class="text-muted">al</span>
-                    <input type="date" id="endDate" class="filter-input" title="Fecha final">
+                        <input type="date"
+                               name="inicioFecha"
+                               class="filter-input" />
+                        <span class="text-muted">al</span>
+                        <input type="date"
+                               name="finFecha"
+                               class="filter-input" />
+                    </div>
+                    <select name="buscarEstado" class="filter-input">
+                        <option value="">Todos los estados</option>
+                        <option value="Aprobado">Aprobado</option>
+                        <option value="Pendiente">Pendiente</option>
+                        <option value="Rechazado">Rechazado</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary">
+                        Filtrar
+                    </button>
                 </div>
-
-                <select id="searchStatus" class="filter-input">
-                    <option value="">Todos los estados</option>
-                    <option value="Aprobado">Aprobado</option>
-                    <option value="Pendiente">Pendiente</option>
-                    <option value="Rechazado">Rechazado</option>
-                </select>
-            </div>
+            </form>
 
             <div class="table-card">
                 <table id="historyTable">
@@ -252,57 +262,6 @@
 </div>
 
 @section Scripts {
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const inputName = document.getElementById('searchConductor');
-            const inputStartDate = document.getElementById('startDate');
-            const inputEndDate = document.getElementById('endDate');
-            const inputStatus = document.getElementById('searchStatus');
-            const rows = document.querySelectorAll('.history-row');
-
-            function filterTable() {
-                const nameVal = inputName.value.toLowerCase();
-                const statusVal = inputStatus.value;
-                const startVal = inputStartDate.value;
-                const endVal = inputEndDate.value;
-
-                rows.forEach(row => {
-                    const conductor = row.querySelector('.col-conductor').textContent.toLowerCase();
-                    const status = row.querySelector('.col-status').textContent;
-                    const dateText = row.querySelector('.col-date').textContent;
-
-                    const [day, month, year] = dateText.split('/');
-                    const rowDate = new Date(year, month - 1, day);
-
-                    let matchesDate = true;
-
-                    if (startVal) {
-                        const [sYear, sMonth, sDay] = startVal.split('-');
-                        const startDate = new Date(sYear, sMonth - 1, sDay);
-                        if (rowDate < startDate) matchesDate = false;
-                    }
-
-                    if (endVal) {
-                        const [eYear, eMonth, eDay] = endVal.split('-');
-                        const endDate = new Date(eYear, eMonth - 1, eDay);
-                        if (rowDate > endDate) matchesDate = false;
-                    }
-
-                    const matchesName = conductor.includes(nameVal);
-                    const matchesStatus = statusVal === "" || status === statusVal;
-
-                    if (matchesName && matchesStatus && matchesDate) {
-                        row.style.display = "";
-                    } else {
-                        row.style.display = "none";
-                    }
-                });
-            }
-
-            inputName.addEventListener('input', filterTable);
-            inputStartDate.addEventListener('change', filterTable);
-            inputEndDate.addEventListener('change', filterTable);
-            inputStatus.addEventListener('change', filterTable);
         });
     </script>
 }

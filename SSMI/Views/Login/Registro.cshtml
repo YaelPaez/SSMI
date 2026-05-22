@@ -449,22 +449,16 @@
                 </div>
 
                 <!-- POLÍTICAS -->
-
                 <div class="contenedor-politicas">
-
                     <input type="checkbox"
                            id="checkDefault"
-                           required>
-
-                    <a asp-controller="Home"
-                       asp-action="Privacy">
-
+                           required
+                           disabled>
+                    <a asp-controller="Home"asp-action="Privacy" onclick="localStorage.setItem('politicasVisitadas', 'true')">
                         Acepto Políticas de Privacidad
-
                     </a>
 
                 </div>
-
                 <!-- BOTÓN -->
 
                 <button type="submit" class="btn-personalizado">
@@ -486,3 +480,13 @@
     </div>
 
 </div>
+
+<script>
+    window.addEventListener('load', function () {
+        const check = document.getElementById('checkDefault');
+
+        if (localStorage.getItem('politicasVisitadas') === 'true') {
+            check.disabled = false;
+        }
+    });
+</script>
