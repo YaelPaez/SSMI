@@ -85,9 +85,56 @@ namespace SSMI.Controllers
             return View();
         }
 
-        public ActionResult HistoricoDeRegistros()
+        public ActionResult HistoricoDeRegistros(/*string buscarConductor, DateTime? inicioFecha, DateTime? finFecha, string buscarEstado*/)
         {
+
+            // tu lista o consulta
+
+            // Validación de fechas
+            /*if (inicioFecha.HasValue && finFecha.HasValue)
+            {
+                if (inicioFecha > finFecha)
+                {
+                    ViewBag.Error = "La fecha inicial no puede ser mayor a la final.";
+                    return View(registros);
+                }
+            }
+
+            // Filtrar conductor
+            if (!string.IsNullOrEmpty(buscarConductor))
+            {
+                registros = registros
+                    .Where(r => r.Conductor.Contains(buscarConductor))
+                    .ToList();
+            }
+
+            // Filtrar estado
+            if (!string.IsNullOrEmpty(buscarEstado))
+            {
+                registros = registros
+                    .Where(r => r.Estado == buscarEstado)
+                    .ToList();
+            }
+
+            // Filtrar fecha inicial
+            if (inicioFecha.HasValue)
+            {
+                registros = registros
+                    .Where(r => r.Fecha >= inicioFecha.Value)
+                    .ToList();
+            }
+
+            // Filtrar fecha final
+            if (finFecha.HasValue)
+            {
+                registros = registros
+                    .Where(r => r.Fecha <= finFecha.Value)
+                    .ToList();
+            }
+
+            return View(registros);*/
             return View();
+
         }
     }
 }
