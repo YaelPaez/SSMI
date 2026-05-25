@@ -269,6 +269,18 @@
         </div>
 
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        @if (TempData["Mensaje"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+                <i class="bi bi-check-circle"></i>
+                @TempData["Mensaje"]
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="alert">
+                </button>
+            </div>
+        }
         <form class="unit-card" method="post" enctype="multipart/form-data">
             <div class="unit-header text-center">
                 <h2 class="unit-title">Reporte de Incidente</h2>
@@ -278,8 +290,8 @@
                 <label class="unit-label" for="incidente">Tipo de Incidente</label>
                 <select asp-for="Incidente" id="Incidente" class="form-control-custom">
                     <option value="">Selecciona un incidente</option>
-                    <option value="choque">Choque</option>
-                    <option value="refaccionaria_danada">Refaccionaria dañada</option>
+                    <option value="Choque">Choque</option>
+                    <option value="Refaccionaria dañada">Refaccionaria dañada</option>
                     <option value="otro">Otro</option>
                 </select>
                 <span asp-validation-for="Incidente" class="text-danger"></span>

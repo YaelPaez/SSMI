@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using SSMI.Models;
 using System.Data;
+
 namespace SSMI.Data
 {
     public class ConsultaHistorico

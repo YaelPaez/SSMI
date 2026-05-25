@@ -1,10 +1,20 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SSMI.Data;
+using SSMI.Models;
 
 namespace SSMI.Controllers
 {
     public class AdminitradorController : Controller
     {
+
+        private readonly IConfiguration _configuration;
+
+        public AdminitradorController(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
         // GET: Administrador/Index (Redirecciona a Paradas por defecto)
         public ActionResult Index()
         {
@@ -208,6 +218,20 @@ namespace SSMI.Controllers
         public ActionResult Monitoreo()
         {
             return View();
+        }
+
+        // ══ HISTORIAL DE INCIDENCIAS ══
+        public ActionResult HistorialIncidencias()
+        {
+            ConsultaIncidencia consulta = new ConsultaIncidencia();
+
+            string cadenaCon =
+                _configuration.GetConnectionString("StringCONSQLocal");
+
+            List<IncidenciaModel> incidencias =
+                consulta.ConsultarIncidencias(cadenaCon);
+
+            return View(incidencias);
         }
     }
 }
