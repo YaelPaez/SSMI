@@ -21,6 +21,6 @@ jobs:
             cd /srv/ssmi/SSMI
             git pull
 
-            dotnet publish -c Release -o /srv/ssmi/publishh
+            dotnet publish -c Release -o /srv/ssmi/publish
 
             systemctl restart ssmi
