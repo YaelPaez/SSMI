@@ -7,7 +7,6 @@ using System.Security.Claims;
 
 namespace SSMI.Controllers
 {
-    [JwtCookieAuthorize("Usuario", "Pasajero")]
     public class UsuarioController : Controller
     {
         

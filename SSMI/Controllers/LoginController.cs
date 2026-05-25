@@ -36,14 +36,7 @@ namespace SSMI.Controllers
             string conStr = _configuracion.GetConnectionString("StringCONSQLocal");
             Usuario usuario = datos.Usuario;
 
-            // VALIDAR MODELO
-            if (!ModelState.IsValid)
-            {
-                datos.Captcha.CaptchaGenerado = cap.GenerarCaptcha();
-
-                return View(datos);
-            }
-
+            
             usuario.Correo = usuario.Correo?.Trim();
 
             if (string.IsNullOrWhiteSpace(usuario.Correo))

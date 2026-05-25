@@ -25,7 +25,6 @@ namespace SSMI.Data
                                 com.CommandType = CommandType.StoredProcedure;
                                 com.CommandText = "spRegistrarPasajero";
 
-                                com.Parameters.AddWithValue("@Rol", usuario.Rol ?? (object)DBNull.Value);
                                 com.Parameters.AddWithValue("@Nombres", usuario.Nombres ?? (object)DBNull.Value);
                                 com.Parameters.AddWithValue("@Apellidos", usuario.Apellidos ?? (object)DBNull.Value);
                                 com.Parameters.AddWithValue("@Contrasena", usuario.Contrasena ?? (object)DBNull.Value);
