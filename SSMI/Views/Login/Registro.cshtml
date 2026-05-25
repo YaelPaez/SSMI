@@ -432,6 +432,8 @@
                                type="text"
                                class="entrada-personalizada captcha-generado"
                                value="@Model.Captcha.CaptchaGenerado"
+                                                              oncopy="return false"
+                               oncut="return false"
                                readonly>
                     </div>
 
@@ -452,9 +454,8 @@
                 <div class="contenedor-politicas">
                     <input type="checkbox"
                            id="checkDefault"
-                           required
-                           disabled>
-                    <a asp-controller="Home"asp-action="Privacy" onclick="localStorage.setItem('politicasVisitadas', 'true')">
+                           required>
+                    <a asp-controller="Home" asp-action="Privacy">
                         Acepto Políticas de Privacidad
                     </a>
 
@@ -480,13 +481,3 @@
     </div>
 
 </div>
-
-<script>
-    window.addEventListener('load', function () {
-        const check = document.getElementById('checkDefault');
-
-        if (localStorage.getItem('politicasVisitadas') === 'true') {
-            check.disabled = false;
-        }
-    });
-</script>
