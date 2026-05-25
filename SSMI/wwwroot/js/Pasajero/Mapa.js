@@ -83,7 +83,7 @@ async function obtenerParadas() {
 
     try {
 
-        const response = await fetch('https://prone-unsmooth-prune.ngrok-free.dev/ParadasAPI/ObtenerTodasLasParadas');
+        const response = await fetch('https://ssmi.site/ParadasAPI/ObtenerTodasLasParadas');
         const data = await response.json();
 
         paradasJson = data;
@@ -103,7 +103,7 @@ async function obtenerParadasCercanas() {
     try {
 
         const response = await fetch(
-            'https://prone-unsmooth-prune.ngrok-free.dev/ParadasAPI/ObtenerParadasCercanas',
+            'https://ssmi.site/ParadasAPI/ObtenerParadasCercanas',
             {
                 method: "POST",
                 headers: {
