@@ -1,10 +1,21 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using System.Data;
+using Microsoft.Extensions.Configuration;
 
 namespace SSMI.Controllers
 {
     public class AdminitradorController : Controller
     {
+        private readonly string _cadenaConexion;
+
+        // 👈 El constructor recibe la configuración del archivo .json mediante Inyección de Dependencias
+        public AdminitradorController(IConfiguration configuration)
+        {
+            // Jalamos el nombre exacto que pusiste en el appsettings.json
+            _cadenaConexion = configuration.GetConnectionString("StringCONSQLocal");
+        }
         // GET: Administrador/Index (Redirecciona a Paradas por defecto)
         public ActionResult Index()
         {
@@ -76,48 +87,147 @@ namespace SSMI.Controllers
         // POST: Administrador/Camiones/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult CrearCamion(IFormCollection collection)
+        public ActionResult CrearCamion(Guid Ruta, Guid Conductor, string Placas, int Kilometraje, string Economico, string Capacidad)
         {
             try
             {
-                // TODO: Implementar lógica de creación de camión
+                using (SqlConnection conexion = new SqlConnection(_cadenaConexion))
+                {
+                    SqlCommand comando = new SqlCommand("Sp_InsertarCamion", conexion);
+                    comando.CommandType = CommandType.StoredProcedure;
+
+                    // Pasamos los parámetros exactos al procedimiento almacenado
+                    comando.Parameters.AddWithValue("@Ruta", Ruta);
+                    comando.Parameters.AddWithValue("@Conductor", Conductor); // El Guid del conductor (IdUsuario)
+                    comando.Parameters.AddWithValue("@Placas", Placas);
+                    comando.Parameters.AddWithValue("@Kilometraje", Kilometraje);
+                    comando.Parameters.AddWithValue("@Economico", Economico);
+                    comando.Parameters.AddWithValue("@Capacidad", Capacidad);
+
+                    conexion.Open();
+                    comando.ExecuteNonQuery(); 
+                }
+                TempData["MensajeExito"] = "¡El camión se registró correctamente en el sistema!";
                 return RedirectToAction(nameof(Camiones));
             }
-            catch
+            catch (SqlException ex)
             {
-                return View(nameof(Camiones));
+                
+                if (ex.Number == 26 || ex.Number == 53 || ex.Number == 11001)
+                {
+                    TempData["MensajeError"] = "No se pudo establecer conexión con el servidor de movilidad. Por favor, verifica que la base de datos remota esté activa.";
+                }
+                else if (ex.Number == 2627 || ex.Number == 2601) // Error de llave duplicada
+                {
+                    TempData["MensajeError"] = "Error: Ya existe un camión registrado con ese número económico o placa.";
+                }
+                else
+                {
+                    TempData["MensajeError"] = "Ocurrió un problema interno en la base de datos al intentar registrar el camión.";
+                }
+
+                return RedirectToAction(nameof(Camiones));
+            }
+            catch (Exception)
+            {
+                TempData["MensajeError"] = "Ocurrió un error inesperado al procesar la solicitud. Inténtalo de nuevo.";
+                return RedirectToAction(nameof(Camiones));
             }
         }
 
         // POST: Administrador/Camiones/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult EditarCamion(int id, IFormCollection collection)
+        public ActionResult EditarCamion(Guid id, Guid Ruta, Guid Conductor, string Placas, int Kilometraje, string Economico, string Capacidad)
         {
             try
             {
-                // TODO: Implementar lógica de edición de camión
+                using (SqlConnection conexion = new SqlConnection(_cadenaConexion))
+                {
+                    SqlCommand comando = new SqlCommand("Sp_ModificarCamion", conexion);
+                    comando.CommandType = CommandType.StoredProcedure;
+
+                    // Pasamos los parámetros incluyendo el ID del camión a modificar
+                    comando.Parameters.AddWithValue("@IdCamion", id);
+                    comando.Parameters.AddWithValue("@Ruta", Ruta);
+                    comando.Parameters.AddWithValue("@Conductor", Conductor);
+                    comando.Parameters.AddWithValue("@Placas", Placas);
+                    comando.Parameters.AddWithValue("@Kilometraje", Kilometraje);
+                    comando.Parameters.AddWithValue("@Economico", Economico);
+                    comando.Parameters.AddWithValue("@Capacidad", Capacidad);
+
+                    conexion.Open();
+                    comando.ExecuteNonQuery();
+                }
+                TempData["MensajeExito"] = "¡Los datos del camión se actualizaron correctamente!";
                 return RedirectToAction(nameof(Camiones));
             }
-            catch
+            catch (SqlException ex)
             {
-                return View(nameof(Camiones));
+                if (ex.Number == 26 || ex.Number == 53 || ex.Number == 11001)
+                {
+                    TempData["MensajeError"] = "No se pudo conectar con el servidor para guardar los cambios. Verifica la red.";
+                }
+                else if (ex.Number == 2627 || ex.Number == 2601)
+                {
+                    TempData["MensajeError"] = "Error: El número económico o las placas ya están asignados a otro camión.";
+                }
+                else
+                {
+                    TempData["MensajeError"] = "Ocurrió un problema interno en la base de datos al intentar modificar el camión.";
+                }
+
+                return RedirectToAction(nameof(Camiones));
+            }
+            catch (Exception)
+            {
+                TempData["MensajeError"] = "Ocurrió un error inesperado al procesar la actualización.";
+                return RedirectToAction(nameof(Camiones));
             }
         }
 
         // POST: Administrador/Camiones/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult EliminarCamion(int id)
+        public ActionResult EliminarCamion(Guid id)
         {
             try
             {
-                // TODO: Implementar lógica de eliminación de camión
+                using (SqlConnection conexion = new SqlConnection(_cadenaConexion))
+                {
+                    SqlCommand comando = new SqlCommand("Sp_EliminarCamion", conexion);
+                    comando.CommandType = CommandType.StoredProcedure;
+
+                    // Para eliminar solo necesitamos el identificador único del camión
+                    comando.Parameters.AddWithValue("@IdCamion", id);
+
+                    conexion.Open();
+                    comando.ExecuteNonQuery();
+                }
+                TempData["MensajeExito"] = "El camión fue removido del sistema con éxito.";
                 return RedirectToAction(nameof(Camiones));
             }
-            catch
+            catch (SqlException ex)
             {
-                return View(nameof(Camiones));
+                if (ex.Number == 26 || ex.Number == 53 || ex.Number == 11001)
+                {
+                    TempData["MensajeError"] = "No se pudo conectar con el servidor para eliminar el registro.";
+                }
+                else if (ex.Number == 547) 
+                {
+                    TempData["MensajeError"] = "No se puede eliminar este camión porque actualmente está asignado a un viaje activo o historial de movilidad.";
+                }
+                else
+                {
+                    TempData["MensajeError"] = "Ocurrió un error interno en la base de datos al intentar eliminar el camión.";
+                }
+
+                return RedirectToAction(nameof(Camiones));
+            }
+            catch (Exception)
+            {
+                TempData["MensajeError"] = "Ocurrió un error inesperado al intentar eliminar el registro.";
+                return RedirectToAction(nameof(Camiones));
             }
         }
 
