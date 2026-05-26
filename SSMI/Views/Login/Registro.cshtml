@@ -434,6 +434,8 @@
                                type="text"
                                class="entrada-personalizada captcha-generado"
                                value="@Model.Captcha.CaptchaGenerado"
+                                                              oncopy="return false"
+                               oncut="return false"
                                readonly>
                     </div>
 
@@ -451,22 +453,15 @@
                 </div>
 
                 <!-- POLÍTICAS -->
-
                 <div class="contenedor-politicas">
-
                     <input type="checkbox"
                            id="checkDefault"
                            required>
-
-                    <a asp-controller="Home"
-                       asp-action="Privacy">
-
+                    <a asp-controller="Home" asp-action="Privacy">
                         Acepto Políticas de Privacidad
-
                     </a>
 
                 </div>
-
                 <!-- BOTÓN -->
 
                 <button type="submit" class="btn-personalizado">

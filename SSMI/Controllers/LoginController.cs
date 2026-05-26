@@ -36,14 +36,7 @@ namespace SSMI.Controllers
             string conStr = _configuracion.GetConnectionString("StringCONSQLocal");
             Usuario usuario = datos.Usuario;
 
-            // VALIDAR MODELO
-            if (!ModelState.IsValid)
-            {
-                datos.Captcha.CaptchaGenerado = cap.GenerarCaptcha();
-
-                return View(datos);
-            }
-
+            
             usuario.Correo = usuario.Correo?.Trim();
 
             if (string.IsNullOrWhiteSpace(usuario.Correo))
@@ -146,6 +139,18 @@ namespace SSMI.Controllers
 
             if (!ModelState.IsValid)
             {
+                Captcha capError = new Captcha();
+                datos.Captcha.CaptchaGenerado = capError.GenerarCaptcha();
+
+                return View(datos);
+            }
+
+            // VALIDAR CORREO DUPLICADO
+            if (cons.ExisteCorreo(usuarioN.Correo, conStr))
+            {
+                ModelState.AddModelError("Usuario.Correo",
+                    "Este correo ya está registrado");
+
                 Captcha capError = new Captcha();
                 datos.Captcha.CaptchaGenerado = capError.GenerarCaptcha();
 

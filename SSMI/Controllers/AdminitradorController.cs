@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SSMI.Data;
+using SSMI.Models;
 using Microsoft.Data.SqlClient;
 using System.Data;
 using Microsoft.Extensions.Configuration;
@@ -8,6 +10,14 @@ namespace SSMI.Controllers
 {
     public class AdminitradorController : Controller
     {
+
+        private readonly IConfiguration _configuration;
+
+        public AdminitradorController(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
         private readonly string _cadenaConexion;
 
         // 👈 El constructor recibe la configuración del archivo .json mediante Inyección de Dependencias
@@ -318,6 +328,20 @@ namespace SSMI.Controllers
         public ActionResult Monitoreo()
         {
             return View();
+        }
+
+        // ══ HISTORIAL DE INCIDENCIAS ══
+        public ActionResult HistorialIncidencias()
+        {
+            ConsultaIncidencia consulta = new ConsultaIncidencia();
+
+            string cadenaCon =
+                _configuration.GetConnectionString("StringCONSQLocal");
+
+            List<IncidenciaModel> incidencias =
+                consulta.ConsultarIncidencias(cadenaCon);
+
+            return View(incidencias);
         }
     }
 }

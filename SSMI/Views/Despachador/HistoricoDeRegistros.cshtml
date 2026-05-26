@@ -1,4 +1,6 @@
-﻿@{
+﻿@model IEnumerable<SSMI.Models.RegistroHistoricoModel>
+
+@{
     ViewData["Title"] = "Histórico";
     Layout = "~/Views/Shared/_UsuarioLayout.cshtml";
 
@@ -193,23 +195,40 @@
 
         <div class="history-content">
             <div class="history-title">Histórico de registros</div>
+            <form method="get" asp-action="HistoricoDeRegistros" id="formFiltros">
+                <div class="filters">
+                    <input type="text"
+                           name="buscarConductor"
+                           class="filter-input"
+                           placeholder="Buscar conductor..." />
 
-            <div class="filters">
-                <input type="text" id="searchConductor" class="filter-input" placeholder="Buscar conductor...">
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="date"
+                               id="inicioFecha"
+                               name="inicioFecha"
+                               class="filter-input" />
 
-                <div class="d-flex align-items-center gap-2">
-                    <input type="date" id="startDate" class="filter-input" title="Fecha inicial">
-                    <span class="text-muted">al</span>
-                    <input type="date" id="endDate" class="filter-input" title="Fecha final">
+                        <span class="text-muted">al</span>
+
+                        <input type="date"
+                               id="finFecha"
+                               name="finFecha"
+                               class="filter-input"
+                               disabled />
+                    </div>
+
+                    <select name="buscarEstado" class="filter-input">
+                        <option value="">Todos los estados</option>
+                        <option value="Aprobado">Aprobado</option>
+                        <option value="Pendiente">Pendiente</option>
+                        <option value="Rechazado">Rechazado</option>
+                    </select>
+
+                    <button type="submit" class="btn btn-primary">
+                        Filtrar
+                    </button>
                 </div>
-
-                <select id="searchStatus" class="filter-input">
-                    <option value="">Todos los estados</option>
-                    <option value="Aprobado">Aprobado</option>
-                    <option value="Pendiente">Pendiente</option>
-                    <option value="Rechazado">Rechazado</option>
-                </select>
-            </div>
+            </form>
 
             <div class="table-card">
                 <table id="historyTable">
@@ -223,27 +242,40 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr class="history-row">
-                            <td>BUS-001</td>
-                            <td class="col-conductor" style="font-weight: 600;">Pedro Ramírez</td>
-                            <td class="col-date">14/04/2026</td>
-                            <td>07:30 AM</td>
-                            <td><span class="badge ok col-status">Aprobado</span></td>
-                        </tr>
-                        <tr class="history-row">
-                            <td>BUS-045</td>
-                            <td class="col-conductor" style="font-weight: 600;">Luis García</td>
-                            <td class="col-date">13/04/2026</td>
-                            <td>08:00 AM</td>
-                            <td><span class="badge pending col-status">Pendiente</span></td>
-                        </tr>
-                        <tr class="history-row">
-                            <td>BUS-078</td>
-                            <td class="col-conductor" style="font-weight: 600;">Ana Torres</td>
-                            <td class="col-date">12/04/2026</td>
-                            <td>09:15 AM</td>
-                            <td><span class="badge error col-status">Rechazado</span></td>
-                        </tr>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr class="history-row">
+                                    <td>@item.NumEconomico</td>
+                                    <td class="col-conductor" style="font-weight: 600;">@item.Conductor</td>
+                                    <td class="col-date">@item.Fecha.ToString("dd/MM/yyyy")</td>
+                                    <td>@item.Hora</td>
+                                    <td>
+                                        @if (item.Estado == "Aprobado")
+                                        {
+                                            <span class="badge ok col-status">@item.Estado</span>
+                                        }
+                                        else if (item.Estado == "Pendiente")
+                                        {
+                                            <span class="badge pending col-status">@item.Estado</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge error col-status">@item.Estado</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-4">
+                                    <i class="bi bi-info-circle me-2"></i> No se encontraron registros con los filtros aplicados.
+                                </td>
+                            </tr>
+                        }
                     </tbody>
                 </table>
             </div>
@@ -254,55 +286,52 @@
 @section Scripts {
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            const inputName = document.getElementById('searchConductor');
-            const inputStartDate = document.getElementById('startDate');
-            const inputEndDate = document.getElementById('endDate');
-            const inputStatus = document.getElementById('searchStatus');
-            const rows = document.querySelectorAll('.history-row');
+            const inputInicio = document.getElementById("inicioFecha");
+            const inputFin = document.getElementById("finFecha");
+            const formFiltros = document.getElementById("formFiltros");
 
-            function filterTable() {
-                const nameVal = inputName.value.toLowerCase();
-                const statusVal = inputStatus.value;
-                const startVal = inputStartDate.value;
-                const endVal = inputEndDate.value;
+            // 1. Bloquear fechas futuras en ambos calendarios
+            const hoy = new Date().toISOString().split('T')[0];
+            inputInicio.setAttribute("max", hoy);
+            inputFin.setAttribute("max", hoy);
 
-                rows.forEach(row => {
-                    const conductor = row.querySelector('.col-conductor').textContent.toLowerCase();
-                    const status = row.querySelector('.col-status').textContent;
-                    const dateText = row.querySelector('.col-date').textContent;
+            // 2. Evento cuando cambia el primer calendario
+            inputInicio.addEventListener("change", function () {
+                if (inputInicio.value) {
+                    // Solo habilitamos el segundo, pero NO le ponemos "min" para evitar el mensaje nativo del navegador
+                    inputFin.removeAttribute("disabled");
+                } else {
+                    inputFin.setAttribute("disabled", "true");
+                    inputFin.value = "";
+                }
+                inputInicio.setCustomValidity("");
+                inputFin.setCustomValidity("");
+            });
 
-                    const [day, month, year] = dateText.split('/');
-                    const rowDate = new Date(year, month - 1, day);
+            // 3. Validación estricta hecha 100% por nosotros al dar clic en Filtrar
+            formFiltros.addEventListener("submit", function (event) {
+                inputInicio.setCustomValidity("");
+                inputFin.setCustomValidity("");
 
-                    let matchesDate = true;
+                if (inputInicio.value && inputFin.value) {
+                    const fechaIni = new Date(inputInicio.value + 'T00:00:00');
+                    const fechaFin = new Date(inputFin.value + 'T00:00:00');
 
-                    if (startVal) {
-                        const [sYear, sMonth, sDay] = startVal.split('-');
-                        const startDate = new Date(sYear, sMonth - 1, sDay);
-                        if (rowDate < startDate) matchesDate = false;
+                    // Si la fecha final es menor o IGUAL a la inicial, lo frenamos con nuestro propio texto
+                    if (fechaFin <= fechaIni) {
+                        event.preventDefault(); // Detiene el envío
+
+                        // Este es el único mensaje que se va a mostrar en pantalla:
+                        inputFin.setCustomValidity("La fecha final debe ser mayor a la fecha inicial.");
+                        inputFin.reportValidity();
                     }
+                }
+            });
 
-                    if (endVal) {
-                        const [eYear, eMonth, eDay] = endVal.split('-');
-                        const endDate = new Date(eYear, eMonth - 1, eDay);
-                        if (rowDate > endDate) matchesDate = false;
-                    }
-
-                    const matchesName = conductor.includes(nameVal);
-                    const matchesStatus = statusVal === "" || status === statusVal;
-
-                    if (matchesName && matchesStatus && matchesDate) {
-                        row.style.display = "";
-                    } else {
-                        row.style.display = "none";
-                    }
-                });
-            }
-
-            inputName.addEventListener('input', filterTable);
-            inputStartDate.addEventListener('change', filterTable);
-            inputEndDate.addEventListener('change', filterTable);
-            inputStatus.addEventListener('change', filterTable);
+            // Limpiar el error cuando el usuario intente corregir la fecha
+            inputFin.addEventListener("input", function () {
+                inputFin.setCustomValidity("");
+            });
         });
     </script>
 }

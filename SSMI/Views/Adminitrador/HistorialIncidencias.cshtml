@@ -1,0 +1,231 @@
+﻿@model List<SSMI.Models.IncidenciaModel>
+
+@{
+    ViewData["Title"] = "Historial de Incidencias";
+    Layout = "~/Views/Shared/_UsuarioLayout.cshtml";
+}
+
+<style>
+    .area-admin {
+        min-height: 100vh;
+        background-color: #f0f2f5;
+        transition: background-color .3s;
+    }
+
+    body.dark-mode .area-admin {
+        background-color: #0d1117;
+    }
+
+    .encabezado-admin {
+        background: linear-gradient(135deg, #1E3C54, #2a5580);
+        color: white;
+        padding: 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    body.dark-mode .encabezado-admin {
+        background: linear-gradient(135deg, #0d1117, #161b22);
+    }
+
+    .encabezado-admin h2 {
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: .7rem;
+    }
+
+    .navegacion-admin {
+        display: flex;
+        gap: .5rem;
+    }
+
+    .navegacion-admin a {
+        padding: .7rem 1.2rem;
+        border-radius: 8px;
+        text-decoration: none;
+        color: white;
+        background: rgba(255,255,255,.1);
+        transition: .3s;
+        font-weight: 600;
+    }
+
+    .navegacion-admin a:hover {
+        background: rgba(255,255,255,.2);
+    }
+
+    .navegacion-admin a.active {
+        background: #00d4ff;
+        color: #1E3C54;
+    }
+
+    .contenido-admin {
+        padding: 1.5rem;
+    }
+
+    .table {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    }
+
+    body.dark-mode .table {
+        background: #161b22;
+    }
+
+    .table thead {
+        background-color: #f8f9fa;
+    }
+
+    body.dark-mode .table thead {
+        background-color: #0d1117;
+    }
+
+    .table th {
+        color: #1E3C54;
+        padding: 1rem;
+    }
+
+    body.dark-mode .table th {
+        color: #e6edf3;
+    }
+
+    .table td {
+        padding: 1rem;
+        vertical-align: middle;
+        color: #1E3C54;
+    }
+
+    body.dark-mode .table td {
+        color: #e6edf3;
+        border-color: #30363d;
+    }
+
+    .evidencia-img {
+        width: 120px;
+        border-radius: 10px;
+        object-fit: cover;
+    }
+
+    .estado {
+        padding: .4rem .8rem;
+        border-radius: 20px;
+        font-size: .9rem;
+        font-weight: 600;
+    }
+
+    .pendiente {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+
+    @@media(max-width:768px) {
+
+        .encabezado-admin {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .navegacion-admin {
+            flex-wrap: wrap;
+        }
+
+        .table {
+            font-size: .9rem;
+        }
+    }
+</style>
+
+<div class="area-admin">
+
+    <!-- HEADER -->
+    <div class="encabezado-admin">
+        <h2>
+            <i class="bi bi-exclamation-triangle"></i>
+            Historial de Incidencias
+        </h2>
+
+        <div class="navegacion-admin">
+            <a asp-action="Paradas">Paradas</a>
+            <a asp-action="Camiones">Camiones</a>
+            <a asp-action="ConductoresEdit">Conductores</a>
+            <a asp-action="Monitoreo">Monitoreo</a>
+            <a asp-action="HistorialIncidencias" class="active">Incidencias</a>
+        </div>
+    </div>
+
+    <!-- CONTENIDO -->
+    <div class="contenido-admin">
+
+        <div class="table-responsive">
+            <table class="table align-middle">
+
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tipo</th>
+                        <th>Descripción</th>
+                        <th>Evidencia</th>
+                        <th>Fecha</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @if (Model != null && Model.Any())
+                    {
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+
+                                <td>@item.Id</td>
+
+                                <td>@item.TipoIncidente</td>
+
+                                <td>@item.Descripcion</td>
+
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.RutaEvidencia))
+                                    {
+                                        <img src="~/evidencias/@item.RutaEvidencia"
+                                             class="evidencia-img" />
+                                    }
+                                    else
+                                    {
+                                        <span>Sin evidencia</span>
+                                    }
+                                </td>
+
+                                <td>
+                                    @item.FechaReporte.ToString("dd/MM/yyyy HH:mm")
+                                </td>
+
+                                <td>
+                                    <span class="estado pendiente">
+                                        @item.Estado
+                                    </span>
+                                </td>
+
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center">
+                                No hay incidencias registradas
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+        </div>
+
+    </div>
+
+</div>
