@@ -13,14 +13,10 @@ namespace SSMI.Controllers
 
         private readonly IConfiguration _configuration;
 
-        public AdminitradorController(IConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
-
+        
         private readonly string _cadenaConexion;
 
-        // 👈 El constructor recibe la configuración del archivo .json mediante Inyección de Dependencias
+        
         public AdminitradorController(IConfiguration configuration)
         {
             // Jalamos el nombre exacto que pusiste en el appsettings.json
