@@ -280,5 +280,40 @@ namespace SSMI.Data
                 return usuarios;
             }
         }
+        public bool ExisteCorreo(string correo, string cadenaCon)
+        {
+            using (SqlConnection con = new SqlConnection(cadenaCon))
+            {
+                try
+                {
+                    con.Open();
+
+                    using (SqlCommand com = new SqlCommand())
+                    {
+                        com.Connection = con;
+                        com.CommandType = CommandType.Text;
+
+                        com.CommandText = @"
+                    SELECT COUNT(*)
+                    FROM tbUsuarios
+                    WHERE Correo = @Correo";
+
+                        com.Parameters.AddWithValue("@Correo", correo);
+
+                        int cantidad = (int)com.ExecuteScalar();
+
+                        return cantidad > 0;
+                    }
+                }
+                catch
+                {
+                    return false;
+                }
+                finally
+                {
+                    con.Close();
+                }
+            }
+        }
     }
 }

@@ -145,6 +145,18 @@ namespace SSMI.Controllers
                 return View(datos);
             }
 
+            // VALIDAR CORREO DUPLICADO
+            if (cons.ExisteCorreo(usuarioN.Correo, conStr))
+            {
+                ModelState.AddModelError("Usuario.Correo",
+                    "Este correo ya está registrado");
+
+                Captcha capError = new Captcha();
+                datos.Captcha.CaptchaGenerado = capError.GenerarCaptcha();
+
+                return View(datos);
+            }
+
             // ENCRIPTAR CONTRASEÑA
             string hash = ctr.EncriptarContrasena(usuarioN.Contrasena);
             usuarioN.Contrasena = hash;

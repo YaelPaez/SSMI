@@ -14,7 +14,6 @@ namespace SSMI.Models.ViewModels
         [MinLength(10, ErrorMessage = "Mínimo 10 caracteres")]
         public string Descripcion { get; set; }
 
-        [Required(ErrorMessage = "Debes subir una imagen")]
-        public IFormFile Evidencia { get; set; }
+        public IFormFile? Evidencia { get; set; }
     }
 }

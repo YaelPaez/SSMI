@@ -34,22 +34,33 @@
                 </thead>
 
                 <tbody>
-                    @foreach (var item in Model)
+                    @if (Model != null)
                     {
-                        <tr>
-                            <td>@item.Nombre</td>
-                            <td>@item.Telefono</td>
-                            <td>@item.Email</td>
-                            <td>
-                                <span class="badge bg-success">Activo</span>
-                            </td>
-                            <td class="text-end">
-                                <button class="btn btn-sm btn-outline-primary"
-                                        onclick="editarConductor(@item.Id, '@item.Nombre', '@item.Telefono', '@item.Email')">
-                                    <i class="bi bi-pencil"></i>
-                                </button>
-                            </td>
-                        </tr>
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.Nombre</td>
+                                <td>@item.Telefono</td>
+                                <td>@item.Email</td>
+
+                                <td>
+                                    <span class="badge bg-success">
+                                        Activo
+                                    </span>
+                                </td>
+
+                                <td class="text-end">
+
+                                    <button class="btn btn-sm btn-outline-primary"
+                                            onclick="editarConductor(@item.Id, '@item.Nombre', '@item.Telefono', '@item.Email')">
+
+                                        <i class="bi bi-pencil"></i>
+
+                                    </button>
+
+                                </td>
+                            </tr>
+                        }
                     }
                 </tbody>
 

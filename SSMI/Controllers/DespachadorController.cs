@@ -1,10 +1,24 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SSMI.Data;
+using SSMI.Models;
 
 namespace SSMI.Controllers
 {
     public class DespachadorController : Controller
     {
+
+        private readonly ConsultaHistorico _consultaHistorico;
+        private readonly string _cadenaConexion;
+
+        // El constructor recibe la configuración global del proyecto de manera automática
+        public DespachadorController(IConfiguration configuration)
+        {
+            _consultaHistorico = new ConsultaHistorico();
+            // Jala la cadena de conexión compartida por tu compañero
+            _cadenaConexion = configuration.GetConnectionString("StringCONSQLocal");
+        }
+
         // GET: DespachadorController
         public ActionResult Index()
         {
@@ -85,56 +99,31 @@ namespace SSMI.Controllers
             return View();
         }
 
-        public ActionResult HistoricoDeRegistros(/*string buscarConductor, DateTime? inicioFecha, DateTime? finFecha, string buscarEstado*/)
+        public ActionResult HistoricoDeRegistros(string buscarConductor, DateTime? inicioFecha, DateTime? finFecha, string buscarEstado)
         {
 
-            // tu lista o consulta
-
-            // Validación de fechas
-            /*if (inicioFecha.HasValue && finFecha.HasValue)
+            // Validación de fechas por si el usuario pone un rango incorrecto
+            if (inicioFecha.HasValue && finFecha.HasValue)
             {
                 if (inicioFecha > finFecha)
                 {
                     ViewBag.Error = "La fecha inicial no puede ser mayor a la final.";
-                    return View(registros);
+                    return View(new List<RegistroHistoricoModel>());
                 }
             }
 
-            // Filtrar conductor
-            if (!string.IsNullOrEmpty(buscarConductor))
-            {
-                registros = registros
-                    .Where(r => r.Conductor.Contains(buscarConductor))
-                    .ToList();
-            }
+            // Consultamos al servicio en Data pasándole la conexión y los filtros seleccionados
+            List<RegistroHistoricoModel> registros = _consultaHistorico.ObtenerHistoricoFiltrado(
+                _cadenaConexion,
+                buscarConductor,
+                inicioFecha,
+                finFecha,
+                buscarEstado
+            );
 
-            // Filtrar estado
-            if (!string.IsNullOrEmpty(buscarEstado))
-            {
-                registros = registros
-                    .Where(r => r.Estado == buscarEstado)
-                    .ToList();
-            }
-
-            // Filtrar fecha inicial
-            if (inicioFecha.HasValue)
-            {
-                registros = registros
-                    .Where(r => r.Fecha >= inicioFecha.Value)
-                    .ToList();
-            }
-
-            // Filtrar fecha final
-            if (finFecha.HasValue)
-            {
-                registros = registros
-                    .Where(r => r.Fecha <= finFecha.Value)
-                    .ToList();
-            }
-
-            return View(registros);*/
-            return View();
-
+            // Retorna la vista y le inyecta la lista real de registros
+            return View(registros);
         }
+    
     }
 }

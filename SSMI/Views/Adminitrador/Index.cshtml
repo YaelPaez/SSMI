@@ -2,36 +2,10 @@
     ViewData["Title"] = "Administración de Rutas";
     Layout = "~/Views/Shared/_UsuarioLayout.cshtml";
 
+    // Unificamos el nombre de la acción (si usas ConductoresEdit, cámbialo aquí también)
     var currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
 }
 
-<!-- ══ FILTROS SVG DALTONISMO ══ -->
-<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0"
-     style="position:absolute;pointer-events:none;overflow:hidden;width:0;height:0">
-    <defs>
-        <filter id="filter-protanopia" color-interpolation-filters="linearRGB">
-            <feColorMatrix type="matrix" values="
-                0.567 0.433 0     0 0
-                0.558 0.442 0     0 0
-                0     0.242 0.758 0 0
-                0     0     0     1 0" />
-        </filter>
-        <filter id="filter-deuteranopia" color-interpolation-filters="linearRGB">
-            <feColorMatrix type="matrix" values="
-                0.625 0.375 0     0 0
-                0.7   0.3   0     0 0
-                0     0.3   0.7   0 0
-                0     0     0     1 0" />
-        </filter>
-        <filter id="filter-tritanopia" color-interpolation-filters="linearRGB">
-            <feColorMatrix type="matrix" values="
-                0.95  0.05  0     0 0
-                0     0.433 0.567 0 0
-                0     0.475 0.525 0 0
-                0     0     0     1 0" />
-        </filter>
-    </defs>
-</svg>
 
 <style>
     /* ── Daltonismo ── */
@@ -47,31 +21,26 @@
         filter: url(#filter-tritanopia) !important;
     }
 
-    /* ── Variables ── */
-    :root {
-        --font-size-base: 1rem;
+    /* ── Tamaños de fuente globales mediante HTML ── */
+    html {
+        font-size: 1rem;
     }
 
-    /* ── Tamaños de fuente ── */
-    html.font-size-sm, body.font-size-sm {
-        font-size: 0.875rem !important;
-        --font-size-base: 0.875rem;
-    }
+        html.font-size-sm {
+            font-size: 0.875rem !important;
+        }
 
-    html.font-size-md, body.font-size-md {
-        font-size: 1rem !important;
-        --font-size-base: 1rem;
-    }
+        html.font-size-md {
+            font-size: 1rem !important;
+        }
 
-    html.font-size-lg, body.font-size-lg {
-        font-size: 1.125rem !important;
-        --font-size-base: 1.125rem;
-    }
+        html.font-size-lg {
+            font-size: 1.125rem !important;
+        }
 
-    html.font-size-xl, body.font-size-xl {
-        font-size: 1.25rem !important;
-        --font-size-base: 1.25rem;
-    }
+        html.font-size-xl {
+            font-size: 1.25rem !important;
+        }
 
     /* ── Layout ── */
     .app-viewport {
@@ -111,7 +80,7 @@
         background: transparent;
         text-decoration: none;
         cursor: pointer;
-        font-size: var(--font-size-base, 1rem);
+        font-size: 1rem;
     }
 
         .nav-btn:hover {
@@ -189,11 +158,17 @@
         }
 
     @@keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
-    /* ── Título de sección ── */
     .seccion h3 {
         color: #1E3C54;
         font-weight: 700;
@@ -201,199 +176,14 @@
         display: flex;
         align-items: center;
         gap: 0.75rem;
-        font-size: calc(var(--font-size-base) * 1.5);
+        font-size: 1.5rem;
     }
 
     body.dark-mode .seccion h3 {
         color: #e6edf3;
     }
 
-    /* ── Tablas ── */
-    .table {
-        background: white;
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 2px 8px rgba(0,0,0,.08);
-        margin-bottom: 2rem;
-        transition: background .3s, box-shadow .3s;
-    }
-
-        .table thead {
-            background-color: #f8f9fa;
-            border-bottom: 2px solid #e9ecef;
-        }
-
-            .table thead th {
-                color: #1E3C54;
-                font-weight: 600;
-                padding: 1rem;
-                font-size: var(--font-size-base);
-            }
-
-        .table tbody td {
-            padding: 1rem;
-            vertical-align: middle;
-            border-bottom: 1px solid #e9ecef;
-        }
-
-        .table tbody tr:hover {
-            background-color: #f8f9fa;
-            transition: background-color .2s;
-        }
-
-    body.dark-mode .table {
-        background: #161b22;
-        box-shadow: 0 2px 8px rgba(0,0,0,.3);
-    }
-
-        body.dark-mode .table thead {
-            background-color: #0d1117;
-            border-color: #30363d;
-        }
-
-            body.dark-mode .table thead th {
-                color: #e6edf3;
-            }
-
-        body.dark-mode .table tbody td {
-            border-color: #30363d;
-        }
-
-        body.dark-mode .table tbody tr:hover {
-            background-color: #0d1117;
-        }
-
-    /* ── Etiquetas de estado ── */
-    .badge-status {
-        padding: 0.5rem 0.75rem;
-        border-radius: 20px;
-        font-size: calc(var(--font-size-base) * 0.85);
-        font-weight: 600;
-        display: inline-block;
-    }
-
-    .badge-activo {
-        background-color: #d4edda;
-        color: #155724;
-    }
-
-    .badge-inactivo {
-        background-color: #f8d7da;
-        color: #721c24;
-    }
-
-    .badge-ruta {
-        background-color: #d1ecf1;
-        color: #0c5460;
-    }
-
-    body.dark-mode .badge-activo {
-        background-color: rgba(28, 99, 66, 0.3);
-        color: #7dde86;
-    }
-
-    body.dark-mode .badge-inactivo {
-        background-color: rgba(156, 39, 48, 0.3);
-        color: #ff8a80;
-    }
-
-    body.dark-mode .badge-ruta {
-        background-color: rgba(0, 83, 112, 0.3);
-        color: #80deea;
-    }
-
-    /* ── Botones ── */
-    .btn-admin {
-        border: none;
-        border-radius: 10px;
-        padding: 0.75rem 1.5rem;
-        font-weight: 600;
-        font-size: var(--font-size-base);
-        transition: all .3s;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .btn-agregar {
-        background-color: #1E3C54;
-        color: white;
-    }
-
-        .btn-agregar:hover {
-            background-color: #2a5580;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(30, 60, 84, 0.3);
-            color: white;
-        }
-
-    .btn-editar {
-        background-color: #00d4ff;
-        color: #1E3C54;
-        padding: 0.5rem 1rem;
-        font-size: calc(var(--font-size-base) * 0.9);
-    }
-
-        .btn-editar:hover {
-            background-color: #00bcd4;
-            transform: translateY(-1px);
-        }
-
-    .btn-eliminar {
-        background-color: #eb4d4b;
-        color: white;
-        padding: 0.5rem 1rem;
-        font-size: calc(var(--font-size-base) * 0.9);
-    }
-
-        .btn-eliminar:hover {
-            background-color: #d63031;
-            transform: translateY(-1px);
-        }
-
-    body.dark-mode .btn-agregar {
-        background-color: rgba(0, 212, 255, 0.2);
-        color: #00d4ff;
-        border: 1px solid rgba(0, 212, 255, 0.4);
-    }
-
-        body.dark-mode .btn-agregar:hover {
-            background-color: rgba(0, 212, 255, 0.3);
-            box-shadow: 0 4px 12px rgba(0, 212, 255, 0.2);
-        }
-
-    /* ── Monitoreo (Mapa) ── */
-    .map-container {
-        width: 100%;
-        height: 500px;
-        background: linear-gradient(135deg, #e5e3df, #f5f3f0);
-        border-radius: 15px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #8b949e;
-        font-size: calc(var(--font-size-base) * 1.1);
-        box-shadow: 0 4px 15px rgba(0,0,0,.1);
-        overflow: hidden;
-        position: relative;
-    }
-
-    body.dark-mode .map-container {
-        background: linear-gradient(135deg, #161b22, #0d1117);
-        box-shadow: 0 4px 15px rgba(0,0,0,.3);
-    }
-
-    .map-placeholder {
-        text-align: center;
-    }
-
-        .map-placeholder i {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            opacity: 0.5;
-        }
-
-    /* ── Formularios ── */
+    /* ── Formularios / Tarjetas ── */
     .form-admin {
         background: white;
         border-radius: 12px;
@@ -406,46 +196,6 @@
     body.dark-mode .form-admin {
         background: #161b22;
         box-shadow: 0 2px 8px rgba(0,0,0,.3);
-    }
-
-    .form-admin .form-label {
-        color: #1E3C54;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-        font-size: var(--font-size-base);
-    }
-
-    body.dark-mode .form-admin .form-label {
-        color: #e6edf3;
-    }
-
-    .form-admin .form-control {
-        border-radius: 8px;
-        border: 1px solid #e9ecef;
-        padding: 0.75rem 1rem;
-        font-size: var(--font-size-base);
-        transition: border-color .3s, box-shadow .3s;
-    }
-
-        .form-admin .form-control:focus {
-            border-color: #00d4ff;
-            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
-        }
-
-    body.dark-mode .form-admin .form-control {
-        background: #0d1117;
-        border-color: #30363d;
-        color: #e6edf3;
-    }
-
-        body.dark-mode .form-admin .form-control:focus {
-            background: #0d1117;
-        }
-
-    /* ── Grid de acciones ── */
-    .action-cell {
-        display: flex;
-        gap: 0.5rem;
     }
 
     /* ── Responsive ── */
@@ -461,20 +211,10 @@
         .admin-content {
             padding: 1rem;
         }
-
-        .table {
-            font-size: calc(var(--font-size-base) * 0.9);
-        }
-
-            .table thead th,
-            .table tbody td {
-                padding: 0.75rem;
-            }
     }
 </style>
 
 <div class="d-flex app-viewport">
-    <!-- ══ SIDEBAR ADMIN ══ -->
     <div id="sidebarMenu" class="shadow">
         <div class="d-flex flex-column p-4 h-100">
             <h4 class="text-center mt-2 mb-4">SSMI Admin</h4>
@@ -487,7 +227,7 @@
                 <i class="bi bi-bus-front"></i> Camiones
             </a>
 
-            <a asp-controller="Adminitrador" asp-action="ConductoresEdit" class="nav-btn @(currentAction == "Conductores" ? "active" : "")">
+            <a asp-controller="Adminitrador" asp-action="Conductores" class="nav-btn @(currentAction == "Conductores" ? "active" : "")">
                 <i class="bi bi-person-badge"></i> Conductores
             </a>
 
@@ -495,16 +235,17 @@
                 <i class="bi bi-activity"></i> Monitoreo
             </a>
 
+
+
             <div class="mt-auto">
                 <a asp-controller="Login" asp-action="CerrarSesion" class="nav-btn"><i class="bi bi-box-arrow-left"></i> Salir</a>
             </div>
         </div>
     </div>
 
-    <!-- ══ CONTENIDO PRINCIPAL ══ -->
     <div class="flex-grow-1 d-flex flex-column">
         <div class="p-3 d-flex align-items-center gap-3 border-bottom">
-            <button id="btnToggleMenu" class="btn btn-dark rounded-circle shadow-sm" style="width: 45px; height: 45px;">
+            <button id="btnToggleMenu" class="btn btn-dark rounded-circle shadow-sm">
                 <i class="bi bi-list"></i>
             </button>
             <h2 class="mb-0">Administración</h2>
