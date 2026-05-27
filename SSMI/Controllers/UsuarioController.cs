@@ -128,6 +128,45 @@ namespace SSMI.Controllers
         {
             return View();
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult GuardarComentario(int Calificacion, string Detalle)
+        {
+            // CASO 1: ¿El sistema no encuentra tu sesión o tu correo?
+            var correoUsuario = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+            if (string.IsNullOrWhiteSpace(correoUsuario))
+            {
+                // Agregamos un mensaje para saber si fue por esto
+                TempData["ErrorComentario"] = "Error de seguridad: No se encontró el correo de la sesión activa.";
+                return RedirectToAction("Comentarios"); // Te regresa a comentarios para que veas el error
+            }
+
+            // CASO 2: ¿El texto del comentario llegó vacío a C#?
+            if (string.IsNullOrWhiteSpace(Detalle))
+            {
+                TempData["ErrorComentario"] = "Error: El comentario llegó vacío al servidor. Revisa el atributo 'name' en tu HTML.";
+                return RedirectToAction("Comentarios");
+            }
+
+            var conStr = _configuracion.GetConnectionString("StringCONSQLocal");
+            var cons = new ConsultaUsuario();
+
+            bool guardado = cons.InsertarComentario(correoUsuario, Calificacion, Detalle, conStr);
+
+            // CASO 3: ¿La consulta SQL falló o devolvió false?
+            if (guardado)
+            {
+                TempData["MensajeComentario"] = "Comentario enviado exitosamente, agradecemos su opinion.";
+            }
+            else
+            {
+                TempData["ErrorComentario"] = "Hubo un problema al conectar con el servidor. Por favor, inténtalo más tarde.";
+            }
+
+            return RedirectToAction("Comentarios");
+        }
+
         public IActionResult Ayuda()
         {
             return View();

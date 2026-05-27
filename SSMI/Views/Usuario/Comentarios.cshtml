@@ -127,6 +127,8 @@
             <div class="mt-auto">
                 <a asp-action="Ayuda" class="nav-btn"><i class="bi bi-question-circle"></i> Ayuda</a>
                 <a asp-action="AcercaDeNosotros" class="nav-btn"><i class="bi bi-info-square"></i> Acerca de nosotros</a>
+                <a asp-controller="Login" asp-action="CerrarSesion" class="nav-btn"><i class="bi bi-box-arrow-right"></i> Cerrar Sesión</a>
+
             </div>
         </div>
     </div>
@@ -149,25 +151,46 @@
                     <p class="text-muted">Ayúdanos a mejorar el transporte inteligente para todos.</p>
                 </div>
 
+                @if (TempData["ErrorComentario"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show rounded-3 mb-4" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["ErrorComentario"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+                @if (TempData["MensajeComentario"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show rounded-3 mb-4" role="alert">
+                        <i class="bi bi-check-circle-fill me-2"></i> @TempData["MensajeComentario"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+
                 <div class="tarjeta-comentario">
-                    <form>
+                    <form asp-controller="Usuario" asp-action="GuardarComentario" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <input type="hidden" id="inputCalificacion" name="Calificacion" value="4" />
+
                         <div class="mb-4">
                             <label class="form-label fw-bold">¿Cómo calificarías tu experiencia?</label>
-                            <div class="estrellas-calificacion mb-2">
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star"></i>
+                            <div class="estrellas-calificacion mb-2" id="contenedorEstrellas">
+                                <i class="bi bi-star-fill" data-value="1"></i>
+                                <i class="bi bi-star-fill" data-value="2"></i>
+                                <i class="bi bi-star-fill" data-value="3"></i>
+                                <i class="bi bi-star-fill" data-value="4"></i>
+                                <i class="bi bi-star" data-value="5"></i>
                             </div>
                         </div>
+
                         <div class="mb-4">
                             <label class="form-label fw-bold">Cuéntanos más</label>
-                            <textarea class="form-control formulario-control" rows="5"
+                            <textarea name="Detalle" class="form-control formulario-control" rows="5" required
                                       placeholder="Escribe tus sugerencias o reporta problemas aquí..."></textarea>
                         </div>
+
                         <div class="text-end">
-                            <button type="button" class="btn boton-enviar-comentario px-5">
+                            <button type="submit" class="btn boton-enviar-comentario px-5">
                                 <i class="bi bi-send me-2"></i> Enviar Comentario
                             </button>
                         </div>
@@ -185,3 +208,25 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('#contenedorEstrellas i').forEach(estrella => {
+            estrella.addEventListener('click', function () {
+                const valorSeleccionado = parseInt(this.getAttribute('data-value'));
+                document.getElementById('inputCalificacion').value = valorSeleccionado;
+
+                document.querySelectorAll('#contenedorEstrellas i').forEach(e => {
+                    const valorEstrella = parseInt(e.getAttribute('data-value'));
+                    if (valorEstrella <= valorSeleccionado) {
+                        e.classList.remove('bi-star');
+                        e.classList.add('bi-star-fill');
+                    } else {
+                        e.classList.remove('bi-star-fill');
+                        e.classList.add('bi-star');
+                    }
+                });
+            });
+        });
+    </script>
+}
