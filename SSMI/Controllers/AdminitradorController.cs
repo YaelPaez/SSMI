@@ -152,7 +152,7 @@ namespace SSMI.Controllers
                 }
                 else
                 {
-                    TempData["MensajeError"] = ex.Message; 
+                    TempData["MensajeError"] = "Ocurrió un problema interno en la base de datos al intentar mostrar la lista el camión."; 
                 }
             }
             catch (Exception ex)
