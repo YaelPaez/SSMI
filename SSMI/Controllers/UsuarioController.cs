@@ -7,6 +7,7 @@ using System.Security.Claims;
 
 namespace SSMI.Controllers
 {
+    //[JwtCookieAuthorize("Usuario")] // <--- SI NO HAS INICIADO SESION NO TE DEJA ENTRAR A LAS VISTAS DEL USUARIO
     public class UsuarioController : Controller
     {
         
@@ -59,6 +60,60 @@ namespace SSMI.Controllers
             }
 
             return View(usuario);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ActualizarPerfil(Usuario modeloModificado, IFormCollection form)
+        {
+            var correoUsuario = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+            if (string.IsNullOrWhiteSpace(correoUsuario))
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            modeloModificado.Correo = correoUsuario;
+
+            // ─── VALIDACIONES DEL SERVIDOR ───
+
+            // 1. Validar Teléfono (que sean 10 números)
+            if (string.IsNullOrWhiteSpace(modeloModificado.Numtelefono) ||
+                modeloModificado.Numtelefono.Length != 10 ||
+                !System.Text.RegularExpressions.Regex.IsMatch(modeloModificado.Numtelefono, @"^[0-9]+$"))
+            {
+                // Si no cumple, cancelamos y recargamos la vista sin guardar
+                return RedirectToAction("Perfil");
+            }
+
+            // 2. Validar Mayoría de Edad y fechas futuras
+            // Nota: Como DateOnly puede ser un poco estricto al mapear, calculamos la edad así:
+            var hoy = DateOnly.FromDateTime(DateTime.Today);
+            var edad = hoy.Year - modeloModificado.FechaNacimiento.Year;
+
+            // Ajuste por si no ha pasado su cumpleaños este año
+            if (modeloModificado.FechaNacimiento > hoy.AddYears(-edad)) edad--;
+
+            if (modeloModificado.FechaNacimiento > hoy || edad < 18)
+            {
+                return RedirectToAction("Perfil");
+            }
+
+            // 3. Validar que los campos de nombres no vayan vacíos o con números
+            if (string.IsNullOrWhiteSpace(modeloModificado.Nombres) ||
+                string.IsNullOrWhiteSpace(modeloModificado.Apellidos) ||
+                System.Text.RegularExpressions.Regex.IsMatch(modeloModificado.Nombres, @"[0-9]") ||
+                System.Text.RegularExpressions.Regex.IsMatch(modeloModificado.Apellidos, @"[0-9]"))
+            {
+                return RedirectToAction("Perfil");
+            }
+
+            // ─── FIN DE VALIDACIONES (SI PASA, SE GUARDA) ───
+
+            var conStr = _configuracion.GetConnectionString("StringCONSQLocal");
+            var cons = new ConsultaUsuario();
+            bool exito = cons.ActualizarDatosUsuario(modeloModificado, conStr);
+
+            return RedirectToAction("Perfil");
         }
 
         public IActionResult Configuracion()

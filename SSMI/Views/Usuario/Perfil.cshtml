@@ -324,28 +324,51 @@
                         <div class="row g-3">
                             <div class="col-12 col-md-6">
                                 <label class="form-label">Nombres</label>
-                                <input asp-for="Nombres" class="form-control" value="@Model.Nombres"/>
+                                <input asp-for="Nombres" class="form-control" value="@Model.Nombres" required
+                                       pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$" title="El nombre solo debe contener letras." />
                             </div>
+
                             <div class="col-12 col-md-6">
                                 <label class="form-label">Apellidos</label>
-                                <input asp-for="Apellidos" class="form-control" value="@Model.Apellidos"/>
+                                <input asp-for="Apellidos" class="form-control" value="@Model.Apellidos" required
+                                       pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$" title="Los apellidos solo deben contener letras." />
                             </div>
+
                             <div class="col-12">
                                 <label class="form-label">Teléfono</label>
-                                <input asp-for="Numtelefono" class="form-control" value="@Model.Numtelefono"/>
+                                <input asp-for="Numtelefono" class="form-control" value="@Model.Numtelefono" required
+                                       type="tel" maxlength="10" minlength="10" pattern="^[0-9]{10}$"
+                                       title="El teléfono debe tener exactamente 10 dígitos numéricos." />
                             </div>
+
                             <div class="col-12 col-md-6">
                                 <label class="form-label">Fecha de nacimiento</label>
-                                <input name="FechaNacimiento" type="date" class="form-control"
-                                       value="@(Model?.FechaNacimiento != default ? Model.FechaNacimiento.ToString("yyyy-MM-dd") : string.Empty)" />
+                                <input name="FechaNacimiento" type="date" class="form-control" required
+                                       max="@DateTime.Today.AddYears(-18).ToString("yyyy-MM-dd")"
+                                       value="@(Model?.FechaNacimiento != default ? Model.FechaNacimiento.ToString("yyyy-MM-dd") : string.Empty)"
+                                       title="Debes ser mayor de 18 años." />
                             </div>
+
                             <div class="col-12 col-md-6">
                                 <label class="form-label">Género</label>
-                                <input asp-for="Genero" class="form-control" value="@Model.Genero" />
+                                <select asp-for="Genero" class="form-control" required>
+                                    <option value="">Seleccione una opción...</option>
+                                    <option value="Masculino">Masculino</option>
+                                    <option value="Femenino">Femenino</option>
+                                    <option value="Otro">Otro</option>
+                                </select>
                             </div>
+
                             <div class="col-12">
                                 <label class="form-label">Discapacidad</label>
-                                <input asp-for="Discapacidad" class="form-control" />
+                                <select asp-for="Discapacidad" class="form-control" required>
+                                    <option value="Ninguna">Ninguna</option>
+                                    <option value="Motriz">Motriz</option>
+                                    <option value="Visual">Visual</option>
+                                    <option value="Auditiva">Auditiva</option>
+                                    <option value="Intelectual/Psicosocial">Intelectual / Psicosocial</option>
+                                    <option value="Otra">Otra</option>
+                                </select>
                             </div>
                         </div>
 
@@ -359,9 +382,6 @@
                         </div>
                     </form>
                 </div>
-
-
-
             </div>
         </div>
     </div>

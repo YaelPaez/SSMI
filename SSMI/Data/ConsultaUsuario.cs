@@ -315,5 +315,58 @@ namespace SSMI.Data
                 }
             }
         }
+
+        public bool ActualizarDatosUsuario(Usuario usuario, string cadenaCon)
+        {
+            bool exito = false;
+            using (SqlConnection con = new SqlConnection(cadenaCon))
+            {
+                try
+                {
+                    con.Open();
+                    using (SqlCommand com = new SqlCommand())
+                    {
+                        com.Connection = con;
+                        com.CommandType = CommandType.Text;
+
+                        // Usamos un INNER JOIN uniendo ambas tablas por [IdUsuario]
+                        // Buscamos al pasajero correcto filtrando por el [Correo] de tbUsuarios
+                        com.CommandText = @"
+                    UPDATE P
+                    SET P.Nombres = @Nombres, 
+                        P.Apellidos = @Apellidos, 
+                        P.Numtelefono = @Numtelefono, 
+                        P.Genero = @Genero, 
+                        P.FchaNacimiento = @FechaNacimiento, -- Ojo: Aquí se usa FchaNacimiento de tu BD
+                        P.Discapacidad = @Discapacidad
+                    FROM [SSMI].[dbo].[tbPasajeros] P
+                    INNER JOIN [SSMI].[dbo].[tbUsuarios] U ON P.IdUsuario = U.IdUsuario
+                    WHERE U.Correo = @Correo";
+
+                        // Enviamos los parámetros controlando los valores nulos
+                        com.Parameters.AddWithValue("@Correo", usuario.Correo ?? (object)DBNull.Value);
+                        com.Parameters.AddWithValue("@Nombres", usuario.Nombres ?? (object)DBNull.Value);
+                        com.Parameters.AddWithValue("@Apellidos", usuario.Apellidos ?? (object)DBNull.Value);
+                        com.Parameters.AddWithValue("@Numtelefono", usuario.Numtelefono ?? (object)DBNull.Value);
+                        com.Parameters.AddWithValue("@Genero", usuario.Genero ?? (object)DBNull.Value);
+                        com.Parameters.AddWithValue("@FechaNacimiento", usuario.FechaNacimiento);
+                        com.Parameters.AddWithValue("@Discapacidad", usuario.Discapacidad ?? (object)DBNull.Value);
+
+                        int filasAfectadas = com.ExecuteNonQuery();
+                        exito = filasAfectadas > 0;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("ERROR AL ACTUALIZAR PASAJERO: " + ex.Message);
+                    throw;
+                }
+                finally
+                {
+                    con.Close();
+                }
+            }
+            return exito;
+        }
     }
 }
