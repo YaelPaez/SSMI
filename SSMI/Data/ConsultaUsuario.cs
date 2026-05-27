@@ -368,5 +368,38 @@ namespace SSMI.Data
             }
             return exito;
         }
+
+        public bool InsertarComentario(string correo, int calificacion, string detalle, string cadenaCon)
+        {
+            bool exito = false;
+            using (SqlConnection con = new SqlConnection(cadenaCon))
+            {
+                try
+                {
+                    con.Open();
+                    using (SqlCommand com = new SqlCommand())
+                    {
+                        com.Connection = con;
+                        com.CommandType = CommandType.Text;
+
+                        com.CommandText = @"
+                    INSERT INTO tbComentarios (IdUsuario, Calificacion, Detalle)
+                    VALUES ((SELECT IdUsuario FROM tbUsuarios WHERE Correo = @Correo), @Calificacion, @Detalle)";
+
+                        com.Parameters.AddWithValue("@Correo", correo);
+                        com.Parameters.AddWithValue("@Calificacion", calificacion);
+                        com.Parameters.AddWithValue("@Detalle", detalle ?? "");
+
+                        int filas = com.ExecuteNonQuery();
+                        exito = filas > 0;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error al guardar comentario: " + ex.Message);
+                }
+            }
+            return exito;
+        }
     }
 }
