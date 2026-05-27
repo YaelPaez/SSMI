@@ -12,14 +12,11 @@ namespace SSMI.Controllers
     {
 
         private readonly IConfiguration _configuration;
-
-        
         private readonly string _cadenaConexion;
 
-        
         public AdminitradorController(IConfiguration configuration)
         {
-            // Jalamos el nombre exacto que pusiste en el appsettings.json
+            _configuration = configuration;
             _cadenaConexion = configuration.GetConnectionString("StringCONSQLocal");
         }
         // GET: Administrador/Index (Redirecciona a Paradas por defecto)
@@ -85,11 +82,87 @@ namespace SSMI.Controllers
 
         // ══ GESTIÓN DE CAMIONES ══
         // GET: Administrador/Camiones
+        // GET: Administrador/Camiones
         public ActionResult Camiones()
         {
-            return View();
-        }
+            // 1. Creamos la lista utilizando el tipo exacto que espera tu vista
+            List<Camion> listaCamiones = new List<Camion>();
 
+            try
+            {
+                using (SqlConnection conexion = new SqlConnection(_cadenaConexion))
+                {
+                    // Ajusta "Sp_ConsultarCamiones" al nombre exacto de tu Procedimiento Almacenado
+                    using (SqlCommand comando = new SqlCommand("Sp_ListarCamionesConConductor", conexion))
+                    {
+                        comando.CommandType = CommandType.StoredProcedure;
+
+                        conexion.Open();
+
+                        using (SqlDataReader dr = comando.ExecuteReader())
+                        {
+                            while (dr.Read())
+                            {
+                                // 2. Mapeamos las columnas de la Base de Datos a las propiedades de tu modelo Camion
+                                Camion camion = new Camion
+                                {
+                                    IdCamion = Guid.Parse(dr["IdCamion"].ToString()),
+                                    Placas = dr["Placas"].ToString(),
+                                    Kilometraje = Convert.ToInt32(dr["Kilometraje"]),
+                                    Economico = dr["Economico"].ToString(),
+                                    Capacidad = dr["Capacidad"].ToString(),
+
+                                    // Tu vista usa esta propiedad: @camion.NombreConductor
+                                    // Asegúrate de que tu SP traiga esta columna haciendo un JOIN con la tabla de Usuarios/Conductores
+                                    NombreConductor = dr["NombreConductor"] != DBNull.Value ? dr["NombreConductor"].ToString() : null
+                                };
+
+                                listaCamiones.Add(camion);
+                            }
+                        }
+                    }
+
+                    // 3. OPCIONAL: Cargar conductores reales para llenar el <select> de tu modal
+                    List<dynamic> listaConductores = new List<dynamic>();
+                    using (SqlCommand comandoCond = new SqlCommand("Sp_ListarCamionesConConductor", conexion)) // Ajusta el nombre de tu SP
+                    {
+                        comandoCond.CommandType = CommandType.StoredProcedure;
+                        using (SqlDataReader drCond = comandoCond.ExecuteReader())
+                        {
+                            while (drCond.Read())
+                            {
+                                listaConductores.Add(new
+                                {
+                                    IdUsuario = Guid.Parse(drCond["IdUsuario"].ToString()),
+                                    NombreCompleto = drCond["NombreCompleto"].ToString()
+                                });
+                            }
+                        }
+                    }
+                    // Lo guardamos en ViewBag para que el modal lo dibuje dinámicamente
+                    ViewBag.Conductores = listaConductores;
+                }
+            }
+            catch (SqlException ex)
+            {
+                // Errores de red o conexión que ya controlabas en los POST
+                if (ex.Number == 26 || ex.Number == 53 || ex.Number == 11001)
+                {
+                    TempData["MensajeError"] = "No se pudo establecer conexión con el servidor de movilidad. Verifica la red remota.";
+                }
+                else
+                {
+                    TempData["MensajeError"] = ex.Message; 
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["MensajeError"] = "Error inesperado al cargar la lista de camiones: " + ex.Message;
+            }
+
+            // 4. Enviamos la lista tipada. Ahora coincide al 100% con @model IEnumerable<SSMI.Models.Camion>
+            return View(listaCamiones);
+        }
         // POST: Administrador/Camiones/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -225,7 +298,7 @@ namespace SSMI.Controllers
                 }
                 else
                 {
-                    TempData["MensajeError"] = "Ocurrió un error interno en la base de datos al intentar eliminar el camión.";
+                    TempData["MensajeError"] = ex.Message;
                 }
 
                 return RedirectToAction(nameof(Camiones));

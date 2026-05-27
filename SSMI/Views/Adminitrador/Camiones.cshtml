@@ -392,12 +392,24 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Conductor Asignado</label>
-                        <select name="Conductor" class="form-control" required>
-                            <option value="">Seleccionar conductor...</option>
-                            <option value="@Guid.Empty">Prueba Conductor Temporal</option>
-                        </select>
-                    </div>
+                <label class="form-label">Conductor Asignado</label>
+                <select name="Conductor" class="form-control" required>
+                    <option value="">Seleccionar conductor...</option>
+        
+                    @if (ViewBag.Conductores != null)
+                    {
+                        foreach (var cond in ViewBag.Conductores)
+                        {
+                            <option value="@cond.IdUsuario">@cond.NombreCompleto</option>
+                        }
+                    }
+                    else
+                    {
+                        <!-- Opción de respaldo en caso de que la BD no responda o no haya conductores creados -->
+                        <option value="@Guid.Empty">Conductor Temporal de Respaldo</option>
+                    }
+                </select>
+            </div>
                     
                 </div>
                 <div class="modal-footer">
