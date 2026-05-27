@@ -23,7 +23,7 @@ namespace SSMI.Models
             MinimumLength = 6,
             ErrorMessage = "La contraseña debe tener entre 6 y 12 caracteres")]
         [RegularExpression(@"^(?=.*[\W_]).+$",
-            ErrorMessage = "La contraseña debe contener al menos un carácter especial")]
+            ErrorMessage = "La contraseña debe contener al menos un carácter especial $, #, @")]
         public string Contrasena { get; set; }
 
         [Required(ErrorMessage = "Ingresa un correo válido")]

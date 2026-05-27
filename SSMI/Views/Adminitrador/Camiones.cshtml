@@ -1,3 +1,4 @@
+@model IEnumerable<SSMI.Models.Camion>
 @{
     ViewData["Title"] = "Gestión de Camiones";
     Layout = "~/Views/Shared/_UsuarioLayout.cshtml";
@@ -258,8 +259,9 @@
     }
 </style>
 
+
+
 <div class="d-flex flex-column admin-viewport">
-    <!-- ?? HEADER ?? -->
     <div class="admin-header">
         <h2>
             <i class="bi bi-bus-front"></i> Gestión de Camiones
@@ -273,8 +275,16 @@
         </div>
     </div>
 
-    <!-- ?? CONTENIDO ?? -->
     <div class="admin-content">
+        
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle-fill"></i> @ViewBag.Error
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
         <div class="mb-3">
             <button class="btn btn-admin btn-agregar" data-bs-toggle="modal" data-bs-target="#modalCamion">
                 <i class="bi bi-plus-circle"></i> Nuevo Camión
@@ -285,57 +295,70 @@
             <table class="table">
                 <thead>
                     <tr>
+                        <th>Económico</th>
                         <th>Placa</th>
                         <th>Conductor</th>
                         <th>Capacidad</th>
-                        <th>Estado</th>
+                        <th>Kilometraje</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>ABC-123</td>
-                        <td>Juan Pérez</td>
-                        <td>45 pasajeros</td>
-                        <td><span class="badge-status badge-activo">Activo</span></td>
-                        <td>
-                            <div class="action-cell">
-                                <button class="btn btn-admin btn-editar"><i class="bi bi-pencil"></i></button>
-                                <button class="btn btn-admin btn-eliminar"><i class="bi bi-trash"></i></button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>XYZ-456</td>
-                        <td>María López</td>
-                        <td>50 pasajeros</td>
-                        <td><span class="badge-status badge-ruta">En Ruta</span></td>
-                        <td>
-                            <div class="action-cell">
-                                <button class="btn btn-admin btn-editar"><i class="bi bi-pencil"></i></button>
-                                <button class="btn btn-admin btn-eliminar"><i class="bi bi-trash"></i></button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>DEF-789</td>
-                        <td>—</td>
-                        <td>48 pasajeros</td>
-                        <td><span class="badge-status badge-inactivo">Inactivo</span></td>
-                        <td>
-                            <div class="action-cell">
-                                <button class="btn btn-admin btn-editar"><i class="bi bi-pencil"></i></button>
-                                <button class="btn btn-admin btn-eliminar"><i class="bi bi-trash"></i></button>
-                            </div>
-                        </td>
-                    </tr>
+                    @if (Model != null && Model.Any())
+                    {
+                        @foreach (var camion in Model)
+                        {
+                            <tr>
+                                <td>@camion.Economico</td>
+                                <td>@camion.Placas</td>
+                                <td>@(string.IsNullOrEmpty(camion.NombreConductor) ? "—" : camion.NombreConductor)</td>
+                                <td>@camion.Capacidad</td>
+                                <td>@camion.Kilometraje KM</td>
+                                <td>
+                                    <div class="action-cell">
+                                        <button class="btn btn-admin btn-editar" data-id="@camion.IdCamion"><i class="bi bi-pencil"></i></button>
+                                        
+                                        <form asp-action="EliminarCamion" asp-route-id="@camion.IdCamion" method="post" style="display:inline;" onsubmit="return confirm('¿Seguro que deseas eliminar este camión?');">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-admin btn-eliminar"><i class="bi bi-trash"></i></button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center text-muted">No hay camiones registrados actualmente.</td>
+                        </tr>
+                    }
                 </tbody>
             </table>
         </div>
     </div>
 </div>
+@if (TempData["MensajeError"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <div class="d-flex align-items-center">
+            <i class="bi bi-exclamation-octagon-fill me-2 fs-5"></i>
+            <div>@TempData["MensajeError"]</div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
 
-<!-- ?? MODAL AGREGAR CAMIÓN ?? -->
+@if (TempData["MensajeExito"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <div class="d-flex align-items-center">
+            <i class="bi bi-check-circle-fill me-2 fs-5"></i>
+            <div>@TempData["MensajeExito"]</div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
 <div class="modal fade" id="modalCamion" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -343,34 +366,48 @@
                 <h5 class="modal-title"><i class="bi bi-bus-front"></i> Agregar Camión</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body">
-                <form>
+            <form asp-action="CrearCamion" method="post">
+                @Html.AntiForgeryToken() <div class="modal-body">
+                    
+                    <input type="hidden" name="Ruta" value="@Guid.Empty" />
+
+                    <div class="mb-3">
+                        <label class="form-label">Número Económico</label>
+                        <input type="text" name="Economico" class="form-control" placeholder="E-01" required>
+                    </div>
+
                     <div class="mb-3">
                         <label class="form-label">Placa</label>
-                        <input type="text" class="form-control" placeholder="ABC-123">
+                        <input type="text" name="Placas" class="form-control" placeholder="ABC-123" required>
                     </div>
+
                     <div class="mb-3">
                         <label class="form-label">Capacidad</label>
-                        <input type="number" class="form-control" placeholder="45">
+                        <input type="text" name="Capacidad" class="form-control" placeholder="45 pasajeros" required>
                     </div>
+
                     <div class="mb-3">
-                        <label class="form-label">Conductor</label>
-                        <select class="form-control">
-                            <option>Seleccionar conductor</option>
-                            <option>Juan Pérez</option>
-                            <option>María López</option>
+                        <label class="form-label">Kilometraje Inicial</label>
+                        <input type="number" name="Kilometraje" class="form-control" placeholder="0" value="0" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Conductor Asignado</label>
+                        <select name="Conductor" class="form-control" required>
+                            <option value="">Seleccionar conductor...</option>
+                            <option value="@Guid.Empty">Prueba Conductor Temporal</option>
                         </select>
                     </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-admin btn-agregar">Guardar</button>
-            </div>
+                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-admin btn-agregar">Guardar Camión</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
-
 @section Scripts {
     <script>
         (function applyStoredPrefs() {

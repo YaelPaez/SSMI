@@ -398,18 +398,20 @@
                 <div class="fila-personalizada">
 
                     <div class="columna-personalizada">
+                        <label asp-for="Usuario.FechaNacimiento">Fecha de nacimiento</label>
                         <input asp-for="Usuario.FechaNacimiento"
                                type="date"
                                class="entrada-personalizada"
                                required>
+                        
                     </div>
 
                     <div class="columna-personalizada">
 
                         <select asp-for="Usuario.Discapacidad"
                                 class="entrada-personalizada">
-
-                            <option value="Ninguna" selected>Ninguna</option>
+                            <option value="" disabled selected hidden>Selecione una discapcidad</option>
+                            <option value="Ninguna">Ninguna</option>
                             <option value="Motriz">Motriz</option>
                             <option value="Visual">Visual</option>
                             <option value="Auditiva">Auditiva</option>
