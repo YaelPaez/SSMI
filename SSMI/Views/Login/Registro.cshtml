@@ -397,17 +397,20 @@
 
                 <div class="fila-personalizada">
 
-                    <div class="columna-personalizada">
-                        <label asp-for="Usuario.FechaNacimiento">Fecha de nacimiento</label>
+                    <div class="columna-personalizada" style="display: flex; flex-direction: column; align-items: center;">
+                        <label asp-for="Usuario.FechaNacimiento" style="color: var(--cian); font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; text-shadow: 0 0 10px rgba(0,212,255,0.4);">Fecha de nacimiento</label>
                         <input asp-for="Usuario.FechaNacimiento"
                                type="date"
                                class="entrada-personalizada"
+                               onkeydown="return false"
                                required>
                         
                     </div>
 
                     <div class="columna-personalizada">
-
+                        <label style="display: block; margin-bottom: 8px; font-size: 0.9rem; visibility: hidden;">
+                            Discapacidad
+                        </label>
                         <select asp-for="Usuario.Discapacidad"
                                 class="entrada-personalizada">
                             <option value="" disabled selected hidden>Selecione una discapcidad</option>
