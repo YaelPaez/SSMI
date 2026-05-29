@@ -501,13 +501,13 @@
         color: #8b949e;
     }
 
-    body.dark-mode .circulo-accion {
-        color: #00d4ff;
-    }
-
-        body.dark-mode .circulo-accion:hover {
-            background: rgba(0,212,255,0.15);
+        body.dark-mode .circulo-accion {
+            color: #00d4ff;
         }
+
+            body.dark-mode .circulo-accion:hover {
+                background: rgba(0,212,255,0.15);
+            }
 
     body.dark-mode .contenido-panel::-webkit-scrollbar-thumb {
         background: #30363d;
@@ -516,6 +516,250 @@
         body.dark-mode .contenido-panel::-webkit-scrollbar-thumb:hover {
             background: #444;
         }
+
+    /* ════════════════════════════════════════════════════════════ */
+    /* 🔍 ESTILOS: BUSCADOR CON SUGERENCIAS (Nominatim API)        */
+    /* ════════════════════════════════════════════════════════════ */
+
+    /* Contenedor del buscador */
+    .buscador-contenedor {
+        position: relative;
+        width: 100%;
+    }
+
+    /* Input del buscador */
+    .input-buscador {
+        border: none !important;
+        padding: 10px !important;
+        font-size: var(--font-size-base, 1rem) !important;
+        outline: none !important;
+        width: 100% !important;
+        background: transparent !important;
+        color: inherit !important;
+    }
+
+    .input-buscador::placeholder {
+        color: #999;
+    }
+
+    body.dark-mode .input-buscador::placeholder {
+        color: #8b949e;
+    }
+
+    /* Botón limpiar */
+    .btn-limpiar-buscador {
+        background: none;
+        border: none;
+        color: #999;
+        cursor: pointer;
+        font-size: 1.1rem;
+        padding: 0 5px;
+        display: none;
+        transition: color 0.2s ease;
+        margin-right: 5px;
+    }
+
+    .btn-limpiar-buscador:hover {
+        color: #667eea;
+    }
+
+    body.dark-mode .btn-limpiar-buscador {
+        color: #8b949e;
+    }
+
+    body.dark-mode .btn-limpiar-buscador:hover {
+        color: #00d4ff;
+    }
+
+    /* Lista de sugerencias */
+    .lista-sugerencias {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-top: none;
+        border-radius: 0 0 12px 12px;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        max-height: 300px;
+        overflow-y: auto;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        z-index: 1001;
+    }
+
+    body.dark-mode .lista-sugerencias {
+        background: #161b22;
+        border-color: #30363d;
+    }
+
+    /* Item de sugerencia */
+    .item-sugerencia {
+        padding: 12px 15px;
+        cursor: pointer;
+        border-bottom: 1px solid #f0f0f0;
+        transition: background-color 0.2s ease;
+        color: #333;
+        font-size: 0.95rem;
+        line-height: 1.4;
+    }
+
+    .item-sugerencia:last-child {
+        border-bottom: none;
+    }
+
+    .item-sugerencia:hover {
+        background-color: #f5f5f5;
+    }
+
+    body.dark-mode .item-sugerencia {
+        color: #e6edf3;
+        border-bottom-color: #30363d;
+    }
+
+    body.dark-mode .item-sugerencia:hover {
+        background-color: rgba(0, 212, 255, 0.1);
+    }
+
+    /* Mensaje de estado */
+    .status-mensaje {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-top: none;
+        border-radius: 0 0 12px 12px;
+        padding: 12px 15px;
+        color: #999;
+        font-size: 0.9rem;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        z-index: 1001;
+    }
+
+    body.dark-mode .status-mensaje {
+        background: #161b22;
+        border-color: #30363d;
+        color: #8b949e;
+    }
+
+    .status-mensaje.error {
+        color: #ef5350;
+    }
+
+    .status-mensaje.cargando {
+        color: #667eea;
+    }
+
+    body.dark-mode .status-mensaje.cargando {
+        color: #00d4ff;
+    }
+
+    /* Ubicación seleccionada */
+    .ubicacion-seleccionada {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        border-radius: 0 0 12px 12px;
+        padding: 12px 15px;
+        border: 1px solid #ddd;
+        border-top: none;
+        z-index: 1001;
+        animation: slideIn 0.3s ease;
+    }
+
+    body.dark-mode .ubicacion-seleccionada {
+        background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+        border-color: #30363d;
+    }
+
+    @@keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-5px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .ubicacion-titulo {
+        font-size: 0.75rem;
+        color: #999;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+    }
+
+    body.dark-mode .ubicacion-titulo {
+        color: #8b949e;
+    }
+
+    .ubicacion-nombre {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 8px;
+        word-break: break-word;
+    }
+
+    body.dark-mode .ubicacion-nombre {
+        color: #e6edf3;
+    }
+
+    .ubicacion-coords {
+        display: flex;
+        gap: 15px;
+        font-size: 0.8rem;
+        color: #666;
+    }
+
+    body.dark-mode .ubicacion-coords {
+        color: #8b949e;
+    }
+
+    .ubicacion-coords span span {
+        font-weight: 600;
+        color: #667eea;
+    }
+
+    body.dark-mode .ubicacion-coords span span {
+        color: #00d4ff;
+    }
+
+    /* Scrollbar personalizado */
+    .lista-sugerencias::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .lista-sugerencias::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .lista-sugerencias::-webkit-scrollbar-thumb {
+        background: #ddd;
+        border-radius: 3px;
+    }
+
+    .lista-sugerencias::-webkit-scrollbar-thumb:hover {
+        background: #999;
+    }
+
+    body.dark-mode .lista-sugerencias::-webkit-scrollbar-thumb {
+        background: #30363d;
+    }
+
+    body.dark-mode .lista-sugerencias::-webkit-scrollbar-thumb:hover {
+        background: #444;
+    }
+
 </style>
 
 <div class="menu-container d-flex app-viewport">
@@ -544,11 +788,44 @@
             <button id="btnToggleMenu" class="btn rounded-circle shadow">
                 <i class="bi bi-list fs-4"></i>
             </button>
-            <div class="grupo-buscador flex-grow-1">
-                <i class="bi bi-geo-alt-fill text-danger ms-2"></i>
-                <input type="text" placeholder="¿A dónde vamos hoy?">
-                <a asp-action="MejorRuta" class="btn btn-primary rounded-circle shadow-sm"
-                   style="background-color:#1E3C54;border:none;flex-shrink:0;">
+            <!-- ══ BUSCADOR CON SUGERENCIAS (Nominatim API) ══ -->
+            <div class="buscador-contenedor flex-grow-1">
+                <div class="grupo-buscador">
+                    <i class="bi bi-geo-alt-fill text-danger ms-2"></i>
+                    <input 
+                        type="text" 
+                        id="inputBuscador" 
+                        class="input-buscador" 
+                        placeholder="¿A dónde vamos hoy?"
+                        autocomplete="off"
+                        spellcheck="false"
+                    >
+                    <button id="btnLimpiarBuscador" class="btn-limpiar-buscador" title="Limpiar búsqueda" style="display: none;">
+                        <i class="bi bi-x-circle"></i>
+                    </button>
+                </div>
+
+                <!-- Lista de sugerencias (desplegable) -->
+                <ul id="listaSugerencias" class="lista-sugerencias" style="display: none;">
+                    <!-- Las sugerencias se inyectan dinámicamente aquí -->
+                </ul>
+
+                <!-- Mensaje de estado (cargando, error, sin resultados) -->
+                <div id="statusMensaje" class="status-mensaje" style="display: none;"></div>
+
+                <!-- Información de ubicación seleccionada -->
+                <div id="ubicacionSeleccionada" class="ubicacion-seleccionada" style="display: none;">
+                    <div class="ubicacion-titulo">📍 Ubicación seleccionada:</div>
+                    <div id="ubicacionNombre" class="ubicacion-nombre"></div>
+                    <div class="ubicacion-coords">
+                        <span>Lat: <span id="ubicacionLat">-</span></span>
+                        <span>Lon: <span id="ubicacionLon">-</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <a asp-action="MejorRuta" class="btn btn-primary rounded-circle shadow-sm"
+               style="background-color:#1E3C54;border:none;flex-shrink:0;">
                     <i class="bi bi-search"></i>
                 </a>
             </div>
@@ -571,81 +848,12 @@
             </div>
 
             <div class="contenido-panel" id="listadoParadas">
-
-                <div class="elemento-parada-nuevo">
-                    <div class="etiqueta-distancia-parada">133 m</div>
-                    <div class="detalles-parada">
-                        <div class="icono-izquierda-parada"><i class="bi bi-geo-alt-fill"></i></div>
-                        <div class="texto-parada">
-                            <div class="direccion-parada">Dirección: Tulyehualco</div>
-                            <div class="rutas-parada">Rutas: 25A 25B 25C</div>
-                        </div>
-                    </div>
-                    <div class="acciones-parada">
-                        <button class="circulo-accion" title="Ir a parada"><i class="bi bi-crosshair"></i></button>
-                        <button class="circulo-accion" title="Más información"><i class="bi bi-info-circle"></i></button>
-                    </div>
+                <!-- Las paradas se cargarán dinámicamente desde JavaScript -->
+                <div style="text-align: center; padding: 2rem; color: #999;">
+                    <i class="bi bi-hourglass-split" style="font-size: 2rem;"></i>
+                    <p>Cargando paradas cercanas...</p>
                 </div>
-
-                <div class="elemento-parada-nuevo">
-                    <div class="etiqueta-distancia-parada">270 m</div>
-                    <div class="detalles-parada">
-                        <div class="icono-izquierda-parada"><i class="bi bi-geo-alt-fill"></i></div>
-                        <div class="texto-parada">
-                            <div class="direccion-parada">Dirección: Tren Ligero, Francisco...</div>
-                            <div class="rutas-parada">Rutas: 25A 25B 25C</div>
-                        </div>
-                    </div>
-                    <div class="acciones-parada">
-                        <button class="circulo-accion" title="Ir a parada"><i class="bi bi-crosshair"></i></button>
-                        <button class="circulo-accion" title="Más información"><i class="bi bi-info-circle"></i></button>
-                    </div>
-                </div>
-
-                <div class="elemento-parada-nuevo">
-                    <div class="etiqueta-distancia-parada">322 m</div>
-                    <div class="detalles-parada">
-                        <div class="icono-izquierda-parada"><i class="bi bi-geo-alt-fill"></i></div>
-                        <div class="texto-parada">
-                            <div class="direccion-parada">Dirección: Tulyehualco</div>
-                            <div class="rutas-parada">Rutas: 25A 25B 25C</div>
-                        </div>
-                    </div>
-                    <div class="acciones-parada">
-                        <button class="circulo-accion" title="Ir a parada"><i class="bi bi-crosshair"></i></button>
-                        <button class="circulo-accion" title="Más información"><i class="bi bi-info-circle"></i></button>
-                    </div>
-                </div>
-
-                <div class="elemento-parada-nuevo">
-                    <div class="etiqueta-distancia-parada">322 m</div>
-                    <div class="detalles-parada">
-                        <div class="icono-izquierda-parada"><i class="bi bi-geo-alt-fill"></i></div>
-                        <div class="texto-parada">
-                            <div class="direccion-parada">Dirección: Tulyehualco</div>
-                            <div class="rutas-parada">Rutas: 25A 25B 25C</div>
-                        </div>
-                    </div>
-                    <div class="acciones-parada">
-                        <button class="circulo-accion" title="Ir a parada"><i class="bi bi-crosshair"></i></button>
-                        <button class="circulo-accion" title="Más información"><i class="bi bi-info-circle"></i></button>
-                    </div>
-                </div>
-
-                <div class="elemento-parada-nuevo">
-                    <div class="etiqueta-distancia-parada">322 m</div>
-                    <div class="detalles-parada">
-                        <div class="icono-izquierda-parada"><i class="bi bi-geo-alt-fill"></i></div>
-                        <div class="texto-parada">
-                            <div class="direccion-parada">Dirección: Tulyehualco</div>
-                            <div class="rutas-parada">Rutas: 25A 25B 25C</div>
-                        </div>
-                    </div>
-                    <div class="acciones-parada">
-                        <button class="circulo-accion" title="Ir a parada"><i class="bi bi-crosshair"></i></button>
-                        <button class="circulo-accion" title="Más información"><i class="bi bi-info-circle"></i></button>
-                    </div>
-                </div>
+            </div>
 
             </div>
         </div>
@@ -653,6 +861,9 @@
 </div>
 
 @section Scripts {
+    <!-- Script del Buscador de Direcciones (Nominatim API) -->
+    <script src="~/js/Pasajero/BuscadorDirecciones.js"></script>
+
     <script>
         /* ── Toggle sidebar ── */
         document.addEventListener('DOMContentLoaded', function () {

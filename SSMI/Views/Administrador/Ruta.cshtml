@@ -1,0 +1,535 @@
+﻿
+@using SSMI.Models.ViewModels
+@model RutaViewModelAdm
+
+@{
+    ViewData["Title"] = "Gestión de Rutas";
+}
+
+<style>
+    .area-admin {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 2rem;
+    }
+
+    .encabezado-admin {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 2rem;
+        gap: 2rem;
+    }
+
+        .encabezado-admin h2 {
+            color: white;
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+            .encabezado-admin h2 i {
+                font-size: 2.5rem;
+            }
+
+    .navegacion-admin {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+        .navegacion-admin a {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+            .navegacion-admin a:hover {
+                background-color: rgba(255, 255, 255, 0.3);
+                transform: translateY(-2px);
+            }
+
+            .navegacion-admin a.active {
+                background-color: #00d4ff;
+                color: #1E3C54;
+                border-color: #00bcd4;
+            }
+
+    .contenido-admin {
+        background-color: white;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .seccion-admin {
+        margin-bottom: 3rem;
+    }
+
+        .seccion-admin h3 {
+            color: #667eea;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 1rem;
+        }
+
+            .seccion-admin h3 i {
+                font-size: 1.75rem;
+            }
+
+    .tabla-contenedor {
+        overflow-x: auto;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+    }
+
+    .tabla {
+        width: 100%;
+        border-collapse: collapse;
+        background-color: white;
+    }
+
+        .tabla thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+            .tabla thead th {
+                padding: 1rem;
+                text-align: left;
+                font-weight: 700;
+                font-size: 0.95rem;
+            }
+
+        .tabla tbody tr {
+            border-bottom: 1px solid #e0e0e0;
+            transition: background-color 0.2s ease;
+        }
+
+            .tabla tbody tr:hover {
+                background-color: #f5f5f5;
+            }
+
+            .tabla tbody td {
+                padding: 1rem;
+                color: #333;
+            }
+
+    .badge-estado {
+        display: inline-block;
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+        .badge-estado.activa {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .badge-estado.inactiva {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+    .acciones-celda {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .btn-admin {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        font-size: 0.9rem;
+    }
+
+        .btn-admin i {
+            margin-right: 0.3rem;
+        }
+
+    .btn-editar {
+        background-color: #667eea;
+        color: white;
+    }
+
+        .btn-editar:hover {
+            background-color: #5568d3;
+            transform: translateY(-2px);
+        }
+
+    .btn-eliminar {
+        background-color: #ef5350;
+        color: white;
+    }
+
+        .btn-eliminar:hover {
+            background-color: #d32f2f;
+            transform: translateY(-2px);
+        }
+
+    .btn-agregar {
+        background-color: #00d4ff;
+        color: #1E3C54;
+        padding: 0.75rem 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+        .btn-agregar:hover {
+            background-color: #00bcd4;
+            box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
+        }
+
+    .vacio-mensaje {
+        text-align: center;
+        padding: 3rem;
+        color: #999;
+    }
+
+        .vacio-mensaje i {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 1rem;
+            color: #bbb;
+        }
+
+    .alerta {
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+
+        .alerta.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #ef5350;
+        }
+
+        .alerta.exito {
+            background-color: #d4edda;
+            color: #155724;
+            border-left: 4px solid #4caf50;
+        }
+
+    .ruta-expandible {
+        cursor: pointer;
+        user-select: none;
+    }
+
+        .ruta-expandible:hover {
+            background-color: #f0f0f0 !important;
+        }
+
+    .variantes-relacionadas {
+        display: none;
+        background-color: #f9f9f9;
+    }
+
+        .variantes-relacionadas.mostrar {
+            display: table-row-group;
+        }
+
+    .variante-fila {
+        background-color: #f9f9f9;
+    }
+</style>
+
+<style>
+    @@media (max-width: 768px) {
+        .area-admin {
+            padding: 1rem;
+        }
+
+        .encabezado-admin {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+            .encabezado-admin h2 {
+                font-size: 1.5rem;
+            }
+
+        .navegacion-admin {
+            width: 100%;
+        }
+
+        .contenido-admin {
+            padding: 1rem;
+        }
+
+        .tabla {
+            font-size: 0.85rem;
+        }
+
+            .tabla thead th,
+            .tabla tbody td {
+                padding: 0.75rem;
+            }
+
+        .btn-admin {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.85rem;
+        }
+
+        .acciones-celda {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<div class="d-flex flex-column area-admin">
+    <!-- ══ HEADER ══ -->
+    <div class="encabezado-admin">
+        <h2>
+            <i class="bi bi-bus-front"></i> Gestión de Rutas
+        </h2>
+        <div class="navegacion-admin">
+            <a asp-controller="Administrador" asp-action="Paradas">Paradas</a>
+            <a asp-controller="Administrador" asp-action="Camiones">Camiones</a>
+            <a asp-controller="Administrador" asp-action="Conductores">Conductores</a>
+            <a asp-controller="Administrador" asp-action="Monitoreo">Monitoreo</a>
+            <a asp-controller="Administrador" asp-action="Ruta" class="active">Rutas</a>
+        </div>
+    </div>
+
+    <!-- ══ CONTENIDO ══ -->
+    <div class="contenido-admin">
+        <!-- Mensajes de error -->
+        @if (!string.IsNullOrEmpty(ViewBag.Error))
+        {
+            <div class="alerta error">
+                <i class="bi bi-exclamation-circle"></i> @ViewBag.Error
+            </div>
+        }
+
+        @if (!string.IsNullOrEmpty(ViewBag.Mensaje))
+        {
+            <div class="alerta exito">
+                <i class="bi bi-check-circle"></i> @ViewBag.Mensaje
+            </div>
+        }
+
+        <!-- ══ SECCIÓN RUTAS ══ -->
+        <div class="seccion-admin">
+            <h3>
+                <i class="bi bi-diagram-3"></i> Rutas Registradas
+            </h3>
+
+            <button class="btn btn-admin btn-agregar" data-bs-toggle="modal" data-bs-target="#modalAgregarRuta">
+                <i class="bi bi-plus-circle"></i> Agregar Ruta
+            </button>
+
+            @if (Model?.Rutas != null && Model.Rutas.Count > 0)
+            {
+                <div class="tabla-contenedor">
+                    <table class="tabla">
+                        <thead>
+                            <tr>
+                                <th style="width: 30%;">Nombre</th>
+                                <th style="width: 35%;">Descripción</th>
+                                <th style="width: 15%;">Estado</th>
+                                <th style="width: 20%;">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var ruta in Model.Rutas)
+                            {
+                                <tr class="ruta-expandible" onclick="toggleVariantes('@ruta.IdRuta')">
+                                    <td>
+                                        <strong>@ruta.Nombre</strong>
+                                    </td>
+                                    <td>
+                                        @ruta.Descripcion
+                                    </td>
+                                    <td>
+                                        @if (ruta.Activa)
+                                        {
+                                            <span class="badge-estado activa">
+                                                <i class="bi bi-check-circle-fill"></i> Activa
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge-estado inactiva">
+                                                <i class="bi bi-x-circle-fill"></i> Inactiva
+                                            </span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="acciones-celda">
+                                            <button class="btn btn-admin btn-editar" onclick="editarRuta('@ruta.IdRuta'); event.stopPropagation();">
+                                                <i class="bi bi-pencil"></i> Editar
+                                            </button>
+                                            <button class="btn btn-admin btn-eliminar" onclick="eliminarRuta('@ruta.IdRuta'); event.stopPropagation();">
+                                                <i class="bi bi-trash"></i> Eliminar
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <!-- Variantes de esta ruta -->
+                                <tr class="variantes-relacionadas" id="variantes-@ruta.IdRuta">
+                                    <td colspan="4">
+                                        <div style="padding: 1rem; background-color: #f9f9f9; border-radius: 6px;">
+                                            <h5 style="margin-top: 0; color: #764ba2;">
+                                                <i class="bi bi-shuffle"></i> Variantes de la Ruta: @ruta.Nombre
+                                            </h5>
+                                            @{
+                                                var variantesRuta = Model.Variantes.Where(v => v.IdRuta == ruta.IdRuta).ToList();
+                                            }
+                                            @if (variantesRuta.Count > 0)
+                                            {
+                                                <table class="tabla" style="margin-top: 1rem; border: 1px solid #e0e0e0;">
+                                                    <thead style="background-color: #764ba2;">
+                                                        <tr>
+                                                            <th style="width: 30%;">Nombre Variante</th>
+                                                            <th style="width: 40%;">Sentido</th>
+                                                            <th style="width: 15%;">Estado</th>
+                                                            <th style="width: 15%;">Acciones</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach (var variante in variantesRuta)
+                                                        {
+                                                            <tr class="variante-fila">
+                                                                <td>
+                                                                    <strong>@(variante.Nombre ?? variante.Nombre_Variante)</strong>
+                                                                </td>
+                                                                <td>
+                                                                    @variante.Sentido
+                                                                </td>
+                                                                <td>
+                                                                    @if (variante.Activa)
+                                                                    {
+                                                                        <span class="badge-estado activa">
+                                                                            <i class="bi bi-check-circle-fill"></i> Activa
+                                                                        </span>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <span class="badge-estado inactiva">
+                                                                            <i class="bi bi-x-circle-fill"></i> Inactiva
+                                                                        </span>
+                                                                    }
+                                                                </td>
+                                                                <td>
+                                                                    <div class="acciones-celda">
+                                                                        <button class="btn btn-admin btn-editar" onclick="editarVariante('@variante.IdRutaVariante'); event.stopPropagation();">
+                                                                            <i class="bi bi-pencil"></i> Editar
+                                                                        </button>
+                                                                        <button class="btn btn-admin btn-eliminar" onclick="eliminarVariante('@variante.IdRutaVariante'); event.stopPropagation();">
+                                                                            <i class="bi bi-trash"></i> Eliminar
+                                                                        </button>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            }
+                                            else
+                                            {
+                                                <div class="vacio-mensaje">
+                                                    <i class="bi bi-shuffle"></i>
+                                                    <p>No hay variantes registradas para esta ruta</p>
+                                                </div>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="vacio-mensaje">
+                    <i class="bi bi-bus-front"></i>
+                    <h4>No hay rutas registradas</h4>
+                    <p>Comienza agregando una nueva ruta para tu administración</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- ══ MODAL AGREGAR RUTA ══ -->
+<div class="modal fade" id="modalAgregarRuta" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-plus-circle"></i> Agregar Nueva Ruta</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formAgregarRuta">
+                    <div class="mb-3">
+                        <label class="form-label">Nombre de la Ruta</label>
+                        <input type="text" class="form-control" placeholder="Ej: Ruta Centro" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Descripción</label>
+                        <textarea class="form-control" rows="3" placeholder="Descripción de la ruta"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-admin btn-agregar">Guardar Ruta</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleVariantes(rutaId) {
+        const elemento = document.getElementById('variantes-' + rutaId);
+        if (elemento) {
+            elemento.classList.toggle('mostrar');
+        }
+    }
+
+    function editarRuta(rutaId) {
+        console.log('Editar ruta: ' + rutaId);
+        // TODO: Implementar lógica de edición
+    }
+
+    function eliminarRuta(rutaId) {
+        if (confirm('¿Está seguro que desea eliminar esta ruta?')) {
+            console.log('Eliminar ruta: ' + rutaId);
+            // TODO: Implementar lógica de eliminación
+        }
+    }
+
+    function editarVariante(varianteId) {
+        console.log('Editar variante: ' + varianteId);
+        // TODO: Implementar lógica de edición
+    }
+
+    function eliminarVariante(varianteId) {
+        if (confirm('¿Está seguro que desea eliminar esta variante?')) {
+            console.log('Eliminar variante: ' + varianteId);
+            // TODO: Implementar lógica de eliminación
+        }
+    }
+</script>

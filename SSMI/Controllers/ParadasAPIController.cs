@@ -6,7 +6,9 @@ using SSMI.Services;
 
 namespace SSMI.Controllers
 {
-    public class ParadasAPIController : Controller
+    [ApiController]
+    [Route("api/paradas")]
+    public class ParadasAPIController : ControllerBase
     {
         private readonly IRutasService _rutasService;
 
@@ -15,19 +17,38 @@ namespace SSMI.Controllers
             _rutasService = rutasService;
         }
 
-
-        [HttpPost]
+        /// <summary>
+        /// Obtiene paradas cercanas a una ubicación específica
+        /// </summary>
+        [HttpPost("obtener-cercanas")]
         public IActionResult ObtenerParadasCercanas([FromBody] UbicacionRequest request)
         {
-            var paradas = _rutasService.ObtenerParadasCercanas(request);
-            return Json(paradas);
+            try
+            {
+                var paradas = _rutasService.ObtenerParadasCercanas(request);
+                return Ok(paradas);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
         }
 
-        [HttpGet]
+        /// <summary>
+        /// Obtiene todas las paradas disponibles
+        /// </summary>
+        [HttpGet("obtener-todas")]
         public IActionResult ObtenerTodasLasParadas()
         {
-            var paradas = _rutasService.ObtenerTodasLasParadas();
-            return Json(paradas);
+            try
+            {
+                var paradas = _rutasService.ObtenerTodasLasParadas();
+                return Ok(paradas);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
         }
     }
 }

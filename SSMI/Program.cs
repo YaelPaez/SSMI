@@ -11,6 +11,30 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+// ?? CONFIGURAR CORS ??
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()          // Permitir cualquier origen
+              .AllowAnyMethod()          // Permitir cualquier método (GET, POST, etc)
+              .AllowAnyHeader();         // Permitir cualquier header
+    });
+
+    options.AddPolicy("AllowSpecific", policy =>
+    {
+        policy.WithOrigins(
+                "https://ssmi.site",
+                "http://localhost:3035",
+                "http://localhost:3000",
+                "http://127.0.0.1:3035"
+            )
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials();
+    });
+});
+
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -67,8 +91,14 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+// ?? USAR CORS ??
+app.UseCors("AllowAll");
+
 app.UseAuthentication();
 app.UseAuthorization();
+
+// ?? MAPEAR RUTAS ??
+app.MapControllers();  // Para rutas de atributos [Route]
 
 app.MapControllerRoute(
     name: "default",
