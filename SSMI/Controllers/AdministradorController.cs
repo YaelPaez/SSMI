@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SSMI.Data;
+using SSMI.Funciones;
+using SSMI.Models;
 using SSMI.Models.ViewModels;
+using System.Text;
 
 namespace SSMI.Controllers
 {
@@ -9,11 +12,13 @@ namespace SSMI.Controllers
     {
         private readonly ConsultasRutasAdm _consultasRutasAdm;
         private readonly IConfiguration _configuration;
+        private readonly ConsultaConductor _consultaConductor;
 
         public AdministradorController(ConsultasRutasAdm consultasRutasAdm, IConfiguration configuration)
         {
             _consultasRutasAdm = consultasRutasAdm;
             _configuration = configuration;
+            _consultaConductor = new ConsultaConductor();
         }
         // GET: Administrador/Index (Redirecciona a Paradas por defecto)
         public ActionResult Index()
@@ -135,35 +140,80 @@ namespace SSMI.Controllers
         // GET: Administrador/Conductores/Index
         public ActionResult Conductores()
         {
-            return RedirectToAction("Index", "Conductores");
+            return RedirectToAction(nameof(ConductoresIndex));
         }
 
-        // GET: Administrador/Conductores/Index (Listar)
+        // GET: Administrador/ConductoresIndex (Listar)
         public ActionResult ConductoresIndex()
         {
-            // TODO: Traer lista de conductores desde la BD
-            return View("ConductoresEdit");
+            // Recuperamos tu cadena de conexión exacta
+            var cadenaConexion = _configuration.GetConnectionString("StringCONSQLocal") ?? string.Empty;
+
+            // Consultamos la lista de la BD usando el método corregido
+            List<Conductor> listaConductores = _consultaConductor.ObtenerConductoresAdmin(cadenaConexion);
+
+            // Retornamos la vista pasando los datos de los conductores
+            return View(listaConductores);
         }
 
         // GET: Administrador/Conductores/Create
         public ActionResult ConductoresCreate()
         {
-            return View("ConductoresEdit");
+            return View();
         }
 
         // POST: Administrador/Conductores/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult ConductoresCreate(IFormCollection collection)
+        public async Task<ActionResult> ConductoresCreate(string nombre, string email)
         {
+            if (string.IsNullOrWhiteSpace(nombre) || string.IsNullOrWhiteSpace(email))
+            {
+                ViewBag.Error = "El nombre y el correo electrónico son campos obligatorios.";
+                return View();
+            }
+
             try
             {
-                // TODO: Implementar lógica de creación de conductor
-                return RedirectToAction(nameof(ConductoresIndex));
+                var cadenaConexion = _configuration.GetConnectionString("StringCONSQLocal") ?? string.Empty;
+
+                // 1. Generar la contraseña temporal aleatoria
+                string contrasenaTemporal = GenerarContrasenaAleatoria(8);
+
+                // 2. Registrar en la Base de Datos mediante la capa Data
+                bool registrado = _consultaConductor.PreRegistrarConductor(nombre, email, contrasenaTemporal, cadenaConexion);
+
+                if (registrado)
+                {
+                    // 3. ENVIAR CORREO ELECTRÓNICO (MailKit integrado con tu clase Correo)
+                    string asunto = "Bienvenido a SSMI - Credenciales de Acceso";
+                    string mensaje = $@"
+                <h3>¡Hola, {nombre}!</h3>
+                <p>Has sido registrado como conductor en el Sistema de Seguimiento de Movilidad Integrada (SSMI).</p>
+                <p>Usa las siguientes credenciales temporales para ingresar al sistema:</p>
+                <ul>
+                    <li><strong>Usuario:</strong> {email}</li>
+                    <li><strong>Contraseña Temporal:</strong> {contrasenaTemporal}</li>
+                </ul>
+                <p><em>Al iniciar sesión por primera vez deberás completar tus datos personales.</em></p>";
+
+                    // Instanciamos tu clase e invocamos el método con tus parámetros específicos
+                    Correo correoServicio = new Correo();
+                    await correoServicio.EnviarCorreoSMTP(nombre, email, asunto, mensaje);
+
+                    TempData["Exito"] = $"El conductor {nombre} fue invitado con éxito. Se envió la contraseña temporal a su correo.";
+                    return RedirectToAction(nameof(ConductoresIndex));
+                }
+                else
+                {
+                    ViewBag.Error = "No se pudo completar el pre-registro en la base de datos.";
+                    return View();
+                }
             }
-            catch
+            catch (Exception ex)
             {
-                return View("Conductores/Create");
+                ViewBag.Error = "Ocurrió un error inesperado: " + ex.Message;
+                return View();
             }
         }
 
@@ -250,5 +300,20 @@ namespace SSMI.Controllers
                 return View(new RutaViewModelAdm());
             }
         }
+
+        private string GenerarContrasenaAleatoria(int longitud)
+        {
+            const string caracteres = "ABCDEFGHJKLMNOPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz0123456789!@#$%^&*";
+            StringBuilder resultado = new StringBuilder();
+            Random rnd = new Random();
+
+            while (0 < longitud--)
+            {
+                resultado.Append(caracteres[rnd.Next(caracteres.Length)]);
+            }
+
+            return resultado.ToString();
+        }
+
     }
 }

@@ -1,0 +1,331 @@
+﻿@model SSMI.Models.ViewModels.CompletarPerfilViewModel
+
+@{
+    ViewData["Title"] = "Completar Perfil de Conductor";
+    Layout = "~/Views/Shared/_UsuarioLayout.cshtml";
+}
+
+<style>
+    /* ───────── VARIABLES ───────── */
+    :root {
+        --cian: #00d4ff;
+        --azul-boton: #5b58ff;
+        --fondo-oscuro: #0d1b2a;
+        --fondo-secundario: #1b3a4b;
+    }
+
+    /* ───────── BODY CONFIGURATION ───────── */
+    body {
+        margin: 0;
+        min-height: 100vh;
+        padding: 30px 15px;
+        font-family: 'Segoe UI', system-ui, sans-serif;
+        background: linear-gradient(135deg, #0d1b2a 0%, #1b3a4b 100%);
+        overflow-x: hidden;
+    }
+
+    /* ───────── CONTENEDOR PRINCIPAL ───────── */
+    .contenedor-login {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        padding: 70px 15px 30px 15px;
+        animation: aparecer 0.8s ease;
+    }
+
+    .tarjeta-login {
+        width: 950px;
+        max-width: 100%;
+        border-radius: 28px;
+        overflow: hidden;
+        display: flex;
+        backdrop-filter: blur(20px);
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.08);
+        box-shadow: 0 20px 45px rgba(0,0,0,0.35);
+    }
+
+    /* ───────── DECORACIÓN IZQUIERDA ───────── */
+    .decoracion-login {
+        flex: 1;
+        min-width: 320px;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255,255,255,0.03);
+    }
+
+    .contenido-decoracion {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+        padding: 30px;
+    }
+
+        .contenido-decoracion h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            color: white;
+        }
+
+        .contenido-decoracion p {
+            color: rgba(255,255,255,0.75);
+            line-height: 1.7;
+            font-size: 1rem;
+        }
+
+    /* ───────── FORMULARIO ───────── */
+    .contenedor-formulario {
+        flex: 1.5;
+        padding: 45px;
+    }
+
+    .titulo-formulario {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+        .titulo-formulario h1 {
+            color: white;
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .titulo-formulario p {
+            color: rgba(255,255,255,0.7);
+            margin: 0;
+        }
+
+    /* ───────── FILAS ───────── */
+    .fila-personalizada {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+    }
+
+    .columna-personalizada {
+        flex: 1;
+        min-width: 220px;
+    }
+
+    /* ───────── INPUTS ───────── */
+    .entrada-personalizada {
+        width: 100%;
+        padding: 15px 18px;
+        border-radius: 15px;
+        border: 1px solid rgba(255,255,255,0.12);
+        background: rgba(255,255,255,0.06);
+        color: white;
+        font-size: 0.95rem;
+        outline: none;
+        transition: 0.3s ease;
+        backdrop-filter: blur(10px);
+        box-sizing: border-box;
+    }
+
+        .entrada-personalizada::placeholder {
+            color: rgba(255,255,255,0.45);
+        }
+
+        .entrada-personalizada:focus {
+            border-color: var(--cian);
+            box-shadow: 0 0 15px rgba(0,212,255,0.25);
+            background: rgba(255,255,255,0.08);
+        }
+
+        .entrada-personalizada[readonly] {
+            background: rgba(255,255,255,0.02);
+            color: rgba(255,255,255,0.5);
+            cursor: not-allowed;
+            border-color: rgba(255,255,255,0.05);
+        }
+
+    /* ───────── SEPARADORES ───────── */
+    .subtitulo-seccion {
+        color: var(--cian);
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        margin-top: 25px;
+        margin-bottom: 15px;
+        text-shadow: 0 0 10px rgba(0,212,255,0.4);
+    }
+
+    /* ───────── BOTÓN ───────── */
+    .btn-personalizado {
+        width: 100%;
+        border: none;
+        padding: 16px;
+        border-radius: 16px;
+        background: linear-gradient(135deg, #5b58ff, #00d4ff);
+        color: white;
+        font-size: 1rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        cursor: pointer;
+        transition: 0.3s ease;
+        box-shadow: 0 12px 25px rgba(0,0,0,0.25);
+    }
+
+        .btn-personalizado:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 18px 30px rgba(0,0,0,0.35);
+        }
+
+    /* ───────── MENSAJES DE ERROR ───────── */
+    .mensaje-error {
+        margin-top: 18px;
+        text-align: center;
+        color: #ff7b7b;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .error-span {
+        display: block;
+        color: #ff7b7b;
+        font-size: 0.82rem;
+        margin-top: 5px;
+        padding-left: 5px;
+    }
+
+    @@keyframes aparecer {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<div class="contenedor-login">
+    <div class="tarjeta-login">
+
+        <div class="decoracion-login">
+            <div class="contenido-decoracion">
+                <h2>SSMI</h2>
+                <p style="text-align: justify;">
+                    ¡Bienvenido al equipo! Por favor, completa la información de tu perfil de conductor para activar formalmente tu acceso al sistema inteligente.
+                    <br><br><br>
+                    • Los apellidos solo deben contener letras.<br>
+                    • Especifica la empresa de transportes asignada.<br>
+                    • Tu contraseña debe tener una longitud de 6 a 12 caracteres.<br>
+                    • Es obligatorio incluir al menos un carácter especial (ej. #, !, $, %, &).
+                </p>
+            </div>
+        </div>
+
+        <div class="contenedor-formulario">
+            <div class="titulo-formulario">
+                <h1>Activar Cuenta</h1>
+                <p>Completa tus datos personales y de acceso</p>
+            </div>
+
+            <div asp-validation-summary="ModelOnly" class="mensaje-error"></div>
+
+            <form asp-action="CompletarPerfil" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="subtitulo-seccion">Datos de Identificación</div>
+
+                <div class="fila-personalizada">
+                    <div class="columna-personalizada">
+                        <input type="text"
+                               class="entrada-personalizada"
+                               value="@Model.Email"
+                               readonly
+                               title="Este será tu identificador de acceso." />
+                    </div>
+                </div>
+
+                <div class="fila-personalizada">
+                    <div class="columna-personalizada">
+                        <input asp-for="ApellidoPaterno"
+                               type="text"
+                               class="entrada-personalizada"
+                               placeholder="Apellido Paterno"
+                               oninput="this.value=this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]/g,'')"
+                               required>
+                        <span asp-validation-for="ApellidoPaterno" class="error-span"></span>
+                    </div>
+
+                    <div class="columna-personalizada">
+                        <input asp-for="ApellidoMaterno"
+                               type="text"
+                               class="entrada-personalizada"
+                               placeholder="Apellido Materno"
+                               oninput="this.value=this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]/g,'')"
+                               required>
+                        <span asp-validation-for="ApellidoMaterno" class="error-span"></span>
+                    </div>
+                </div>
+
+                <div class="fila-personalizada">
+                    <div class="columna-personalizada">
+                        <input asp-for="Empresa"
+                               type="text"
+                               class="entrada-personalizada"
+                               placeholder="Empresa (Ej: Transportes del Norte)"
+                               required>
+                        <span asp-validation-for="Empresa" class="error-span"></span>
+                    </div>
+                </div>
+
+                <div class="subtitulo-seccion">Establecer Contraseña</div>
+
+                <div class="fila-personalizada">
+                    <div class="columna-personalizada">
+                        <input asp-for="NuevaContrasena"
+                               type="password"
+                               class="entrada-personalizada"
+                               placeholder="Nueva Contraseña (6-12 carac. + 1 especial)"
+                               maxlength="12"
+                               oninput="this.value = this.value.replace(/\s/g, '');"
+                               required>
+                        <span asp-validation-for="NuevaContrasena" class="error-span"></span>
+                    </div>
+
+                    <div class="columna-personalizada">
+                        <input asp-for="ConfirmarContrasena"
+                               type="password"
+                               class="entrada-personalizada"
+                               placeholder="Confirmar Contraseña"
+                               maxlength="12"
+                               oninput="this.value = this.value.replace(/\s/g, '');"
+                               required>
+                        <span asp-validation-for="ConfirmarContrasena" class="error-span"></span>
+                    </div>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <button type="submit" class="btn-personalizado">
+                        GUARDAR Y ACTIVAR CUENTA
+                    </button>
+                </div>
+
+                @if (ViewBag.Error != null)
+                {
+                    <div class="mensaje-error">
+                        @ViewBag.Error
+                    </div>
+                }
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

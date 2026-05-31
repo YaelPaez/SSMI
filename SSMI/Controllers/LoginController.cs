@@ -70,9 +70,24 @@ namespace SSMI.Controllers
             }
             else
             {
+                if (string.Equals(usrEnc.Estado, "Inactivo", StringComparison.OrdinalIgnoreCase))
+                {
+                    ViewBag.Error = "Esta cuenta ha sido inactivada.";
+                    datos.Captcha.CaptchaGenerado = cap.GenerarCaptcha();
+                    return View(datos);
+                }
                 ViewBag.Error = "Sesion Iniciada";
                 await _auth.SignInAsync(usrEnc);
 
+                // CONTROL DE CONDUCTOR PENDIENTE (FASE 2)
+                if (string.Equals(usrEnc.Rol, "Conductor", StringComparison.OrdinalIgnoreCase) &&
+                    string.Equals(usrEnc.Estado, "Pendiente", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Si es conductor y está pendiente, lo mandamos directo a completar sus datos personales
+                    return RedirectToAction("CompletarPerfil", "Conductor");
+                }
+
+                // Flujo normal para los demás usuarios activos
                 var (controller, action) = _auth.GetHomeRouteForRole(usrEnc.Rol);
                 return RedirectToAction(action, controller);
             }

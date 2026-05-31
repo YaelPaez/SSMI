@@ -42,5 +42,7 @@ namespace SSMI.Models
         public DateOnly FechaNacimiento { get; set; }
 
         public string? Discapacidad { get; set; }
+
+        public string Estado { get; set; } = "Activo";
     }
 }

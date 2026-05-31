@@ -11,6 +11,8 @@ namespace SSMI.Controllers
 
         private readonly IConfiguration _configuration;
 
+
+
         public ConductorController(IConfiguration configuration)
         {
             _configuration = configuration;
@@ -22,10 +24,128 @@ namespace SSMI.Controllers
             return View();
         }
 
+        // GET: Conductor/CompletarPerfil
+        public ActionResult CompletarPerfil()
+        {
+            // Recuperamos el correo del usuario autenticado desde los Claims del JWT
+            string? emailUsuario = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+
+            if (string.IsNullOrEmpty(emailUsuario))
+            {
+                return RedirectToAction("IniciarSesion", "Login");
+            }
+
+            // Preparamos el ViewModel enviándole el correo ya establecido
+            var model = new CompletarPerfilViewModel
+            {
+                Email = emailUsuario
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult CompletarPerfil(CompletarPerfilViewModel model)
+        {
+
+
+            // 1. Forzamos a recuperar el correo real de la sesión del usuario autenticado
+            string? emailUsuario = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+
+            // 2. Se lo asignamos al modelo pase lo que pase
+            model.Email = emailUsuario ?? string.Empty;
+
+            // 3. LIMPIAMOS el error del Email en el ModelState para que ya no bloquee la validación
+            ModelState.Remove(nameof(model.Email));
+
+            // Ahora sí, evaluamos si los demás campos (apellidos, contraseña) están bien
+            if (!ModelState.IsValid)
+            {
+                var errores = string.Join(" | ", ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage));
+
+                ViewBag.Error = "El formulario tiene errores de validación: " + errores;
+                return View(model);
+            }
+
+            try
+            {
+                string conStr = _configuration.GetConnectionString("StringCONSQLocal");
+
+                // Encriptar la nueva contraseña definitiva
+                Funciones.Contrasena ctr = new Funciones.Contrasena();
+                string contrasenaHash = ctr.EncriptarContrasena(model.NuevaContrasena);
+
+                // Mandar a guardar a la base de datos usando el correo seguro de la sesión
+                ConsultaConductor consulta = new ConsultaConductor();
+                bool actualizado = consulta.ActualizarPerfilConductor(
+                    model.Email,
+                    model.ApellidoPaterno,
+                    model.ApellidoMaterno,
+                    model.Empresa,
+                    contrasenaHash,
+                    conStr
+                );
+
+                if (actualizado)
+                {
+                    TempData["Exito"] = "Perfil completado con éxito. Ahora estás activo en el sistema.";
+                    return RedirectToAction("Index", "Conductor");
+                }
+                else
+                {
+                    ViewBag.Error = "No se pudo actualizar el perfil en la base de datos. Verifica si el usuario existe.";
+                    return View(model);
+                }
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = "Ocurrió un error inesperado al procesar tu solicitud: " + ex.Message;
+                return View(model);
+            }
+        }
+
+        public ActionResult PerfilConductor()
+        {
+            // 1. Recuperamos el correo del conductor autenticado
+            string? emailUsuario = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+
+            if (string.IsNullOrEmpty(emailUsuario))
+            {
+                return RedirectToAction("IniciarSesion", "Login");
+            }
+
+            try
+            {
+                string conStr = _configuration.GetConnectionString("StringCONSQLocal");
+                ConsultaConductor consulta = new ConsultaConductor();
+
+                // 2. Buscamos con nuestra nueva consulta combinada (JOIN)
+                CompletarPerfilViewModel? conductorDatos = consulta.ObtenerPerfilPorEmail(emailUsuario, conStr);
+
+                if (conductorDatos == null)
+                {
+                    // Si por alguna razón el JOIN no encuentra coincidencia en tbConductores, pasamos al menos el correo
+                    return View(new CompletarPerfilViewModel { Email = emailUsuario });
+                }
+
+                // 3. Enviamos los datos completos a la vista
+                return View(conductorDatos);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = "Error al mapear los datos del perfil: " + ex.Message;
+                return View(new CompletarPerfilViewModel { Email = emailUsuario });
+            }
+        }
+
         public ActionResult MiUnidad()
         {
             return View();
         }
+
 
         public ActionResult Incidencias()
         {

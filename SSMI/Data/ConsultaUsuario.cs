@@ -90,6 +90,7 @@ namespace SSMI.Data
                                 usuario.Rol = dr["Rol"].ToString();
                                 usuario.Contrasena = dr.IsDBNull(dr.GetOrdinal("Contrasena")) ? null : dr["Contrasena"].ToString();
                                 usuario.Correo = dr["Correo"].ToString();
+                                usuario.Estado = dr["Estado"].ToString();
                             }
                         }
                     }
