@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using SSMI.Data;
+using System.ComponentModel.DataAnnotations;
 
 namespace SSMI.Models
 {
@@ -12,6 +13,8 @@ namespace SSMI.Models
         public string Economico { get; set; }
         public string Capacidad { get; set; }
         public string NombreConductor { get; set; }
+        // CORRECCIÓN: El nombre visible de la ruta debe ser una cadena de texto
+        public string? NombreRuta { get; set; }
 
 
     }

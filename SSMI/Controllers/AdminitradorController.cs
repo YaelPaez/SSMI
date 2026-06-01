@@ -128,26 +128,98 @@ namespace SSMI.Controllers
                         }
                     }
 
-                    // 3. OPCIONAL: Cargar conductores reales para llenar el <select> de tu modal
-                    List<dynamic> listaConductores = new List<dynamic>();
-                    using (SqlCommand comandoCond = new SqlCommand("Sp_ListarCamionesConConductor", conexion)) // Ajusta el nombre de tu SP
+                    // 3. CARGAR CONDUCTORES REALES (Consulta directa sin depender de un SP global)
+                    List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem> listaConductores = new List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>();
+
+                    try
                     {
-                        comandoCond.CommandType = CommandType.StoredProcedure;
-                        using (SqlDataReader drCond = comandoCond.ExecuteReader())
+                        using (SqlConnection conexionConductor = new SqlConnection(_cadenaConexion))
                         {
-                            while (drCond.Read())
+                            // Usamos la misma estructura de tu SP de consulta pero para todo el universo de conductores
+                            string queryTodosLosConductores = @"
+            SELECT 
+                U.IdUsuario,
+                C.Nombre,
+                C.ApellidoPaterno,
+                C.ApellidoMaterno
+            FROM tbUsuarios U
+            INNER JOIN tbConductores C ON U.IdUsuario = C.IdUsuario";
+
+                            using (SqlCommand comandoCond = new SqlCommand(queryTodosLosConductores, conexionConductor))
                             {
-                                listaConductores.Add(new
+                                // !!! IMPORTANTE: Cambiamos a Text porque es un Query directo, no un Stored Procedure
+                                comandoCond.CommandType = CommandType.Text;
+
+                                conexionConductor.Open();
+
+                                using (SqlDataReader drCond = comandoCond.ExecuteReader())
                                 {
-                                    IdUsuario = Guid.Parse(drCond["IdUsuario"].ToString()),
-                                    NombreCompleto = drCond["NombreCompleto"].ToString()
-                                });
+                                    while (drCond.Read())
+                                    {
+                                        string idUsuario = drCond["IdUsuario"].ToString();
+                                        string nombre = drCond["Nombre"].ToString();
+
+                                        // Controlamos nulos por si están en Fase 1 (Pre-registro)
+                                        string apPaterno = drCond["ApellidoPaterno"] != DBNull.Value ? drCond["ApellidoPaterno"].ToString() : "";
+                                        string apMaterno = drCond["ApellidoMaterno"] != DBNull.Value ? drCond["ApellidoMaterno"].ToString() : "";
+
+                                        string nombreCompleto = $"{nombre} {apPaterno} {apMaterno}".Trim();
+
+                                        listaConductores.Add(new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem
+                                        {
+                                            Value = idUsuario,      // Mandará el IdUsuario (Guid) al presionar "Guardar"
+                                            Text = nombreCompleto   // Desplegará el nombre en el modal
+                                        });
+                                    }
+                                }
                             }
                         }
                     }
-                    // Lo guardamos en ViewBag para que el modal lo dibuje dinámicamente
+                    catch (Exception ex)
+                    {
+                        // Si algo falla al cargar los conductores, lo registramos en la consola para depurar
+                        Console.WriteLine("Error al mapear conductores para el select: " + ex.Message);
+                    }
+
+                    // Lo asignamos al ViewBag para que tu HTML lo dibuje
                     ViewBag.Conductores = listaConductores;
                 }
+                // 4. CARGAR RUTAS REALES PARA EL SELECT DEL FORMULARIO
+                List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem> listaRutas = new List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>();
+
+                try
+                {
+                    using (SqlConnection conRuta = new SqlConnection(_cadenaConexion))
+                    {
+                        // Usamos el nombre exacto de tus columnas: IdRuta y NombreRuta
+                        string queryRutas = "SELECT IdRuta, NombreRuta FROM tbRutas";
+
+                        using (SqlCommand comandoRuta = new SqlCommand(queryRutas, conRuta))
+                        {
+                            comandoRuta.CommandType = CommandType.Text;
+                            conRuta.Open();
+
+                            using (SqlDataReader drRuta = comandoRuta.ExecuteReader())
+                            {
+                                while (drRuta.Read())
+                                {
+                                    listaRutas.Add(new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem
+                                    {
+                                        Value = drRuta["IdRuta"].ToString(),     // El GUID único de la ruta
+                                        Text = drRuta["NombreRuta"].ToString()   // El texto descriptivo que verá el Admin
+                                    });
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error al cargar rutas en el controlador: " + ex.Message);
+                }
+
+                // Lo enviamos a la vista mediante ViewBag
+                ViewBag.Rutas = listaRutas;
             }
             catch (SqlException ex)
             {
@@ -190,25 +262,38 @@ namespace SSMI.Controllers
                     comando.Parameters.AddWithValue("@Capacidad", Capacidad);
 
                     conexion.Open();
-                    comando.ExecuteNonQuery(); 
+                    comando.ExecuteNonQuery();
                 }
                 TempData["MensajeExito"] = "¡El camión se registró correctamente en el sistema!";
                 return RedirectToAction(nameof(Camiones));
             }
             catch (SqlException ex)
             {
-                
+                // CONTROL DE ERRORES DE CONEXIÓN
                 if (ex.Number == 26 || ex.Number == 53 || ex.Number == 11001)
                 {
                     TempData["MensajeError"] = "No se pudo establecer conexión con el servidor de movilidad. Por favor, verifica que la base de datos remota esté activa.";
                 }
-                else if (ex.Number == 2627 || ex.Number == 2601) // Error de llave duplicada
+                // CONTROL DE LLAVE DUPLICADA (PLACAS O ECONÓMICO)
+                else if (ex.Number == 2627 || ex.Number == 2601)
                 {
                     TempData["MensajeError"] = "Error: Ya existe un camión registrado con ese número económico o placa.";
                 }
+                // CORRECCIÓN PARA LA LLAVE FORÁNEA (ERROR 547)
+                else if (ex.Number == 547)
+                {
+                    if (ex.Message.Contains("FK_tbCamiones_IdRuta"))
+                    {
+                        TempData["MensajeError"] = "Error de Integridad: La ruta asignada no existe en el sistema. Selecciona o vincula una ruta válida.";
+                    }
+                    else
+                    {
+                        TempData["MensajeError"] = "Error de consistencia: El conductor o la ruta seleccionada no son válidos en la base de datos.";
+                    }
+                }
                 else
                 {
-                    TempData["MensajeError"] = "Ocurrió un problema interno en la base de datos al intentar registrar el camión.";
+                    TempData["MensajeError"] = "Ocurrió un problema interno en la base de datos al intentar registrar el camión: " + ex.Message;
                 }
 
                 return RedirectToAction(nameof(Camiones));
@@ -223,7 +308,8 @@ namespace SSMI.Controllers
         // POST: Administrador/Camiones/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult EditarCamion(Guid id, Guid Ruta, Guid Conductor, string Placas, int Kilometraje, string Economico, string Capacidad)
+        // CORRECCIÓN: Cambiamos 'Guid id' por 'Guid IdCamion' para que coincida con el name del HTML
+        public ActionResult EditarCamion(Guid IdCamion, Guid Ruta, Guid Conductor, string Placas, int Kilometraje, string Economico, string Capacidad)
         {
             try
             {
@@ -232,8 +318,8 @@ namespace SSMI.Controllers
                     SqlCommand comando = new SqlCommand("Sp_ModificarCamion", conexion);
                     comando.CommandType = CommandType.StoredProcedure;
 
-                    // Pasamos los parámetros incluyendo el ID del camión a modificar
-                    comando.Parameters.AddWithValue("@IdCamion", id);
+                    // Pasamos los parámetros usando la variable corregida
+                    comando.Parameters.AddWithValue("@IdCamion", IdCamion);
                     comando.Parameters.AddWithValue("@Ruta", Ruta);
                     comando.Parameters.AddWithValue("@Conductor", Conductor);
                     comando.Parameters.AddWithValue("@Placas", Placas);
@@ -257,6 +343,11 @@ namespace SSMI.Controllers
                 {
                     TempData["MensajeError"] = "Error: El número económico o las placas ya están asignados a otro camión.";
                 }
+                // PROTECCIÓN EXTRA: Por si la nueva ruta seleccionada da problemas de FK
+                else if (ex.Number == 547)
+                {
+                    TempData["MensajeError"] = "Error de Integridad: La ruta o el conductor seleccionados no son válidos en el sistema.";
+                }
                 else
                 {
                     TempData["MensajeError"] = "Ocurrió un problema interno en la base de datos al intentar modificar el camión.";
@@ -270,7 +361,6 @@ namespace SSMI.Controllers
                 return RedirectToAction(nameof(Camiones));
             }
         }
-
         // POST: Administrador/Camiones/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
