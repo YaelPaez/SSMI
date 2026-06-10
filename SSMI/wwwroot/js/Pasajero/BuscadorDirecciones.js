@@ -364,7 +364,7 @@ function mostrarEstado(tipo, mensaje) {
 }
 
 function mostrarUbicacionSeleccionada(nombre, lat, lon) {
-    document.getElementById('ubicacionNombre').textContent = nombre;
+    document.getElementById('ubicacionNombre').textContent = "Direccion";
     document.getElementById('ubicacionLat').textContent = lat.toFixed(6);
     document.getElementById('ubicacionLon').textContent = lon.toFixed(6);
 
