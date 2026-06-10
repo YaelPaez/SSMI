@@ -120,9 +120,20 @@ namespace SSMI.Controllers
         {
             return View();
         }
-        public IActionResult MejorRuta()
+
+        [HttpPost]
+        public IActionResult MejorRuta(decimal LatI, decimal LonI, string nombre, decimal latF, decimal lonF)
         {
-            return View();
+            MejorRutaVM obj = new MejorRutaVM()
+            {
+               LatI = LatI,
+               LonI = LonI,
+               nombre = nombre,
+               latF = latF,
+               lonF = lonF
+            };
+
+            return View("MejorRuta", obj);
         }
         public IActionResult Comentarios()
         {

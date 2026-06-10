@@ -77,6 +77,7 @@ builder.Services.AddAuthorization();
 // Application services
 builder.Services.AddTransient<ConsultasParadas>();
 builder.Services.AddScoped<IRutasService, RutasService>();
+builder.Services.AddScoped<ConsultaRutasPasajero>();
 
 builder.WebHost.UseUrls("http://0.0.0.0:3035");
 

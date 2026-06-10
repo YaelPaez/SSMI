@@ -5,8 +5,8 @@
 ?        Listo para integrar con Leaflet y GraphHopper             ?
 ????????????????????????????????????????????????????????????????????
 */
-
-// ?? VARIABLES GLOBALES ??
+/*
+//*?? VARIABLES GLOBALES ??
 const inputBuscador = document.getElementById('inputBuscador');
 const listaSugerencias = document.getElementById('listaSugerencias');
 const statusMensaje = document.getElementById('statusMensaje');
@@ -232,13 +232,112 @@ function seleccionarSugerencia(elemento) {
     // Ocultar sugerencias
     ocultarSugerencias();
 
-    // ?? AQUÍ LLAMAR A GRAPHHOPPER PARA CALCULAR RUTAS ??
-    // Cuando el usuario selecciona destino, se puede llamar a:
-    // calcularRutasGraphHopper(latitud, longitud)
-    // o 
-    // obtenerDetallesUbicacion(latitud, longitud)
+    // ?? CALCULAR RUTA Y REDIRIGIR A MEJOR RUTA ??
+    calcularRutaYRedireccionar(latitud, longitud);
+}
 
-    console.log('?? Próximo paso: Integrar con GraphHopper para calcular rutas');
+/* ??????????????????????????????????????????????????????????????????? */
+/* ??? CALCULAR RUTA Y REDIRIGIR A MEJOR RUTA                         */
+/* ??????????????????????????????????????????????????????????????????? */
+
+async function calcularRutaYRedireccionar(latDestino, lonDestino) {
+    try {
+        console.log('?? Calculando ruta...');
+        console.log(`?? Destino: (${latDestino}, ${lonDestino})`);
+
+        // Obtener ubicación actual del usuario
+        if (!navigator.geolocation) {
+            console.error('? Geolocalización no disponible');
+            alert('Necesitamos acceso a tu ubicación para calcular la ruta');
+            return;
+        }
+
+        // Mostrar loading
+        mostrarEstado('cargando', '? Obteniendo tu ubicación y calculando ruta...');
+
+        navigator.geolocation.getCurrentPosition(async function(position) {
+            const latOrigen = position.coords.latitude;
+            const lonOrigen = position.coords.longitude;
+
+            console.log(`?? Origen: (${latOrigen}, ${lonOrigen})`);
+            console.log(`?? Destino: (${latDestino}, ${lonDestino})`);
+
+            try {
+                mostrarEstado('cargando', '?? Calculando ruta...');
+
+                // Construir URL con parámetros
+                const url = `/api/rutas/calcular-completo?latOrigen=${latOrigen}&lonOrigen=${lonOrigen}&latDestino=${latDestino}&lonDestino=${lonDestino}`;
+
+                console.log(`?? Llamando a API: ${url}`);
+
+                // Llamar a API para calcular ruta completa
+                const response = await fetch(url);
+
+                console.log(`?? Respuesta HTTP: ${response.status} ${response.statusText}`);
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error('? Error en respuesta:', errorData);
+                    throw new Error(errorData.error || 'Error al calcular ruta');
+                }
+
+                const rutaData = await response.json();
+
+                console.log('? Ruta calculada:', rutaData);
+
+                // Guardar ruta en sessionStorage para usarla en MejorRuta
+                sessionStorage.setItem('rutaCalculada', JSON.stringify(rutaData));
+                sessionStorage.setItem('latOrigen', latOrigen);
+                sessionStorage.setItem('lonOrigen', lonOrigen);
+                sessionStorage.setItem('latDestino', latDestino);
+                sessionStorage.setItem('lonDestino', lonDestino);
+
+                // Ocultar estado antes de redirigir
+                ocultarSugerencias();
+
+                // Redirigir a página de mejor ruta
+                console.log('?? Redirigiendo a Mejor Ruta...');
+                setTimeout(() => {
+                    window.location.href = '/Usuario/MejorRuta';
+                }, 500);
+
+            } catch (error) {
+                console.error('? Error al calcular ruta:', error);
+                mostrarEstado('error', '? Error: ' + error.message);
+
+                // Permitir reintentar
+                setTimeout(() => {
+                    ocultarSugerencias();
+                }, 3000);
+            }
+
+        }, function(error) {
+            console.error('? Error de geolocalización:', error.message);
+
+            let mensaje = 'No se puede acceder a tu ubicación';
+            if (error.code === error.PERMISSION_DENIED) {
+                mensaje = 'Debes permitir acceso a tu ubicación';
+            } else if (error.code === error.POSITION_UNAVAILABLE) {
+                mensaje = 'Tu ubicación no está disponible';
+            } else if (error.code === error.TIMEOUT) {
+                mensaje = 'Tiempo de espera agotado';
+            }
+
+            mostrarEstado('error', '? ' + mensaje);
+
+            setTimeout(() => {
+                ocultarSugerencias();
+            }, 3000);
+        }, {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+        });
+
+    } catch (error) {
+        console.error('? Error:', error);
+        mostrarEstado('error', '? Error: ' + error.message);
+    }
 }
 
 /* ??????????????????????????????????????????????????????????????????? */
@@ -268,6 +367,7 @@ function mostrarUbicacionSeleccionada(nombre, lat, lon) {
     document.getElementById('ubicacionNombre').textContent = nombre;
     document.getElementById('ubicacionLat').textContent = lat.toFixed(6);
     document.getElementById('ubicacionLon').textContent = lon.toFixed(6);
+
     ubicacionSeleccionada.style.display = 'block';
     listaSugerencias.style.display = 'none';
     statusMensaje.style.display = 'none';

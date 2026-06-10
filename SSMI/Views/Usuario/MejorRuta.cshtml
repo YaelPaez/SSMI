@@ -1,65 +1,264 @@
-﻿@{
+﻿@model SSMI.Models.MejorRutaVM;
+
+
+@{
     ViewData["Title"] = "Mejor Ruta";
     Layout = "~/Views/Shared/_UsuarioLayout.cshtml";
 }
 
 <style>
-    .contenido-perfil {
-        flex-grow: 1;
+    /* Vista principal */
+    .app-viewport {
+        height: 100vh;
+        background-color: #f0f2f5;
+        overflow: hidden;
+        display: flex;
+    }
+
+    /* Sidebar */
+    #sidebarMenu {
+        margin-left: -280px;
+        transition: margin-left 0.3s ease;
+    }
+
+    #sidebarMenu.open {
+        margin-left: 0;
+    }
+
+    /* Contenedor del mapa */
+    .contenedor-mapa {
+        flex: 1;
+        position: relative;
+        overflow: hidden;
+        background-color: #e5e3df;
+    }
+
+    /* Mapa Leaflet */
+    #map {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+    }
+
+    /* Botones de control */
+    .control-mapa {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        z-index: 10;
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn-control {
+        background: white;
+        border: none;
+        border-radius: 4px;
+        padding: 10px 15px;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        transition: all 0.2s ease;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .btn-control:hover {
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+
+    .btn-control.primary {
+        background: #667eea;
+        color: white;
+    }
+
+    .btn-control.primary:hover {
+        background: #5568d3;
+    }
+
+    /* Panel de información */
+    .panel-info {
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        max-width: 400px;
+        z-index: 10;
+        max-height: 300px;
         overflow-y: auto;
-        padding: 1.5rem;
-        transition: background .3s;
+    }
+
+    .panel-info h4 {
+        margin: 0 0 10px 0;
+        font-size: 1rem;
+        color: #333;
+    }
+
+    .panel-info p {
+        margin: 5px 0;
+        font-size: 0.9rem;
+        color: #666;
+    }
+
+    .panel-info .ruta-item {
+        background: #f5f5f5;
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 4px;
+        border-left: 3px solid #667eea;
+    }
+
+    /* Dark mode */
+    body.dark-mode .contenedor-mapa {
+        background-color: #161b22;
+    }
+
+    body.dark-mode .btn-control {
+        background: #161b22;
+        color: #e6edf3;
+    }
+
+    body.dark-mode .panel-info {
+        background: #161b22;
+        color: #e6edf3;
+    }
+
+    body.dark-mode .panel-info h4 {
+        color: #e6edf3;
+    }
+
+    body.dark-mode .panel-info p {
+        color: #8b949e;
+    }
+
+    body.dark-mode .panel-info .ruta-item {
+        background: rgba(0,212,255,0.1);
+    }
+
+    /* Botón toggle sidebar */
+    .btn-toggle-menu {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        z-index: 10;
+        background: white;
+        border: none;
+        border-radius: 4px;
+        padding: 10px;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .btn-toggle-menu:hover {
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+
+    body.dark-mode .btn-toggle-menu {
+        background: #161b22;
+        color: #e6edf3;
     }
 </style>
-
 
 <div class="d-flex app-viewport">
     <!-- ══ SIDEBAR ══ -->
     <div id="sidebarMenu" class="shadow">
         <div class="d-flex flex-column p-4 h-100">
             <h4 class="text-center mt-2 mb-4">SSMI</h4>
-            <a asp-action="Index" class="nav-btn"><i class="bi bi-house-door"></i> Inicio</a>
+            <a asp-action="Index" class="nav-btn"><i class="bi bi-map"></i> Explorar Mapa</a>
             <a asp-action="Perfil" class="nav-btn"><i class="bi bi-person-circle"></i> Mi Perfil</a>
-            <a asp-action="MejorRuta" class="nav-btn active"><i class="bi bi-map"></i> Mejor Ruta</a>
+            <a asp-action="MejorRuta" class="nav-btn active"><i class="bi bi-route"></i> Mejor Ruta</a>
             <a asp-action="Comentarios" class="nav-btn"><i class="bi bi-chat-left-dots"></i> Comentarios</a>
             <div class="mt-auto">
                 <a asp-action="Ayuda" class="nav-btn"><i class="bi bi-question-circle"></i> Ayuda</a>
                 <a asp-action="AcercaDeNosotros" class="nav-btn"><i class="bi bi-info-square"></i> Acerca de nosotros</a>
+                <a asp-controller="Login" asp-action="CerrarSesion" class="nav-btn"><i class="bi bi-box-arrow-right"></i> Cerrar Sesión</a>
             </div>
         </div>
     </div>
 
-    <!-- ══ CONTENIDO PRINCIPAL ══ -->
-    <div class="flex-grow-1 d-flex flex-column">
-        <div class="p-3 d-flex align-items-center gap-3 border-bottom">
-            <button id="btnToggleMenu" class="btn btn-dark rounded-circle shadow-sm" style="width: 45px; height: 45px;">
-                <i class="bi bi-list"></i>
+    <!-- ══ CONTENEDOR MAPA ══ -->
+    <div class="contenedor-mapa d-flex flex-column">
+        <!-- Mapa Leaflet -->
+        <div id="map"></div>
+
+        <!-- Botón toggle sidebar -->
+        <button id="btnToggleSidebar" class="btn-toggle-menu">
+            <i class="bi bi-list fs-5"></i>
+        </button>
+
+        <!-- Controles del mapa -->
+        <div class="control-mapa">
+            <button id="btnCentrar" class="btn-control" title="Centrar en mi ubicación">
+                <i class="bi bi-crosshair"></i> Centrar
             </button>
-            <h2 class="mb-0">Mejor Ruta</h2>
+            <button id="btnResetear" class="btn-control primary" title="Resetear vista">
+                <i class="bi bi-arrow-clockwise"></i> Resetear
+            </button>
         </div>
 
-        <div class="contenido-perfil d-flex justify-content-center align-items-center">
-            <div class="card shadow-lg p-4 d-flex flex-column"
-                 style="width: 100%; max-width: 650px; border-radius: 25px; background-color: white;">
-
-                <div class="mb-3">
-                    <input type="text" class="form-control rounded-pill bg-light border-0 p-3 shadow-sm"
-                           placeholder="Ingresa tu destino" aria-label="Destino">
-                </div>
-
-                <div class="text-center d-flex align-items-center justify-content-center overflow-hidden"
-                     style="border-radius: 15px; background-color: #fcfcfc; min-height: 200px; max-height: 350px;">
-                    <img src="~/Imagenes/imgMejorRuta.png" alt="Mejor Ruta - Mapa de trayecto"
-                         style="max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain;">
-                </div>
-
-                <div class="text-center mt-4">
-                    <a asp-action="TrayectoIniciado" class="btn rounded-pill px-5 py-3 shadow fw-bold"
-                       style="background-color: #b8e994; border: none; color: black; font-size: 1.2rem; min-width: 250px;">
-                        Iniciar Trayecto
-                    </a>
-                </div>
-            </div>
+        <!-- Panel de información de la ruta -->
+        <div id="panelInfo" class="panel-info" style="display: none;">
+            <h4>📍 Ruta Calculada</h4>
+            <div id="detallesRuta"></div>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <!-- Leaflet JS y CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Script del mapa -->
+    <script src="~/js/Pasajero/MejorRuta.js"></script>
+
+    <script>
+        // Inicializar cuando la página carga
+        document.addEventListener('DOMContentLoaded', function() {
+            IniciarMapa();
+
+            // Toggle sidebar
+            const btnToggle = document.getElementById('btnToggleSidebar');
+            const sidebar = document.getElementById('sidebarMenu');
+            if (btnToggle) {
+                btnToggle.addEventListener('click', function() {
+                    sidebar.classList.toggle('open');
+                });
+            }
+
+            // Botón centrar
+            const btnCentrar = document.getElementById('btnCentrar');
+            if (btnCentrar) {
+                btnCentrar.addEventListener('click', function() {
+                    if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(function(position) {
+                            const lat = position.coords.latitude;
+                            const lon = position.coords.longitude;
+                            if (window.map) {
+                                window.map.setView([lat, lon], 16);
+                                console.log('Mapa centrado en:', lat, lon);
+                            }
+                        });
+                    }
+                });
+            }
+
+            // Botón resetear
+            const btnResetear = document.getElementById('btnResetear');
+            if (btnResetear) {
+                btnResetear.addEventListener('click', function() {
+                    if (window.map) {
+                        window.map.setView([19.4326, -99.1332], 13);
+                        console.log('Vista reseteada');
+                    }
+                });
+            }
+        });
+        console.log(@Model.nombre)
+    </script>
+}

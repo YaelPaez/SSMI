@@ -182,6 +182,8 @@ function PintarParadas() {
     });
 }
 
+mostrarUbicacionSeleccionada()
+
 /* ───────────────────────────── */
 /* 📍  MARCAR CERCANAS           */
 /* ───────────────────────────── */
@@ -351,3 +353,476 @@ function MostrarDetallesParada(idParada) {
 
     alert(mensaje);
 }
+
+/* 
+????????????????????????????????????????????????????????????????????
+?        BUSCADOR DE DIRECCIONES CON NOMINATIM API                ?
+?        Búsqueda en tiempo real, sugerencias y selección          ?
+?        Listo para integrar con Leaflet y GraphHopper             ?
+????????????????????????????????????????????????????????????????????
+*/
+
+// ?? VARIABLES GLOBALES ??
+const inputBuscador = document.getElementById('inputBuscador');
+const listaSugerencias = document.getElementById('listaSugerencias');
+const statusMensaje = document.getElementById('statusMensaje');
+const btnLimpiarBuscador = document.getElementById('btnLimpiarBuscador');
+const ubicacionSeleccionada = document.getElementById('ubicacionSeleccionada');
+
+// Variables para guardar la ubicación seleccionada
+let ubicacionActual = {
+    nombre: '',
+    latitud: null,
+    longitud: null,
+    displayName: ''
+};
+
+// Control de debounce para búsqueda
+let timeoutBusqueda = null;
+const DELAY_BUSQUEDA = 300; // ms
+const MIN_CARACTERES = 3;
+const API_NOMINATIM = 'https://nominatim.openstreetmap.org/search';
+
+/* ??????????????????????????????????????????????????????????????????? */
+/* ?? INICIALIZACIÓN DE EVENTOS                                       */
+/* ??????????????????????????????????????????????????????????????????? */
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Event listener: escribir en el input
+    inputBuscador.addEventListener('input', manejarInputBuscador);
+
+    // Event listener: limpiar búsqueda
+    btnLimpiarBuscador.addEventListener('click', limpiarBuscador);
+
+    // Event listener: cerrar sugerencias al hacer click fuera
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.buscador-contenedor')) {
+            ocultarSugerencias();
+        }
+    });
+
+    // Event listener: navegación con teclado (flecha arriba/abajo, enter, esc)
+    inputBuscador.addEventListener('keydown', manejarTeclas);
+});
+
+/* ??????????????????????????????????????????????????????????????????? */
+/* ?? MANEJO DE EVENTOS DEL INPUT                                     */
+/* ??????????????????????????????????????????????????????????????????? */
+
+function manejarInputBuscador(e) {
+    const valor = e.target.value.trim();
+
+    // Mostrar/ocultar botón limpiar
+    if (valor.length > 0) {
+        btnLimpiarBuscador.style.display = 'block';
+    } else {
+        btnLimpiarBuscador.style.display = 'none';
+        ocultarSugerencias();
+        return;
+    }
+
+    // Si hay menos de 3 caracteres, no hacer búsqueda
+    if (valor.length < MIN_CARACTERES) {
+        ocultarSugerencias();
+        return;
+    }
+
+    // Cancelar búsqueda anterior si existe
+    if (timeoutBusqueda) {
+        clearTimeout(timeoutBusqueda);
+    }
+
+    // Debounce: esperar a que el usuario deje de escribir
+    timeoutBusqueda = setTimeout(() => {
+        buscarDirecciones(valor);
+    }, DELAY_BUSQUEDA);
+}
+
+function manejarTeclas(e) {
+    const items = Array.from(document.querySelectorAll('.item-sugerencia'));
+    const activo = document.querySelector('.item-sugerencia.activa');
+    let indiceActivo = activo ? items.indexOf(activo) : -1;
+
+    switch (e.key) {
+        case 'ArrowDown':
+            e.preventDefault();
+            indiceActivo++;
+            if (indiceActivo >= items.length) indiceActivo = 0;
+            marcarActivo(items[indiceActivo]);
+            break;
+
+        case 'ArrowUp':
+            e.preventDefault();
+            indiceActivo--;
+            if (indiceActivo < 0) indiceActivo = items.length - 1;
+            marcarActivo(items[indiceActivo]);
+            break;
+
+        case 'Enter':
+            e.preventDefault();
+            if (activo) {
+                activo.click();
+            }
+            break;
+
+        case 'Escape':
+            e.preventDefault();
+            ocultarSugerencias();
+            inputBuscador.blur();
+            break;
+    }
+}
+
+function marcarActivo(elemento) {
+    document.querySelectorAll('.item-sugerencia').forEach(el => el.classList.remove('activa'));
+    if (elemento) {
+        elemento.classList.add('activa');
+        elemento.scrollIntoView({ block: 'nearest' });
+    }
+}
+
+/* ??????????????????????????????????????????????????????????????????? */
+/* ?? BÚSQUEDA CON NOMINATIM API                                      */
+/* ??????????????????????????????????????????????????????????????????? */
+
+async function buscarDirecciones(query) {
+    try {
+        // Mostrar estado: cargando
+        mostrarEstado('cargando', '? Buscando...');
+
+        // Construir URL con parámetros
+        const url = new URL(API_NOMINATIM);
+        url.searchParams.append('q', query);
+        url.searchParams.append('format', 'json');
+        url.searchParams.append('limit', '5');
+        url.searchParams.append('addressdetails', '1');
+
+        console.log('?? Buscando:', query);
+
+        // Hacer request a Nominatim
+        const response = await fetch(url.toString());
+
+        if (!response.ok) {
+            throw new Error(`Error HTTP: ${response.status}`);
+        }
+
+        const datos = await response.json();
+
+        console.log('?? Resultados:', datos.length);
+
+        // Si no hay resultados
+        if (!datos || datos.length === 0) {
+            mostrarEstado('info', 'Sin resultados. Intenta con otra búsqueda.');
+            ocultarSugerencias();
+            return;
+        }
+
+        // Renderizar sugerencias
+        renderizarSugerencias(datos);
+        mostrarSugerencias();
+
+    } catch (error) {
+        console.error('? Error en búsqueda:', error);
+        mostrarEstado('error', 'Error en la búsqueda. Intenta de nuevo.');
+        ocultarSugerencias();
+    }
+}
+
+/* ??????????????????????????????????????????????????????????????????? */
+/* ?? RENDERIZAR SUGERENCIAS                                          */
+/* ??????????????????????????????????????????????????????????????????? */
+
+function renderizarSugerencias(resultados) {
+    // Limpiar lista anterior
+    listaSugerencias.innerHTML = '';
+
+    // Crear elemento para cada resultado
+    resultados.forEach((resultado, indice) => {
+        const li = document.createElement('li');
+        li.className = 'item-sugerencia';
+        li.textContent = resultado.display_name;
+
+        // Guardar lat/lon como data-attributes
+        li.setAttribute('data-lat', resultado.lat);
+        li.setAttribute('data-lon', resultado.lon);
+        li.setAttribute('data-display-name', resultado.display_name);
+
+        // Event listener: click en sugerencia
+        li.addEventListener('click', () => seleccionarSugerencia(li));
+
+        listaSugerencias.appendChild(li);
+    });
+
+    console.log('? Sugerencias renderizadas:', resultados.length);
+}
+
+/* ??????????????????????????????????????????????????????????????????? */
+/* ? SELECCIONAR SUGERENCIA                                          */
+/* ??????????????????????????????????????????????????????????????????? */
+
+function seleccionarSugerencia(elemento) {
+    // Obtener datos del elemento
+    const nombre = elemento.getAttribute('data-display-name');
+    const latitud = parseFloat(elemento.getAttribute('data-lat'));
+    const longitud = parseFloat(elemento.getAttribute('data-lon'));
+
+    // Guardar en variable global
+    ubicacionActual = {
+        nombre: nombre,
+        latitud: latitud,
+        longitud: longitud,
+        displayName: nombre
+    };
+
+    console.log('?? Ubicación seleccionada:');
+    console.log('   Nombre:', nombre);
+    console.log('   Latitud:', latitud);
+    console.log('   Longitud:', longitud);
+
+    // Llenar input con el nombre
+    inputBuscador.value = nombre;
+
+    // Mostrar información de ubicación
+    mostrarUbicacionSeleccionada(nombre, latitud, longitud);
+
+    // Ocultar sugerencias
+    ocultarSugerencias();
+
+    // ?? CALCULAR RUTA Y REDIRIGIR A MEJOR RUTA ??
+    calcularRutaYRedireccionar(latitud, longitud);
+}
+
+/* ??????????????????????????????????????????????????????????????????? */
+/* ??? CALCULAR RUTA Y REDIRIGIR A MEJOR RUTA                         */
+/* ??????????????????????????????????????????????????????????????????? */
+
+async function calcularRutaYRedireccionar(latDestino, lonDestino) {
+    try {
+        console.log('?? Calculando ruta...');
+        console.log(`?? Destino: (${latDestino}, ${lonDestino})`);
+
+        // Obtener ubicación actual del usuario
+        if (!navigator.geolocation) {
+            console.error('? Geolocalización no disponible');
+            alert('Necesitamos acceso a tu ubicación para calcular la ruta');
+            return;
+        }
+
+        // Mostrar loading
+        mostrarEstado('cargando', '? Obteniendo tu ubicación y calculando ruta...');
+
+        navigator.geolocation.getCurrentPosition(async function (position) {
+            const latOrigen = position.coords.latitude;
+            const lonOrigen = position.coords.longitude;
+
+            console.log(`?? Origen: (${latOrigen}, ${lonOrigen})`);
+            console.log(`?? Destino: (${latDestino}, ${lonDestino})`);
+
+            try {
+                mostrarEstado('cargando', '?? Calculando ruta...');
+
+                // Construir URL con parámetros
+                const url = `/api/rutas/calcular-completo?latOrigen=${latOrigen}&lonOrigen=${lonOrigen}&latDestino=${latDestino}&lonDestino=${lonDestino}`;
+
+                console.log(`?? Llamando a API: ${url}`);
+
+                // Llamar a API para calcular ruta completa
+                const response = await fetch(url);
+
+                console.log(`?? Respuesta HTTP: ${response.status} ${response.statusText}`);
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error('? Error en respuesta:', errorData);
+                    throw new Error(errorData.error || 'Error al calcular ruta');
+                }
+
+                const rutaData = await response.json();
+
+                console.log('? Ruta calculada:', rutaData);
+
+                // Guardar ruta en sessionStorage para usarla en MejorRuta
+                sessionStorage.setItem('rutaCalculada', JSON.stringify(rutaData));
+                sessionStorage.setItem('latOrigen', latOrigen);
+                sessionStorage.setItem('lonOrigen', lonOrigen);
+                sessionStorage.setItem('latDestino', latDestino);
+                sessionStorage.setItem('lonDestino', lonDestino);
+
+                // Ocultar estado antes de redirigir
+                ocultarSugerencias();
+
+                // Redirigir a página de mejor ruta
+                console.log('?? Redirigiendo a Mejor Ruta...');
+                setTimeout(() => {
+                    window.location.href = '/Usuario/MejorRuta';
+                }, 500);
+
+            } catch (error) {
+                console.error('? Error al calcular ruta:', error);
+                mostrarEstado('error', '? Error: ' + error.message);
+
+                // Permitir reintentar
+                setTimeout(() => {
+                    ocultarSugerencias();
+                }, 3000);
+            }
+
+        }, function (error) {
+            console.error('? Error de geolocalización:', error.message);
+
+            let mensaje = 'No se puede acceder a tu ubicación';
+            if (error.code === error.PERMISSION_DENIED) {
+                mensaje = 'Debes permitir acceso a tu ubicación';
+            } else if (error.code === error.POSITION_UNAVAILABLE) {
+                mensaje = 'Tu ubicación no está disponible';
+            } else if (error.code === error.TIMEOUT) {
+                mensaje = 'Tiempo de espera agotado';
+            }
+
+            mostrarEstado('error', '? ' + mensaje);
+
+            setTimeout(() => {
+                ocultarSugerencias();
+            }, 3000);
+        }, {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+        });
+
+    } catch (error) {
+        console.error('? Error:', error);
+        mostrarEstado('error', '? Error: ' + error.message);
+    }
+}
+
+/* ??????????????????????????????????????????????????????????????????? */
+/* ?? MOSTRAR/OCULTAR ELEMENTOS                                       */
+/* ??????????????????????????????????????????????????????????????????? */
+
+function mostrarSugerencias() {
+    listaSugerencias.style.display = 'block';
+    statusMensaje.style.display = 'none';
+    ubicacionSeleccionada.style.display = 'none';
+}
+
+function ocultarSugerencias() {
+    listaSugerencias.style.display = 'none';
+    statusMensaje.style.display = 'none';
+}
+
+function mostrarEstado(tipo, mensaje) {
+    statusMensaje.textContent = mensaje;
+    statusMensaje.className = 'status-mensaje ' + tipo;
+    statusMensaje.style.display = 'block';
+    listaSugerencias.style.display = 'none';
+    ubicacionSeleccionada.style.display = 'none';
+}
+
+function mostrarUbicacionSeleccionada(nombre, lat, lon) {
+    document.getElementById('ubicacionNombre').textContent = nombre;
+    document.getElementById('ubicacionLat').textContent = lat.toFixed(6);
+    document.getElementById('ubicacionLon').textContent = lon.toFixed(6);
+
+    ubicacionSeleccionada.style.display = 'block';
+    listaSugerencias.style.display = 'none';
+    statusMensaje.style.display = 'none';
+
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = "/Ruta/MejorRuta"; // Controlador/Acción
+
+    const datos = {
+        LatI: posicionUsuario[0],
+        LonI: posicionUsuario[1],
+        nombre: nombre,
+        latF: lat,
+        lonF: lon
+    };
+
+    for (const key in datos) {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = key;
+        input.value = datos[key];
+        form.appendChild(input);
+    }
+
+    document.body.appendChild(form);
+    form.submit();
+}
+
+/* ??????????????????????????????????????????????????????????????????? */
+/* ??? LIMPIAR BÚSQUEDA                                                */
+/* ??????????????????????????????????????????????????????????????????? */
+
+function limpiarBuscador() {
+    inputBuscador.value = '';
+    inputBuscador.focus();
+    btnLimpiarBuscador.style.display = 'none';
+    ocultarSugerencias();
+
+    // Limpiar ubicación seleccionada
+    ubicacionActual = {
+        nombre: '',
+        latitud: null,
+        longitud: null,
+        displayName: ''
+    };
+
+    console.log('???  Búsqueda limpiada');
+}
+
+/* ??????????????????????????????????????????????????????????????????? */
+/* ?? FUNCIÓN PARA OBTENER UBICACIÓN ACTUAL                           */
+/* ??????????????????????????????????????????????????????????????????? */
+
+function obtenerUbicacionSeleccionada() {
+    return ubicacionActual;
+}
+
+// Exportar para usar en otros scripts (si es necesario)
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        obtenerUbicacionSeleccionada,
+        ubicacionActual
+    };
+}
+
+/* ??????????????????????????????????????????????????????????????????? */
+/* ?? INTEGRACIÓN CON GRAPHHOPPER (Comentada para después)           */
+/* ??????????????????????????????????????????????????????????????????? */
+
+/*
+// Cuando tengas ubicación de origen Y destino, llama a esta función:
+
+async function calcularRutasGraphHopper(latOrigen, lonOrigen, latDestino, lonDestino) {
+    try {
+        const url = 'https://graphhopper.com/api/1/route';
+
+        const params = {
+            point: [
+                `${latOrigen},${lonOrigen}`,
+                `${latDestino},${lonDestino}`
+            ],
+            vehicle: 'foot',  // o 'car', 'bike', etc
+            locale: 'es',
+            key: 'YOUR_GRAPHHOPPER_API_KEY'
+        };
+
+        const response = await fetch(url + '?' + new URLSearchParams(params));
+        const datos = await response.json();
+
+        console.log('???  Ruta calculada:', datos);
+        // Aquí mostrar la ruta en el mapa con Leaflet
+
+    } catch (error) {
+        console.error('? Error GraphHopper:', error);
+    }
+}
+
+// Uso:
+// calcularRutasGraphHopper(19.25, -99.04, 19.26, -99.05);
+*/
+
+console.log('? Script de buscador cargado y listo');
