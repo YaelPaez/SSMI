@@ -259,8 +259,9 @@
     }
 </style>
 
-
-
+<head>
+    <meta charset="utf-8" />
+    </head>
 <div class="d-flex flex-column admin-viewport">
     <div class="admin-header">
         <h2>
@@ -297,7 +298,7 @@
                     <tr>
                         <th>Económico</th>
                         <th>Placa</th>
-                        <th>Conductor</th>
+                        <th>Ruta Asignada</th> <th>Conductor</th>
                         <th>Capacidad</th>
                         <th>Kilometraje</th>
                         <th>Acciones</th>
@@ -311,12 +312,22 @@
                             <tr>
                                 <td>@camion.Economico</td>
                                 <td>@camion.Placas</td>
+                                <td>@(string.IsNullOrEmpty(camion.NombreRuta) ? "—" : camion.NombreRuta)</td> 
                                 <td>@(string.IsNullOrEmpty(camion.NombreConductor) ? "—" : camion.NombreConductor)</td>
                                 <td>@camion.Capacidad</td>
                                 <td>@camion.Kilometraje KM</td>
                                 <td>
                                     <div class="action-cell">
-                                        <button class="btn btn-admin btn-editar" data-id="@camion.IdCamion"><i class="bi bi-pencil"></i></button>
+                                       <button class="btn btn-admin btn-editar" 
+                                                data-id="@camion.IdCamion"
+                                                data-economico="@camion.Economico"
+                                                data-placas="@camion.Placas"
+                                                data-capacidad="@camion.Capacidad"
+                                                data-kilometraje="@camion.Kilometraje"
+                                                data-ruta="@camion.Ruta"
+                                                data-conductor="@camion.Conductor">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
                                         
                                         <form asp-action="EliminarCamion" asp-route-id="@camion.IdCamion" method="post" style="display:inline;" onsubmit="return confirm('¿Seguro que deseas eliminar este camión?');">
                                             @Html.AntiForgeryToken()
@@ -330,7 +341,7 @@
                     else
                     {
                         <tr>
-                            <td colspan="6" class="text-center text-muted">No hay camiones registrados actualmente.</td>
+                            <td colspan="7" class="text-center text-muted">No hay camiones registrados actualmente.</td>
                         </tr>
                     }
                 </tbody>
@@ -338,8 +349,8 @@
         </div>
     </div>
 </div>
-@if (TempData["MensajeError"] != null)
-{
+
+@if (TempData["MensajeError"] != null){
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
         <div class="d-flex align-items-center">
             <i class="bi bi-exclamation-octagon-fill me-2 fs-5"></i>
@@ -349,8 +360,7 @@
     </div>
 }
 
-@if (TempData["MensajeExito"] != null)
-{
+@if (TempData["MensajeExito"] != null){
     <div class="alert alert-success alert-dismissible fade show" role="alert">
         <div class="d-flex align-items-center">
             <i class="bi bi-check-circle-fill me-2 fs-5"></i>
@@ -359,6 +369,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
+
 <div class="modal fade" id="modalCamion" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -367,9 +378,26 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form asp-action="CrearCamion" method="post">
-                @Html.AntiForgeryToken() <div class="modal-body">
+                @Html.AntiForgeryToken() 
+                <div class="modal-body">
                     
-                    <input type="hidden" name="Ruta" value="@Guid.Empty" />
+                    <div class="mb-3">
+                        <label class="form-label">Ruta Asignada</label>
+                        <select name="Ruta" class="form-select" required>
+                            <option value="">Seleccionar ruta...</option>
+                            @if (ViewBag.Rutas != null)
+                            {
+                                foreach (var ruta in (List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)ViewBag.Rutas)
+                                {
+                                    <option value="@ruta.Value">@ruta.Text</option>
+                                }
+                            }
+                            else
+                            {
+                                <option value="">No hay rutas disponibles</option>
+                            }
+                        </select>
+                    </div>
 
                     <div class="mb-3">
                         <label class="form-label">Número Económico</label>
@@ -392,29 +420,97 @@
                     </div>
 
                     <div class="mb-3">
-                <label class="form-label">Conductor Asignado</label>
-                <select name="Conductor" class="form-control" required>
-                    <option value="">Seleccionar conductor...</option>
-        
-                    @if (ViewBag.Conductores != null)
-                    {
-                        foreach (var cond in ViewBag.Conductores)
-                        {
-                            <option value="@cond.IdUsuario">@cond.NombreCompleto</option>
-                        }
-                    }
-                    else
-                    {
-                        <!-- Opción de respaldo en caso de que la BD no responda o no haya conductores creados -->
-                        <option value="@Guid.Empty">Conductor Temporal de Respaldo</option>
-                    }
-                </select>
-            </div>
+                        <label class="form-label">Conductor Asignado</label>
+                        <select name="Conductor" class="form-select" required>
+                            <option value="">Seleccionar conductor...</option>
+                            @if (ViewBag.Conductores != null)
+                            {
+                                foreach (var cond in (List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)ViewBag.Conductores)
+                                {
+                                    <option value="@cond.Value">@cond.Text</option>
+                                }
+                            }
+                            else
+                            {
+                                <option value="@Guid.Empty">Conductor Temporal de Respaldo</option>
+                            }
+                        </select>
+                    </div>
                     
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-admin btn-agregar">Guardar Camión</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modalEditarCamion" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-pencil-square"></i> Editar Camión</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form asp-action="EditarCamion" method="post">
+                @Html.AntiForgeryToken() 
+                <div class="modal-body">
+                    
+                    <input type="hidden" name="IdCamion" id="editIdCamion" />
+
+                    <div class="mb-3">
+                        <label class="form-label">Ruta Asignada</label>
+                        <select name="Ruta" id="editRuta" class="form-select" required>
+                            <option value="">Seleccionar ruta...</option>
+                            @if (ViewBag.Rutas != null)
+                            {
+                                foreach (var ruta in (List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)ViewBag.Rutas)
+                                {
+                                    <option value="@ruta.Value">@ruta.Text</option>
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Número Económico</label>
+                        <input type="text" name="Economico" id="editEconomico" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Placa</label>
+                        <input type="text" name="Placas" id="editPlacas" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Capacidad</label>
+                        <input type="text" name="Capacidad" id="editCapacidad" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Kilometraje Actual</label>
+                        <input type="number" name="Kilometraje" id="editKilometraje" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Conductor Asignado</label>
+                        <select name="Conductor" id="editConductor" class="form-select" required>
+                            <option value="">Seleccionar conductor...</option>
+                            @if (ViewBag.Conductores != null)
+                            {
+                                foreach (var cond in (List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)ViewBag.Conductores)
+                                {
+                                    <option value="@cond.Value">@cond.Text</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Actualizar Cambios</button>
                 </div>
             </form>
         </div>
@@ -447,5 +543,30 @@
             document.documentElement.classList.add('font-size-' + fs);
             document.body.classList.add('font-size-' + fs);
         })();
+        $(document).ready(function () {
+            $('.btn-editar').on('click', function () {
+                // Extraemos los atributos data- del botón de la tabla
+                var idCamion = $(this).data('id');
+                var economico = $(this).data('economico');
+                var plates = $(this).data('placas');
+                var capacidad = $(this).data('capacidad');
+                var kilometraje = $(this).data('kilometraje');
+                var ruta = $(this).data('ruta');
+                var conductor = $(this).data('conductor');
+
+                // Los inyectamos en los inputs del formulario de edición
+                $('#editIdCamion').val(idCamion);
+                $('#editEconomico').val(economico);
+                $('#editPlacas').val(plates);
+                $('#editCapacidad').val(capacidad);
+                $('#editKilometraje').val(kilometraje);
+                $('#editRuta').val(ruta);
+                $('#editConductor').val(conductor);
+
+                // Mostramos el modal de edición en pantalla
+                $('#modalEditarCamion').modal('show');
+            });
+        });
+    </script>
     </script>
 }
