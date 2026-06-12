@@ -12,10 +12,7 @@ window.marcadores = {};
 window.rutaPolilinea = null;
 window.rutaActual = null;
 
-const Ruta = JSON.parse(sessionStorage.getItem("rutaCalculada"));
-
-
-console.log(Ruta);
+const Ruta = null;
 
 
 /* ═══════════════════════════════════════════════════════════════════ */
@@ -51,8 +48,9 @@ function IniciarMapa() {
 
         console.log('✅ Mapa inicializado correctamente');
 
-        // Cargar y dibujar ruta calculada
-        cargarRutaCalculada();
+        Ruta = JSON.parse(sessionStorage.getItem("rutaCalculada"));
+
+        console.log(Ruta);
 
     } catch (error) {
         console.error('❌ Error al inicializar mapa:', error);
