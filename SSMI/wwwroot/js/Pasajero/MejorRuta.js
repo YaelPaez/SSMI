@@ -20,6 +20,10 @@ const Ruta = null;
 /* ═══════════════════════════════════════════════════════════════════ */
 
 function IniciarMapa() {
+    Ruta = JSON.parse(sessionStorage.getItem("rutaCalculada"));
+
+    console.log(Ruta);
+
     try {
         // Verificar que Leaflet esté disponible
         if (typeof L === 'undefined') {
@@ -48,9 +52,7 @@ function IniciarMapa() {
 
         console.log('✅ Mapa inicializado correctamente');
 
-        Ruta = JSON.parse(sessionStorage.getItem("rutaCalculada"));
-
-        console.log(Ruta);
+        
 
     } catch (error) {
         console.error('❌ Error al inicializar mapa:', error);
