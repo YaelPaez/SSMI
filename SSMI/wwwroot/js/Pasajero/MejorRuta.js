@@ -12,7 +12,7 @@ window.marcadores = {};
 window.rutaPolilinea = null;
 window.rutaActual = null;
 
-const Ruta = null;
+var Ruta = null;
 
 window.onload = IniciarMapa();
 /* ═══════════════════════════════════════════════════════════════════ */
