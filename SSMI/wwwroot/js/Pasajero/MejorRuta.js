@@ -12,7 +12,7 @@ window.marcadores = {};
 window.rutaPolilinea = null;
 window.rutaActual = null;
 
-const Ruta = JSON.parse(sessionStorage.getItem("rutaCalculada");
+const Ruta = JSON.parse(sessionStorage.getItem("rutaCalculada"));
 
 
 console.log(Ruta);
