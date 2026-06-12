@@ -1,4 +1,4 @@
-﻿window.onload = IniciarMapa();
+﻿
 /* 
 ╔══════════════════════════════════════════════════════════════════╗
 ║          VISTA: MEJOR RUTA - CÁLCULO Y VISUALIZACIÓN             ║
@@ -14,7 +14,7 @@ window.rutaActual = null;
 
 const Ruta = null;
 
-
+window.onload = IniciarMapa();
 /* ═══════════════════════════════════════════════════════════════════ */
 /* 🗺️ INICIALIZAR MAPA                                               */
 /* ═══════════════════════════════════════════════════════════════════ */
