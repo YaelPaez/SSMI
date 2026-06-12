@@ -182,7 +182,6 @@ function PintarParadas() {
     });
 }
 
-mostrarUbicacionSeleccionada()
 
 /* ───────────────────────────── */
 /* 📍  MARCAR CERCANAS           */
@@ -354,6 +353,29 @@ function MostrarDetallesParada(idParada) {
     alert(mensaje);
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* 
 ????????????????????????????????????????????????????????????????????
 ?        BUSCADOR DE DIRECCIONES CON NOMINATIM API                ?
@@ -362,7 +384,7 @@ function MostrarDetallesParada(idParada) {
 ????????????????????????????????????????????????????????????????????
 */
 
-// ?? VARIABLES GLOBALES ??
+//*?? VARIABLES GLOBALES ??
 const inputBuscador = document.getElementById('inputBuscador');
 const listaSugerencias = document.getElementById('listaSugerencias');
 const statusMensaje = document.getElementById('statusMensaje');
@@ -583,20 +605,20 @@ function seleccionarSugerencia(elemento) {
     inputBuscador.value = nombre;
 
     // Mostrar información de ubicación
-    mostrarUbicacionSeleccionada(nombre, latitud, longitud);
+    mostrarUbicacionSeleccionada("Direccion", latitud, longitud);
 
     // Ocultar sugerencias
     ocultarSugerencias();
 
     // ?? CALCULAR RUTA Y REDIRIGIR A MEJOR RUTA ??
-    calcularRutaYRedireccionar(latitud, longitud);
+    calcularRutaYRedireccionar(latitud, longitud, nombre);
 }
 
 /* ??????????????????????????????????????????????????????????????????? */
 /* ??? CALCULAR RUTA Y REDIRIGIR A MEJOR RUTA                         */
 /* ??????????????????????????????????????????????????????????????????? */
 
-async function calcularRutaYRedireccionar(latDestino, lonDestino) {
+async function calcularRutaYRedireccionar(latDestino, lonDestino, nombreDestino) {
     try {
         console.log('?? Calculando ruta...');
         console.log(`?? Destino: (${latDestino}, ${lonDestino})`);
@@ -622,12 +644,27 @@ async function calcularRutaYRedireccionar(latDestino, lonDestino) {
                 mostrarEstado('cargando', '?? Calculando ruta...');
 
                 // Construir URL con parámetros
-                const url = `/api/rutas/calcular-completo?latOrigen=${latOrigen}&lonOrigen=${lonOrigen}&latDestino=${latDestino}&lonDestino=${lonDestino}`;
+                const url = `/RutasAutobus/ObtenerRuta`;
+
+
 
                 console.log(`?? Llamando a API: ${url}`);
 
+                const request = {
+                    LatInicio: latOrigen,
+                    LonInicio: lonOrigen,
+                    LatFin: latDestino,
+                    LonFin: lonDestino
+                };
+
                 // Llamar a API para calcular ruta completa
-                const response = await fetch(url);
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(request)
+                });
 
                 console.log(`?? Respuesta HTTP: ${response.status} ${response.statusText}`);
 
@@ -652,10 +689,38 @@ async function calcularRutaYRedireccionar(latDestino, lonDestino) {
                 ocultarSugerencias();
 
                 // Redirigir a página de mejor ruta
-                console.log('?? Redirigiendo a Mejor Ruta...');
-                setTimeout(() => {
-                    window.location.href = '/Usuario/MejorRuta';
-                }, 500);
+              //  console.log('?? Redirigiendo a Mejor Ruta...');
+                //setTimeout(() => {
+                  //  window.location.href = '/Usuario/MejorRuta';
+                //     }, 500);
+
+                const form = document.createElement("form");
+                form.method = "POST";
+                form.action = "/Usuario/MejorRuta"; // Controlador/Acción
+
+                const datos = {
+                    LatI: latOrigen,
+                    LonI: lonOrigen,
+                    nombre: nombreDestino,
+                    latF: latDestino,
+                    lonF: lonDestino
+                };
+
+                for (const key in datos) {
+                    const input = document.createElement("input");
+                    input.type = "hidden";
+                    input.name = key;
+                    input.value = datos[key];
+                    form.appendChild(input);
+                }
+
+                localStorage.setItem(
+                    "datosRuta",
+                    JSON.stringify(datos)
+                );
+
+                document.body.appendChild(form);
+                form.submit();
 
             } catch (error) {
                 console.error('? Error al calcular ruta:', error);
@@ -720,36 +785,13 @@ function mostrarEstado(tipo, mensaje) {
 }
 
 function mostrarUbicacionSeleccionada(nombre, lat, lon) {
-    document.getElementById('ubicacionNombre').textContent = "Diereccion";
+    document.getElementById('ubicacionNombre').textContent = "Direccion";
     document.getElementById('ubicacionLat').textContent = lat.toFixed(6);
     document.getElementById('ubicacionLon').textContent = lon.toFixed(6);
 
     ubicacionSeleccionada.style.display = 'block';
     listaSugerencias.style.display = 'none';
     statusMensaje.style.display = 'none';
-
-    const form = document.createElement("form");
-    form.method = "POST";
-    form.action = "/Ruta/MejorRuta"; // Controlador/Acción
-
-    const datos = {
-        LatI: posicionUsuario[0],
-        LonI: posicionUsuario[1],
-        nombre: nombre,
-        latF: lat,
-        lonF: lon
-    };
-
-    for (const key in datos) {
-        const input = document.createElement("input");
-        input.type = "hidden";
-        input.name = key;
-        input.value = datos[key];
-        form.appendChild(input);
-    }
-
-    document.body.appendChild(form);
-    form.submit();
 }
 
 /* ??????????????????????????????????????????????????????????????????? */
