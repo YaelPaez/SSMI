@@ -760,6 +760,103 @@
         background: #444;
     }
 
+
+
+    .card-rutas-overlay {
+        position: absolute;
+        top: 90px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 420px;
+        max-width: 90%;
+        background: white;
+        border-radius: 18px;
+        box-shadow: 0 10px 35px rgba(0,0,0,.25);
+        z-index: 1000;
+        display: none;
+        overflow: hidden;
+    }
+
+        .card-rutas-overlay.show {
+            display: block;
+        }
+
+    .card-rutas-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+        background: #1E3C54;
+        color: white;
+    }
+
+        .card-rutas-header button {
+            border: none;
+            background: none;
+            color: white;
+        }
+
+    .card-rutas-body {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .ruta-item {
+        padding: 15px;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+
+    .ruta-item {
+        display: flex;
+        gap: 15px;
+        padding: 15px;
+        border-bottom: 1px solid #e5e7eb;
+        transition: .2s;
+    }
+
+        .ruta-item:hover {
+            background: #f8fafc;
+        }
+
+    .ruta-codigo {
+        min-width: 70px;
+        height: 70px;
+        background: linear-gradient( 135deg, #1E3C54, #00d4ff );
+        color: white;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    .ruta-info {
+        flex: 1;
+    }
+
+    .ruta-destino {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+    .ruta-detalles {
+        display: flex;
+        gap: 15px;
+        font-size: 13px;
+        color: #64748b;
+        margin-top: 4px;
+    }
+
+    .nocturna {
+        color: #7c3aed;
+        font-weight: 600;
+    }
 </style>
 
 <div class="menu-container d-flex app-viewport">
@@ -824,9 +921,9 @@
                 </div>
             </div>
 
-            <a asp-action="MejorRuta" class="btn btn-primary rounded-circle shadow-sm"
+            <a onclick="MostrarCardRutas()" class="btn btn-primary rounded-circle shadow-sm"
                style="background-color:#1E3C54;border:none;flex-shrink:0;">
-                    <i class="bi bi-search"></i>
+                <i class="bi bi-map-fill"></i>
                 </a>
             </div>
         </div>
@@ -858,6 +955,64 @@
             </div>
         </div>
     </div>
+</div>
+
+<div id="cardRutas" class="card-rutas-overlay">
+
+    <div class="card-rutas-header">
+        <span>Rutas Disponibles</span>
+
+        <button onclick="CerrarCardRutas()">
+            <i class="bi bi-x-lg"></i>
+        </button>
+    </div>
+
+    <div class="card-rutas-body">
+
+        <div class="ruta-item">
+
+            <div class="ruta-codigo">
+                Z03A
+            </div>
+
+            <div class="ruta-info">
+
+                <div class="ruta-destino">
+                    Culhuacan - Taxqueña
+                </div>
+
+                <div class="ruta-detalles">
+
+                    <span>
+                        <i class="bi bi-cash-coin"></i>
+                        $9
+                    </span>
+
+                    <span>
+                        <i class="bi bi-clock"></i>
+                        6:00 - 23:00
+                    </span>
+
+                </div>
+
+                <div class="ruta-detalles nocturna">
+
+                    <span>
+                        🌙 $12
+                    </span>
+
+                    <span>
+                        23:00 - 5:00
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
 </div>
 
 @section Scripts {
@@ -957,4 +1112,5 @@
     </script>
 
     <script src="/js/Pasajero/Mapa.js"></script>
+    <script src="/js/Pasajero/InfoRutas.js"></script>
 }
