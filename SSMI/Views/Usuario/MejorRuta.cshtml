@@ -162,6 +162,70 @@
         background: #161b22;
         color: #e6edf3;
     }
+
+    .card-ruta {
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+        width: 420px;
+        max-width: calc(100% - 40px);
+        background: #0b1220;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,.35);
+        z-index: 1000;
+    }
+
+    .card-header-ruta {
+        background: linear-gradient(90deg,#1f5f7f,#1ec8ff);
+        color: white;
+        padding: 15px 20px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .card-body-ruta {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .paso-ruta {
+        display: flex;
+        gap: 15px;
+        padding: 15px 20px;
+        border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+
+    .numero-paso {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        background: #00d4ff;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+    }
+
+    .contenido-paso {
+        display: flex;
+        flex-direction: column;
+    }
+
+        .contenido-paso strong {
+            color: white;
+            font-size: .95rem;
+        }
+
+        .contenido-paso small {
+            color: #9ca3af;
+            margin-top: 3px;
+        }
+
 </style>
 
 <div class="d-flex app-viewport">
@@ -196,16 +260,22 @@
             <button id="btnCentrar" class="btn-control" title="Centrar en mi ubicación">
                 <i class="bi bi-crosshair"></i> Centrar
             </button>
-            <button id="btnResetear" class="btn-control primary" title="Resetear vista">
-                <i class="bi bi-arrow-clockwise"></i> Resetear
-            </button>
         </div>
 
         <!-- Panel de información de la ruta -->
-        <div id="panelInfo" class="panel-info" style="display: none;">
-            <h4>📍 Ruta Calculada</h4>
-            <div id="detallesRuta"></div>
+        <div id="panelInfo" class="card-ruta">
+            <div class="card-header-ruta">
+                <i class="bi bi-signpost-2-fill"></i>
+                <span>Ruta Recomendada</span>
+            </div>
+
+            <div class="card-body-ruta" id="card-instrucciones">
+
+                
+
+            </div>
         </div>
+
     </div>
 </div>
 
