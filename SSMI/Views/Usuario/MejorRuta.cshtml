@@ -226,6 +226,129 @@
             margin-top: 3px;
         }
 
+    .btn-iniciar-ruta {
+        position: absolute;
+        bottom: 390px; /* arriba del card */
+        left: 20px;
+        width: 420px;
+        max-width: calc(100% - 40px);
+        border: none;
+        border-radius: 12px;
+        padding: 14px;
+        background: linear-gradient(90deg,#00b4db,#0083b0);
+        color: white;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        z-index: 1001;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        box-shadow: 0 8px 20px rgba(0,0,0,.3);
+        transition: all .2s ease;
+    }
+
+        .btn-iniciar-ruta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(0,0,0,.35);
+        }
+
+        .btn-iniciar-ruta:active {
+            transform: translateY(0);
+        }
+
+
+
+
+
+
+
+
+
+        #panelInfo{
+    border: none;
+    box-shadow: none;
+}
+
+.bus-card{
+    background: white;
+    border-radius: 18px;
+    padding: 15px;
+    margin-bottom: 12px;
+
+    box-shadow:
+        0 4px 15px rgba(0,0,0,.12);
+
+    transition: .25s;
+}
+
+.bus-card:hover{
+    transform: translateY(-2px);
+}
+
+.bus-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    margin-bottom:12px;
+}
+
+.bus-route{
+    font-size:18px;
+    font-weight:700;
+    color:#1f2937;
+}
+
+.bus-unit{
+    font-size:14px;
+    color:#64748b;
+}
+
+.eta-badge{
+    background:#10b981;
+    color:white;
+
+    padding:8px 14px;
+
+    border-radius:999px;
+
+    font-size:15px;
+    font-weight:700;
+
+    min-width:70px;
+    text-align:center;
+}
+
+.bus-info{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+.info-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    padding:8px 0;
+
+    border-bottom:1px solid #e5e7eb;
+}
+
+.info-row:last-child{
+    border-bottom:none;
+}
+
+.info-row span{
+    color:#6b7280;
+    font-size:14px;
+}
+
+.info-row strong{
+    color:#111827;
+}
 </style>
 
 <div class="d-flex app-viewport">
@@ -257,16 +380,20 @@
 
         <!-- Controles del mapa -->
         <div class="control-mapa">
-            <button id="btnCentrar" class="btn-control" title="Centrar en mi ubicación">
-                <i class="bi bi-crosshair"></i> Centrar
+            <button id="btnCentrar" class="btn-primary" title="Iniciar Ruta">
+                Iniciar Ruta
             </button>
         </div>
+        
 
+        
         <!-- Panel de información de la ruta -->
         <div id="panelInfo" class="card-ruta">
+           
+           
             <div class="card-header-ruta">
-                <i class="bi bi-signpost-2-fill"></i>
-                <span>Ruta Recomendada</span>
+                <i id="icono-card" class="bi bi-signpost-2-fill"></i>
+                <span id="span-RR-CC">Ruta Recomendada</span>
             </div>
 
             <div class="card-body-ruta" id="card-instrucciones">
@@ -301,35 +428,11 @@
                 });
             }
 
-            // Botón centrar
-            const btnCentrar = document.getElementById('btnCentrar');
-            if (btnCentrar) {
-                btnCentrar.addEventListener('click', function() {
-                    if (navigator.geolocation) {
-                        navigator.geolocation.getCurrentPosition(function(position) {
-                            const lat = position.coords.latitude;
-                            const lon = position.coords.longitude;
-                            if (window.map) {
-                                window.map.setView([lat, lon], 16);
-                                console.log('Mapa centrado en:', lat, lon);
-                            }
-                        });
-                    }
-                });
-            }
+            
 
-            // Botón resetear
-            const btnResetear = document.getElementById('btnResetear');
-            if (btnResetear) {
-                btnResetear.addEventListener('click', function() {
-                    if (window.map) {
-                        window.map.setView([19.4326, -99.1332], 13);
-                        console.log('Vista reseteada');
-                    }
-                });
-            }
-        });
+            
     </script>
 
     <script src="~/js/Pasajero/MejorRuta.js"></script>
+    <script src="~/js/Pasajero/IndicacionesYCamionesCerca.js"></script>
 }

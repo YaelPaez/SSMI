@@ -61,6 +61,7 @@ function IniciarMapa() {
 
 function PintarRuta() {
     try {
+        var primerparada = false;
         const coordenadas = [];
         Ruta.forEach(Instruccion => {
             console.log("Punto: " + Instruccion.posicionLat + ", " + Instruccion.posicionLon);
@@ -97,6 +98,24 @@ function PintarRuta() {
                     }
                 ).addTo(window.map);
             }
+            if (Instruccion.tipo == "AUTOBUS" && primerparada == false) {
+
+                primerparada = true;
+
+                var paradaCercanaIcon = L.icon({
+                    iconUrl: '/Imagenes/paradaCercana.png',
+                    iconSize: [30, 30],
+                    iconAnchor: [15, 30]
+                });
+
+                L.marker(
+                    [Instruccion.posicionLat, Instruccion.posicionLon],
+                    {
+                        icon: paradaCercanaIcon
+                    }
+                ).addTo(window.map);
+            }
+
         });
 
         window.rutaPolilinea = L.polyline(coordenadas, {
@@ -191,3 +210,5 @@ function AgregarPaso(numero, titulo, detalle) {
 
     contenedor.appendChild(div);
 }
+
+
