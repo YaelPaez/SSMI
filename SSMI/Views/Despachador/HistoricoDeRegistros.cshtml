@@ -14,11 +14,13 @@
     }
 
     .app-viewport {
-        min-height: 100vh;
+        height: 100vh;
         background-color: #f0f2f5;
         display: flex;
         align-items: stretch;
         overflow-x: hidden;
+        overflow-y: auto; /* Fuerza a que este contenedor sea el encargado de mostrar el scroll vertical */
+    }
     }
 
     #sidebarMenu {
@@ -30,6 +32,7 @@
         transition: margin-left 0.3s ease-in-out, visibility 0.3s;
         z-index: 1000;
         flex-shrink: 0;
+        overflow-y: auto; /* Si el menú de ayuda o navegación crece en pantallas chicas, tendrá su propio scroll independiente */
     }
 
         #sidebarMenu.collapsed {
@@ -291,9 +294,14 @@
             const formFiltros = document.getElementById("formFiltros");
 
             // 1. Bloquear fechas futuras en ambos calendarios
-            const hoy = new Date().toISOString().split('T')[0];
-            inputInicio.setAttribute("max", hoy);
-            inputFin.setAttribute("max", hoy);
+        const fechaLocal = new Date();
+        const anio = fechaLocal.getFullYear();
+        const mes = String(fechaLocal.getMonth() + 1).padStart(2, '0');
+        const dia = String(fechaLocal.getDate()).padStart(2, '0');
+        const hoy = `${anio}-${mes}-${dia}`;
+
+        inputInicio.setAttribute("max", hoy);
+        inputFin.setAttribute("max", hoy);
 
             // 2. Evento cuando cambia el primer calendario
             inputInicio.addEventListener("change", function () {

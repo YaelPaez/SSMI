@@ -22,7 +22,26 @@ namespace SSMI.Controllers
         // GET: DespachadorController
         public ActionResult Index()
         {
-            return View();
+            DateTime hoy = DateTime.Today;
+
+            // 2. Llamamos al método respetando el orden exacto de los parámetros:
+            // (cdnConexion, conductor, inicio, fin, estado)
+            List<RegistroHistoricoModel> registrosHoy = _consultaHistorico.ObtenerHistoricoFiltrado(
+                _cadenaConexion,
+                null,  // conductor
+                hoy,   // inicio
+                hoy,   // fin
+                null   // estado
+            ) ?? new List<RegistroHistoricoModel>();
+
+            // 3. Calcular los KPIs basados dinámicamente en los registros de hoy obtenidos
+            ViewBag.TotalSalidas = registrosHoy.Count;
+            ViewBag.Aprobados = registrosHoy.Count(r => r.Estado == "Aprobado");
+            ViewBag.Pendientes = registrosHoy.Count(r => r.Estado == "Pendiente");
+            ViewBag.Rechazados = registrosHoy.Count(r => r.Estado == "Rechazado");
+
+            // 4. Retornar la vista Index enviando los registros reales como el modelo
+            return View(registrosHoy);
         }
 
         // GET: DespachadorController/Details/5

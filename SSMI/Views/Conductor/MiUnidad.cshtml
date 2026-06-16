@@ -92,17 +92,19 @@
     .acciones-unidad {
         margin-top: 2.5rem;
         display: flex;
-        gap: 1rem;
+        justify-content: center; /* <--- Centra el botón horizontalmente */
     }
 
     .boton-unidad {
-        flex: 1;
+        width: 100%;
+        max-width: 320px; /* <--- Evita que se estire demasiado y mantiene una estética limpia */
         padding: 1rem;
         border: none;
         border-radius: 12px;
         font-weight: 700;
         cursor: pointer;
         transition: 0.3s;
+        text-decoration: none; /* Quita el subrayado automático de los enlaces */
     }
 
     .boton-primario-unidad {
@@ -192,14 +194,7 @@
             </a>
 
             <div class="mt-auto">
-                <a asp-controller="Usuario" asp-action="Ayuda" class="nav-btn">
-                    <i class="bi bi-question-circle"></i> Ayuda
-                </a>
-                <a asp-controller="Usuario" asp-action="AcercaDeNosotros" class="nav-btn">
-                    <i class="bi bi-question-circle"></i> Acerca de Nosotros
-                </a>
                 <a asp-controller="Login" asp-action="CerrarSesion" class="nav-btn"><i class="bi bi-box-arrow-right"></i> Cerrar Sesión</a>
-
             </div>
         </div>
     </div>
@@ -247,12 +242,9 @@
                 </div>
 
                 <div class="acciones-unidad">
-                    <a asp-controller="Conductor" asp-action="Incidencias" class="boton-unidad boton-primario-unidad">
-                        <center><i class="bi bi-cone-striped"></i>  Reportar Incidencia</center>
+                    <a asp-controller="Conductor" asp-action="Incidencias" class="boton-unidad boton-primario-unidad text-center">
+                        <i class="bi bi-cone-striped"></i> Reportar Incidencia
                     </a>
-                    <button class="boton-unidad boton-secundario-unidad">
-                        <i class="bi bi-tools"></i> Editar
-                    </button>
                 </div>
             </div>
         </div>
