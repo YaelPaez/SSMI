@@ -7,11 +7,12 @@ using System.Security.Claims;
 
 namespace SSMI.Controllers
 {
-    [JwtCookieAuthorize("Usuario")] // <--- SI NO HAS INICIADO SESION NO TE DEJA ENTRAR A LAS VISTAS DEL USUARIO
+   // <--- SI NO HAS INICIADO SESION NO TE DEJA ENTRAR A LAS VISTAS DEL USUARIO
     public class UsuarioController : Controller
     {
         
         private readonly IConfiguration _configuracion;
+
 
         public UsuarioController(IConfiguration config)
         {
@@ -84,7 +85,7 @@ namespace SSMI.Controllers
                 // Si no cumple, cancelamos y recargamos la vista sin guardar
                 return RedirectToAction("Perfil");
             }
-
+            
             // 2. Validar Mayoría de Edad y fechas futuras
             // Nota: Como DateOnly puede ser un poco estricto al mapear, calculamos la edad así:
             var hoy = DateOnly.FromDateTime(DateTime.Today);
