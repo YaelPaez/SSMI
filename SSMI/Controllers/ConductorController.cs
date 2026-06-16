@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SSMI.Data;
+using SSMI.Filters;
 using SSMI.Models;
 using SSMI.Models.ViewModels;
-using SSMI.Data;
 
 namespace SSMI.Controllers
 {
+    [JwtCookieAuthorize("Conductor")]
     public class ConductorController : Controller
     {
 

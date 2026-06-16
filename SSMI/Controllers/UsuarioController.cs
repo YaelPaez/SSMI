@@ -7,7 +7,7 @@ using System.Security.Claims;
 
 namespace SSMI.Controllers
 {
-    //[JwtCookieAuthorize("Usuario")] // <--- SI NO HAS INICIADO SESION NO TE DEJA ENTRAR A LAS VISTAS DEL USUARIO
+    [JwtCookieAuthorize("Usuario")] // <--- SI NO HAS INICIADO SESION NO TE DEJA ENTRAR A LAS VISTAS DEL USUARIO
     public class UsuarioController : Controller
     {
         

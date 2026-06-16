@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SSMI.Data;
+using SSMI.Filters;
 using SSMI.Models;
 
 namespace SSMI.Controllers
 {
+    [JwtCookieAuthorize("Despachador")]
     public class DespachadorController : Controller
     {
 

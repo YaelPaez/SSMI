@@ -1,15 +1,17 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SSMI.Data;
-using SSMI.Models;
 using Microsoft.Data.SqlClient;
-using System.Data;
-using SSMI.Funciones;
 using Microsoft.Extensions.Configuration;
+using SSMI.Data;
+using SSMI.Filters;
+using SSMI.Funciones;
+using SSMI.Models;
+using System.Data;
 using System.Text;
 
 namespace SSMI.Controllers
 {
+    [JwtCookieAuthorize("Administrador")]
     public class AdminitradorController : Controller
     {
 
