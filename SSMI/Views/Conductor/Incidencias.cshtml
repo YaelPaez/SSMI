@@ -15,11 +15,14 @@
 
     /* ───── CONTENEDOR PRINCIPAL ───── */
     .app-viewport {
+        height: auto !important; /* <--- Rompe el candado del 100vh de sidebar.css */
         min-height: 100vh;
         background-color: #f0f2f5;
         display: flex;
         align-items: stretch;
-        overflow-x: hidden;
+        overflow: max-content; /* <--- Permite que aparezca la barra para bajar */
+        overflow-y: auto !important; /* <--- Obliga a aparecer la barrita lateral derecha para bajar */
+        overflow-x: hidden !important; /* Evita que la pantalla baile hacia los lados */
         transition: background-color .3s;
     }
 
@@ -33,6 +36,7 @@
         transition: margin-left 0.3s ease-in-out, visibility 0.3s, background-color .3s;
         z-index: 1000;
         flex-shrink: 0;
+        overflow-y: auto;
     }
 
         #sidebarMenu.collapsed {
@@ -172,63 +176,57 @@
     }
 
     /* ───── MODO OSCURO (Sincronizado con el segundo código) ───── */
-    html.dark-mode .app-viewport {
+    body.dark-mode .app-viewport {
         background-color: #0d1117 !important;
     }
 
-    html.dark-mode #sidebarMenu {
+    body.dark-mode #sidebarMenu {
         background-color: #161b22 !important;
         border-right: 1px solid rgba(0,212,255,.15);
     }
 
-    html.dark-mode .unit-card {
+    body.dark-mode .unit-card {
         background-color: #161b22 !important;
         border: 1px solid rgba(0,212,255,.12);
         box-shadow: 0 10px 25px rgba(0,0,0,.4);
     }
 
-    html.dark-mode .unit-title,
-    html.dark-mode .unit-label {
+    body.dark-mode .unit-title,
+    body.dark-mode .unit-label {
         color: #e6edf3 !important;
     }
 
-    html.dark-mode .unit-header {
+    body.dark-mode .unit-header {
         border-bottom-color: rgba(255,255,255,0.1);
     }
 
-    html.dark-mode .form-control-custom {
+    body.dark-mode .form-control-custom {
         background-color: rgba(0,212,255,.06) !important;
         border-color: rgba(0,212,255,.2) !important;
         color: #e6edf3 !important;
     }
 
-        html.dark-mode .form-control-custom option {
+        body.dark-mode .form-control-custom option {
             background-color: #0d1117;
             color: #00d4ff;
         }
 
-        html.dark-mode .form-control-custom::placeholder {
+        body.dark-mode .form-control-custom::placeholder {
             color: #8b949e;
         }
 
-    html.dark-mode .btn-primary-unit {
+    body.dark-mode .btn-primary-unit {
         background-color: #00d4ff;
         color: #0d1117;
     }
 
-    html.dark-mode .btn-secondary-unit {
+    body.dark-mode .btn-secondary-unit {
         background-color: #21262d;
         color: #8b949e;
     }
 
-    html.dark-mode small {
+    body.dark-mode small {
         color: #8b949e !important;
-    }
-
-    @@media (max-width: 768px) {
-        .unit-actions {
-            flex-direction: column;
-        }
     }
 </style>
 
@@ -254,14 +252,7 @@
             </a>
 
             <div class="mt-auto">
-                <a asp-controller="Usuario" asp-action="Ayuda" class="nav-btn">
-                    <i class="bi bi-question-circle"></i> Ayuda
-                </a>
-                <a asp-controller="Usuario" asp-action="AcercaDeNosotros" class="nav-btn">
-                    <i class="bi bi-question-circle"></i> Acerca de Nosotros
-                </a>
                 <a asp-controller="Login" asp-action="CerrarSesion" class="nav-btn"><i class="bi bi-box-arrow-right"></i> Cerrar Sesión</a>
-
             </div>
         </div>
     </div>

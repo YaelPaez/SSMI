@@ -1,4 +1,6 @@
-﻿@{
+﻿@model List<SSMI.Models.RegistroHistoricoModel>
+
+@{
     ViewData["Title"] = "Dashboard Despachador";
     Layout = "~/Views/Shared/_UsuarioLayout.cshtml";
 
@@ -206,19 +208,19 @@
 
             <div class="cuadricula-kpi">
                 <div class="tarjeta-kpi">
-                    <div class="valor-kpi">12</div>
+                    <div class="valor-kpi">@ViewBag.TotalSalidas</div>
                     <div class="etiqueta-kpi">Salidas hoy</div>
                 </div>
                 <div class="tarjeta-kpi">
-                    <div class="valor-kpi">9</div>
+                    <div class="valor-kpi">@ViewBag.Aprobados</div>
                     <div class="etiqueta-kpi">Aprobados</div>
                 </div>
                 <div class="tarjeta-kpi">
-                    <div class="valor-kpi">2</div>
+                    <div class="valor-kpi">@ViewBag.Pendientes</div>
                     <div class="etiqueta-kpi">Pendientes</div>
                 </div>
                 <div class="tarjeta-kpi">
-                    <div class="valor-kpi">1</div>
+                    <div class="valor-kpi">@ViewBag.Rechazados</div>
                     <div class="etiqueta-kpi">Rechazados</div>
                 </div>
             </div>
@@ -236,30 +238,45 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>BUS-001</td>
-                            <td style="font-weight: 600;">Juan Pérez</td>
-                            <td>@DateTime.Today.ToString("dd/MM/yyyy")</td>
-                            <td>08:30 AM</td>
-                            <td><span class="badge insignia-aprobado">Aprobado</span></td>
-                        </tr>
-                        <tr>
-                            <td>BUS-002</td>
-                            <td style="font-weight: 600;">Carlos López</td>
-                            <td>@DateTime.Today.ToString("dd/MM/yyyy")</td>
-                            <td>09:15 AM</td>
-                            <td><span class="badge insignia-pendiente">Pendiente</span></td>
-                        </tr>
-                        <tr>
-                            <td>BUS-003</td>
-                            <td style="font-weight: 600;">Carlos López</td>
-                            <td>@DateTime.Today.ToString("dd/MM/yyyy")</td>
-                            <td>09:15 AM</td>
-                            <td><span class="badge insignia-rechazado">Rechazado</span></td>
-                        </tr>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@item.NumEconomico</td>
+                                    <td style="font-weight: 600;">@item.Conductor</td>
+                                    <td>@item.Fecha.ToString("dd/MM/yyyy")</td>
+                                    <td>@item.Hora</td>
+                                    <td>
+                                        @if (item.Estado == "Aprobado")
+                                        {
+                                            <span class="badge insignia-aprobado">Aprobado</span>
+                                        }
+                                        else if (item.Estado == "Pendiente")
+                                        {
+                                            <span class="badge insignia-pendiente">Pendiente</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge insignia-rechazado">@item.Estado</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5" style="text-align: center; color: #6b7280; padding: 2rem;">
+                                    No se han registrado salidas el día de hoy.
+                                </td>
+                            </tr>
+                        }
                     </tbody>
                 </table>
             </div>
         </div>
+    </div>
+</div>
     </div>
 </div>
